@@ -29,8 +29,8 @@ tags:
 # SZL Command lab
 
 Holographic command body for the SZL estate. Five organs. SHA-256 receipts.
-Energy UNAVAILABLE. Λ uniqueness is **Conjecture 1 — OPEN**. `proven_trust` is
-always false.
+Energy **channel LIVE**. Energy **joule UNAVAILABLE** until RAPL or NVML exists.
+Λ uniqueness is **Conjecture 1 — OPEN**. `proven_trust` is always false.
 
 GitHub is canonical. Hub is the publish mirror. This is **not** a-11-oy.com,
 **not** a11oy the flagship, **not** an ATO.
@@ -52,10 +52,12 @@ GitHub is canonical. Hub is the publish mirror. This is **not** a-11-oy.com,
 | Claim | Status |
 |---|---|
 | CPU / browser kernels | LIVE |
+| Energy channel | LIVE |
+| Energy joule | UNAVAILABLE (no RAPL, no NVML) |
 | CUDA | UNAVAILABLE |
-| Energy | UNAVAILABLE |
 | Λ uniqueness | Conjecture 1 OPEN |
 | proven_trust | false |
+| Elevation / ATO | refused |
 | Flagship | a-11-oy.com — this lab is not it |
 
 Apache-2.0 · Doctrine v11 LOCKED.

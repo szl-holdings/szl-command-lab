@@ -57,7 +57,7 @@ a{color:var(--proof)}
 <main>
   <div class="eyebrow">SZL Holdings · Command lab · GitHub canonical</div>
   <h1>Holographic command body. Fail closed.</h1>
-  <p class="lede">Five organs. SHA-256 receipts. Energy probe is live: MEASURED only from RAPL or NVML. Never a fabricated joule. Λ uniqueness is Conjecture 1 OPEN. Not a-11-oy.com. Not an ATO.</p>
+  <p class="lede">Five organs. SHA-256 receipts. Energy channel is LIVE. Joules are MEASURED only from RAPL or NVML. Never a fabricated joule. Λ uniqueness is Conjecture 1 OPEN. Not a-11-oy.com. Not an ATO. Not an elevation.</p>
   <div class="badges" id="badges"></div>
   <div class="stage" id="stage"></div>
   <div class="grid" id="metrics"></div>
@@ -84,9 +84,11 @@ async function cycle(){
   const energy=j.energy||{};
   document.getElementById('out').textContent=JSON.stringify({verdict:body.verdict, live:body.live_count, energy, reason:body.reason, head:body.chain_head},null,2);
   const eh=energy.honesty||'UNAVAILABLE';
+  const ch=energy.channel||'LIVE';
   document.getElementById('badges').innerHTML=[
     ['organs', (body.live_count||0)+'/5'],
-    ['energy', eh],
+    ['energy channel', ch],
+    ['joule', eh],
     ['Λ', body.conjecture_1||'OPEN'],
     ['proven_trust', String(body.proven_trust===true)],
   ].map(([k,v])=>`<span class="badge">${k} <b>${v}</b></span>`).join('');
@@ -104,6 +106,16 @@ cycle();
 """
 
 
+JSON_PATHS = {
+    "/healthz",
+    "/readyz",
+    "/api/energy",
+    "/api/organs/integrity",
+    "/v1/organs/integrity",
+}
+HTML_PATHS = {"/", "/index.html"}
+
+
 def _flag(qs: dict[str, list[str]], name: str) -> bool:
     v = (qs.get(name) or ["0"])[0]
     return v in {"1", "true", "on", "yes"}
@@ -113,12 +125,33 @@ class Handler(BaseHTTPRequestHandler):
     def log_message(self, fmt: str, *args) -> None:  # noqa: A003
         sys.stderr.write("%s - %s\n" % (self.address_string(), fmt % args))
 
+    def do_HEAD(self) -> None:  # noqa: N802
+        parsed = urlparse(self.path)
+        path = parsed.path.rstrip("/") or "/"
+        if path in HTML_PATHS:
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Content-Length", str(len(HTML.encode("utf-8"))))
+            self.send_header("Cache-Control", "no-store")
+            self.end_headers()
+            return
+        if path in JSON_PATHS:
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Content-Length", "0")
+            self.send_header("Cache-Control", "no-store")
+            self.end_headers()
+            return
+        self.send_response(404)
+        self.send_header("Content-Length", "0")
+        self.end_headers()
+
     def do_GET(self) -> None:  # noqa: N802
         parsed = urlparse(self.path)
         path = parsed.path.rstrip("/") or "/"
         qs = parse_qs(parsed.query)
         if path in {"/healthz", "/readyz"}:
-            self._send(200, {"ok": True, "energy": probe(), "proven_trust": False})
+            self._send(200, {"ok": True, "energy": probe(), "proven_trust": False, "channel": "LIVE"})
             return
         if path == "/api/energy":
             self._send(200, probe())
@@ -134,6 +167,7 @@ class Handler(BaseHTTPRequestHandler):
             body, energy = measure_run(run)
             if _flag(qs, "fabricate_joule"):
                 energy = {
+                    "channel": "LIVE",
                     "honesty": "UNAVAILABLE",
                     "energy_j": None,
                     "inference_energy_j": None,
@@ -145,7 +179,7 @@ class Handler(BaseHTTPRequestHandler):
             body["energy_j"] = energy.get("energy_j")
             self._send(200, {"ok": True, "body": body, "energy": energy})
             return
-        if path in {"/", "/index.html"}:
+        if path in HTML_PATHS:
             raw = HTML.encode("utf-8")
             self.send_response(200)
             self.send_header("Content-Type", "text/html; charset=utf-8")
@@ -171,7 +205,7 @@ def main() -> int:
     selftest()
     host, port = "0.0.0.0", int(__import__("os").environ.get("PORT", "7860"))
     httpd = ThreadingHTTPServer((host, port), Handler)
-    print(f"[szl-command-lab] {host}:{port} · energy probe live · never a fabricated joule", file=sys.stderr)
+    print(f"[szl-command-lab] {host}:{port} · energy channel LIVE · never a fabricated joule", file=sys.stderr)
     httpd.serve_forever()
     return 0
 
