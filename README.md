@@ -1,6 +1,6 @@
 ---
 title: SZL Command lab
-emoji: 🜂
+emoji: 🧠
 colorFrom: yellow
 colorTo: gray
 sdk: docker
