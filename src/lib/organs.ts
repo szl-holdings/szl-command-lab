@@ -118,6 +118,25 @@ const SPEC: Omit<Organ, "status" | "honesty" | "detail" | "metric">[] = [
   },
 ];
 
+export function hydrateLiveOrgan(row: {
+  name?: string;
+  status?: string;
+  honesty?: string;
+}): Organ | null {
+  const spec = SPEC.find((item) => item.name === row.name);
+  if (!spec) return null;
+  const status: OrganStatus = row.status === "DOWN" ? "DOWN" : "LIVE";
+  const honesty: OrganHonesty =
+    row.honesty === "UNAVAILABLE" ? "UNAVAILABLE" : row.honesty === "ADVISORY" ? "ADVISORY" : status === "DOWN" ? "UNAVAILABLE" : "LIVE";
+  return {
+    ...spec,
+    status,
+    honesty,
+    detail: "Hub kernel recapture · SZLHOLDINGS/szl-command-lab",
+    metric: 0,
+  };
+}
+
 function wgm(xs: number[], ws: number[]): number {
   if (xs.length !== ws.length || xs.length === 0) return 0;
   if (xs.some((x) => !Number.isFinite(x) || x <= 0)) return 0;

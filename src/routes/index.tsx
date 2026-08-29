@@ -3,6 +3,7 @@ import { ArrowRight } from "lucide-react";
 import { ClaimChip } from "@/components/claim-chip";
 import { Hologram } from "@/components/hologram";
 import { KhipuLedger } from "@/components/khipu-ledger";
+import { LiveStrip, useLiveEstate } from "@/components/live-strip";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CANONICAL_ENTRIES, CAPTURED_AT, CATEGORY, GITHUB, HF } from "@/lib/census";
@@ -13,6 +14,8 @@ export const Route = createFileRoute("/")({ component: Home });
 
 function Home() {
   const receipts = useLedger((s) => s.receipts);
+  const { estate } = useLiveEstate();
+  const liveOrgans = estate?.kernel.organs.length ? estate.kernel.organs : undefined;
 
   return (
     <main>
@@ -43,10 +46,18 @@ function Home() {
           </div>
           <p className="mt-6 max-w-2xl text-sm text-mute">{RECOMMENDATION.verdict}</p>
         </div>
-        <Hologram
-          title="SZL organism"
-          caption="Five organs. Locked-8 formulas. Energy UNAVAILABLE. Not a 3D rehost of the product atlas."
-        />
+        <div className="flex flex-col gap-4">
+          <LiveStrip />
+          <Hologram
+            organs={liveOrgans}
+            title="SZL organism"
+            caption={
+              estate
+                ? `${estate.kernel.live_count}/5 Hub kernel. Energy channel ${estate.kernel.energy.channel}. Joule ${estate.kernel.energy.honesty}. Not a 3D rehost of the product atlas.`
+                : "Five organs. Locked-8 formulas. Energy channel LIVE. Joule UNAVAILABLE. Not a 3D rehost of the product atlas."
+            }
+          />
+        </div>
       </section>
 
       <section className="border-y border-line">

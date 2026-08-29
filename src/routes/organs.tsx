@@ -5,6 +5,7 @@ import { Hologram } from "@/components/hologram";
 import { PageHeader } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { LiveStrip, useLiveEstate } from "@/components/live-strip";
 import {
   evaluateAnatomy,
   evaluateAuthorization,
@@ -20,6 +21,9 @@ export function Organs() {
   const [flags, setFlags] = useState<TamperFlags>(HEALTHY_FLAGS);
   const [body, setBody] = useState<AnatomyEval | null>(null);
   const [attempted, setAttempted] = useState(false);
+  const { estate } = useLiveEstate();
+  const tampered = Object.values(flags).some(Boolean);
+  const hologramOrgans = tampered ? body?.organs : (estate?.kernel.organs.length ? estate.kernel.organs : body?.organs);
 
   useEffect(() => {
     let cancelled = false;
@@ -48,16 +52,25 @@ export function Organs() {
         lede="HEART, BRAIN, CIRCULATORY, NERVOUS, SKELETON. Any DOWN organ or a WILLAY veto fail-closes. Five LIVE organs are still advisory. The hologram is the same kernel the product maps."
         claims={["DEMO", "MEASURED", "CONJECTURE"]}
       />
+      <div className="mt-6">
+        <LiveStrip />
+      </div>
 
       <div className="mt-8 grid gap-4 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
         <Hologram
-          organs={body?.organs}
+          organs={hologramOrgans}
           pulse={pulse}
           activeOrgan={down?.id ?? null}
-          caption={body?.reason ?? "Evaluating."}
+          caption={
+            tampered
+              ? (body?.reason ?? "Evaluating DEMO tamper.")
+              : (estate?.kernel.reason ?? body?.reason ?? "Evaluating.")
+          }
         />
         <article className="rounded-xl border border-line bg-ink-2 p-5">
-          <p className="font-mono text-xs uppercase tracking-[0.14em] text-mute">Injure an organ</p>
+          <p className="font-mono text-xs uppercase tracking-[0.14em] text-mute">
+            {tampered ? "DEMO tamper · this preview" : "Injure a DEMO organ"}
+          </p>
           <div className="mt-4 flex flex-wrap gap-2">
             {TAMPER_CONTROLS.map((control) => (
               <Button
