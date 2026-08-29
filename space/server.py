@@ -20,7 +20,7 @@ sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(HERE / "python"))
 
 try:
-    from energy import measure_run, probe
+    from energy import hardware, measure_run, probe
     from kernel import evaluate_anatomy, selftest
 except ImportError:
     # Immune flatten historically copied only server.py. Keep a local fallback.
@@ -213,11 +213,17 @@ SURFACES = [
     ("command-lab", "Operator kernel", "https://huggingface.co/spaces/SZLHOLDINGS/szl-command-lab", None),
     ("a11oy", "Product command", "https://huggingface.co/spaces/SZLHOLDINGS/a11oy", "https://szlholdings-a11oy.hf.space/healthz"),
     ("killinchu", "Bounded vertical", "https://huggingface.co/spaces/SZLHOLDINGS/killinchu", "https://szlholdings-killinchu.hf.space/healthz"),
-    ("khipu", "Python kernels", "https://huggingface.co/spaces/SZLHOLDINGS/szl-khipu", "https://szlholdings-szl-khipu.hf.space/"),
+    ("khipu", "Python kernels", "https://huggingface.co/spaces/SZLHOLDINGS/szl-khipu", "https://szlholdings-szl-khipu.hf.space/healthz"),
+    ("khipu-lab", "Khipu lab hologram", "https://huggingface.co/spaces/SZLHOLDINGS/khipu-lab", "https://szlholdings-khipu-lab.hf.space/healthz"),
     ("anatomy", "Living body", "https://huggingface.co/spaces/SZLHOLDINGS/anatomy", "https://szlholdings-anatomy.hf.space/healthz"),
     ("immune", "Defense matrix", "https://huggingface.co/spaces/SZLHOLDINGS/immune", "https://szlholdings-immune.hf.space/healthz"),
+    ("immune-lattice", "Channel B kernel", "https://huggingface.co/spaces/SZLHOLDINGS/immune-lattice", "https://szlholdings-immune-lattice.hf.space/healthz"),
+    ("factory", "Decision cell compiler", "https://huggingface.co/spaces/SZLHOLDINGS/a11oy-factory", "https://szlholdings-a11oy-factory.hf.space/healthz"),
+    ("lyte-services", "Lyte window", "https://huggingface.co/spaces/SZLHOLDINGS/lyte-services", "https://szlholdings-lyte-services.hf.space/healthz"),
+    ("evidence-studio", "Merge sink", "https://huggingface.co/spaces/SZLHOLDINGS/evidence-studio", "https://szlholdings-evidence-studio.hf.space/healthz"),
     ("sovereign-os", "Operator OS", "https://huggingface.co/spaces/SZLHOLDINGS/szl-sovereign-os", "https://szlholdings-szl-sovereign-os.hf.space/healthz"),
     ("real-estate", "Public records", "https://huggingface.co/spaces/SZLHOLDINGS/szl-real-estate", "https://szlholdings-szl-real-estate.hf.space/healthz"),
+    ("nexus", "Analog core", "https://huggingface.co/spaces/SZLHOLDINGS/nexus", "https://szlholdings-nexus.hf.space/healthz"),
     ("cosmos", "Estate map", "https://huggingface.co/spaces/SZLHOLDINGS/cosmos", "https://szlholdings-cosmos.hf.space/"),
     ("counsel", "Counsel hologram", "https://huggingface.co/spaces/SZLHOLDINGS/counsel", "https://szlholdings-counsel.hf.space/"),
 ]
@@ -397,7 +403,7 @@ estate();
 </html>
 """
 
-JSON_PATHS = {"/healthz", "/readyz", "/api/energy", "/api/organs/integrity", "/v1/organs/integrity", "/api/estate"}
+JSON_PATHS = {"/healthz", "/readyz", "/api/energy", "/api/energy/hardware", "/api/organs/integrity", "/v1/organs/integrity", "/api/estate"}
 HTML_PATHS = {"/", "/index.html"}
 
 
@@ -427,6 +433,13 @@ class Handler(BaseHTTPRequestHandler):
             return
         if path == "/api/energy":
             self._send(200, probe())
+            return
+        if path == "/api/energy/hardware":
+            try:
+                hw = hardware()
+            except NameError:
+                hw = probe().get("hardware") or {}
+            self._send(200, {"channel": "LIVE", "hardware": hw, "note": "Inventory only. Joule MEASURED only when RAPL or NVML is readable."})
             return
         if path == "/api/estate":
             self._send(200, recapture_estate())
