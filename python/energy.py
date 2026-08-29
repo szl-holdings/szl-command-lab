@@ -5,6 +5,7 @@
 """Energy probe. Channel is always LIVE. Joules MEASURED only from RAPL or NVML."""
 from __future__ import annotations
 
+import json
 import time
 from pathlib import Path
 from typing import Any
@@ -34,6 +35,15 @@ def _rapl_uj() -> int | None:
     return None
 
 
+def _pynvml_importable() -> bool:
+    try:
+        import pynvml  # noqa: F401
+
+        return True
+    except ImportError:
+        return False
+
+
 def _nvml_mj() -> float | None:
     try:
         import pynvml  # type: ignore
@@ -53,6 +63,20 @@ def _nvml_mj() -> float | None:
         return None
 
 
+def hardware() -> dict[str, Any]:
+    """Inventory only. Never a joule. RAPL/NVML readable ⇒ a later probe can MEASURE."""
+    rapl = _rapl_uj()
+    nv = _nvml_mj()
+    return {
+        "powercap_dir": POWERCAP.is_dir(),
+        "rapl_readable": rapl is not None,
+        "rapl_uj": rapl,
+        "pynvml_import": _pynvml_importable(),
+        "nvml_readable": nv is not None,
+        "nvml_mj": nv,
+    }
+
+
 def _unavailable(note: str) -> dict[str, Any]:
     return {
         "channel": "LIVE",
@@ -62,6 +86,7 @@ def _unavailable(note: str) -> dict[str, Any]:
         "sample_delta_j": None,
         "inference_energy_j": None,
         "energy_j": None,
+        "hardware": hardware(),
         "note": note,
     }
 
@@ -88,6 +113,7 @@ def probe(*, sample_s: float = 0.05) -> dict[str, Any]:
             "sample_delta_j": delta_j,
             "inference_energy_j": None,
             "energy_j": None,
+            "hardware": hardware(),
             "note": "RAPL package counter MEASURED. Inference joule still None until a kernel is wrapped.",
         }
     mj = _nvml_mj()
@@ -100,6 +126,7 @@ def probe(*, sample_s: float = 0.05) -> dict[str, Any]:
             "sample_delta_j": None,
             "inference_energy_j": None,
             "energy_j": None,
+            "hardware": hardware(),
             "note": "NVML total energy MEASURED. Inference joule still None until a kernel is wrapped.",
         }
     return _unavailable("No RAPL, no NVML. Channel is live. Never a fabricated joule.")
@@ -130,3 +157,7 @@ def measure_run(fn):
         energy["energy_j"] = energy["inference_energy_j"]
         energy["note"] = f"NVML delta around kernel · {dt:.4f}s"
     return result, energy
+
+
+if __name__ == "__main__":
+    print(json.dumps({"probe": probe(), "hardware": hardware()}, indent=2))
