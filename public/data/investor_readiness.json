@@ -1,0 +1,43 @@
+{
+  "category_sentence": "SZL Holdings builds governed decision infrastructure that turns model proposals into policy-bounded, evidence-linked, human-accountable actions.",
+  "demos": [
+    {
+      "demo": "Governed decision receipt",
+      "href": "/command"
+    },
+    {
+      "demo": "Tamper and verify",
+      "href": "/verify"
+    },
+    {
+      "demo": "Killinchu bounded edge decision",
+      "href": "/killinchu"
+    }
+  ],
+  "must_exist": [
+    "one ICP and buyer per initial product",
+    "three repeatable receipt-backed demos",
+    "measured traction table with source links",
+    "commercial/OSS boundary",
+    "security and deployment architecture",
+    "data-rights and license diligence",
+    "claims register and risk register",
+    "private diligence room",
+    "founder biography and execution history",
+    "12\u201318 month product and hiring plan"
+  ],
+  "never_claim_without_evidence": [
+    "production-ready",
+    "fully autonomous",
+    "formal proof",
+    "customer adoption",
+    "benchmark leadership",
+    "live actuation",
+    "measured energy",
+    "enterprise compliance"
+  ],
+  "product_wedge": [
+    "A11oy: governed decision and execution fabric",
+    "Killinchu: bounded edge/defense observation-to-decision vertical, simulated until real deployment evidence exists"
+  ]
+}

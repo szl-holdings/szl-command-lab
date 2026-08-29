@@ -1,0 +1,425 @@
+{
+  "captured_at": "2026-08-28T23:18:28Z",
+  "edges": [
+    {
+      "from": "szl-holdings/szl-forge#65",
+      "to": "szl-holdings/szl-forge#66",
+      "type": "changed_path_collision"
+    },
+    {
+      "from": "szl-holdings/szl-forge#64",
+      "to": "szl-holdings/szl-forge#66",
+      "type": "changed_path_collision"
+    },
+    {
+      "from": "szl-holdings/szl-forge#64",
+      "to": "szl-holdings/szl-forge#65",
+      "type": "changed_path_collision"
+    },
+    {
+      "from": "szl-holdings/a11oy#1394",
+      "to": "szl-holdings/a11oy-net#23",
+      "type": "dependency"
+    },
+    {
+      "from": "szl-holdings/a11oy#1396",
+      "to": "szl-holdings/a11oy-net#23",
+      "type": "dependency"
+    },
+    {
+      "from": "szl-holdings/szl-forge#59",
+      "to": "szl-holdings/szl-forge#66",
+      "type": "changed_path_collision"
+    },
+    {
+      "from": "szl-holdings/szl-forge#59",
+      "to": "szl-holdings/szl-forge#65",
+      "type": "changed_path_collision"
+    },
+    {
+      "from": "szl-holdings/szl-forge#59",
+      "to": "szl-holdings/szl-forge#64",
+      "type": "changed_path_collision"
+    },
+    {
+      "from": "szl-holdings/a11oy#1394",
+      "to": "szl-holdings/a11oy#1397",
+      "type": "dependency"
+    },
+    {
+      "from": "szl-holdings/a11oy#1396",
+      "to": "szl-holdings/a11oy#1397",
+      "type": "dependency"
+    },
+    {
+      "from": "szl-holdings/a11oy#1397",
+      "to": "szl-holdings/a11oy#1405",
+      "type": "changed_path_collision"
+    },
+    {
+      "from": "szl-holdings/a11oy#1395",
+      "to": "szl-holdings/a11oy#1405",
+      "type": "changed_path_collision"
+    },
+    {
+      "from": "szl-holdings/a11oy#1395",
+      "to": "szl-holdings/a11oy#1397",
+      "type": "changed_path_collision"
+    },
+    {
+      "from": "szl-holdings/a11oy#1393",
+      "to": "szl-holdings/a11oy#1405",
+      "type": "changed_path_collision"
+    },
+    {
+      "from": "szl-holdings/a11oy#1393",
+      "to": "szl-holdings/a11oy#1397",
+      "type": "changed_path_collision"
+    },
+    {
+      "from": "szl-holdings/a11oy#1393",
+      "to": "szl-holdings/a11oy#1395",
+      "type": "changed_path_collision"
+    },
+    {
+      "from": "szl-holdings/a11oy#1391",
+      "to": "szl-holdings/a11oy#1405",
+      "type": "changed_path_collision"
+    },
+    {
+      "from": "szl-holdings/a11oy#1391",
+      "to": "szl-holdings/a11oy#1397",
+      "type": "changed_path_collision"
+    },
+    {
+      "from": "szl-holdings/a11oy#1391",
+      "to": "szl-holdings/a11oy#1395",
+      "type": "changed_path_collision"
+    },
+    {
+      "from": "szl-holdings/a11oy#1391",
+      "to": "szl-holdings/a11oy#1393",
+      "type": "changed_path_collision"
+    },
+    {
+      "from": "FRESH_REVIEW",
+      "to": "szl-holdings/governed-norm-holo#7",
+      "type": "dependency"
+    },
+    {
+      "from": "HF_RELEASE_READBACK",
+      "to": "szl-holdings/governed-norm-holo#7",
+      "type": "dependency"
+    },
+    {
+      "from": "FRESH_REVIEW",
+      "to": "szl-holdings/lambda-gate-holo#8",
+      "type": "dependency"
+    },
+    {
+      "from": "HF_RELEASE_READBACK",
+      "to": "szl-holdings/lambda-gate-holo#8",
+      "type": "dependency"
+    },
+    {
+      "from": "SIGNED_SUCCESSOR",
+      "to": "szl-holdings/.github#465",
+      "type": "dependency"
+    },
+    {
+      "from": "LIVE_APP_PERMISSION_PROOF",
+      "to": "szl-holdings/.github#465",
+      "type": "dependency"
+    },
+    {
+      "from": "POSTGRESQL18_HOSTED_PROOF",
+      "to": "szl-holdings/a11oy#1366",
+      "type": "dependency"
+    },
+    {
+      "from": "FRESH_REVIEW",
+      "to": "szl-holdings/a11oy#1366",
+      "type": "dependency"
+    },
+    {
+      "from": "CURRENT_MAIN_INTEGRATION",
+      "to": "szl-holdings/a11oy#1363",
+      "type": "dependency"
+    },
+    {
+      "from": "DEPLOYED_SHELL_P1",
+      "to": "szl-holdings/a11oy#1363",
+      "type": "dependency"
+    },
+    {
+      "from": "PROTECTED_DEPLOYMENT",
+      "to": "szl-holdings/a11oy#1358",
+      "type": "dependency"
+    },
+    {
+      "from": "LIVE_READBACK",
+      "to": "szl-holdings/a11oy#1358",
+      "type": "dependency"
+    },
+    {
+      "from": "szl-holdings/a11oy#1358",
+      "to": "szl-holdings/a11oy#1405",
+      "type": "changed_path_collision"
+    },
+    {
+      "from": "FRESH_EXACT_HEAD_REVIEW",
+      "to": "szl-holdings/a11oy#1333",
+      "type": "dependency"
+    },
+    {
+      "from": "ACTIVATION_SUCCESSOR",
+      "to": "szl-holdings/a11oy#1333",
+      "type": "dependency"
+    }
+  ],
+  "nodes": [
+    {
+      "blockers": [
+        "CHANGED_PATH_COLLISION",
+        "DRAFT",
+        "EXPLICIT_HOLD_OR_INTENDED_RED",
+        "MERGE_STATE_UNSTABLE"
+      ],
+      "classification": "INTENTIONAL_HOLD_OR_RED",
+      "draft": true,
+      "eligible": false,
+      "id": "szl-holdings/a11oy#1405",
+      "merge_state": "UNSTABLE",
+      "title": "feat(ui): bind Series A models and kernels as holographic estate cards"
+    },
+    {
+      "blockers": [
+        "CHANGED_PATH_COLLISION",
+        "DRAFT"
+      ],
+      "classification": "DRAFT_NEEDS_QUALIFICATION",
+      "draft": true,
+      "eligible": false,
+      "id": "szl-holdings/szl-forge#66",
+      "merge_state": "CLEAN",
+      "title": "feat(chaski_r2): CHAWPI Qwen3.5-0.8B silhouette as a separate SKU"
+    },
+    {
+      "blockers": [
+        "CHANGED_PATH_COLLISION"
+      ],
+      "classification": "CANDIDATE_REVIEW",
+      "draft": false,
+      "eligible": false,
+      "id": "szl-holdings/szl-forge#65",
+      "merge_state": "CLEAN",
+      "title": "feat(chakana): first-class embedding kit for SZLHOLDINGS/chakana"
+    },
+    {
+      "blockers": [
+        "CHANGED_PATH_COLLISION",
+        "EXPLICIT_HOLD_OR_INTENDED_RED"
+      ],
+      "classification": "INTENTIONAL_HOLD_OR_RED",
+      "draft": false,
+      "eligible": false,
+      "id": "szl-holdings/szl-forge#64",
+      "merge_state": "CLEAN",
+      "title": "fix(khipu_r2): CHAWPI lock Hub receipt ddf6c50 (3/6 not a pass)"
+    },
+    {
+      "blockers": [
+        "EXPLICIT_HOLD_OR_INTENDED_RED",
+        "MERGE_STATE_BLOCKED",
+        "UNRESOLVED_DEPENDENCIES"
+      ],
+      "classification": "INTENTIONAL_HOLD_OR_RED",
+      "draft": false,
+      "eligible": false,
+      "id": "szl-holdings/a11oy-net#23",
+      "merge_state": "BLOCKED",
+      "title": "test(ci): add fail-closed investor smoke gate"
+    },
+    {
+      "blockers": [
+        "CHANGED_PATH_COLLISION",
+        "EXPLICIT_HOLD_OR_INTENDED_RED",
+        "MERGE_STATE_DIRTY"
+      ],
+      "classification": "INTENTIONAL_HOLD_OR_RED",
+      "draft": false,
+      "eligible": false,
+      "id": "szl-holdings/szl-forge#59",
+      "merge_state": "DIRTY",
+      "title": "feat(chaski): local RTX 5050 kit (alpha=16, QLoRA banned)"
+    },
+    {
+      "blockers": [
+        "EXPLICIT_HOLD_OR_INTENDED_RED",
+        "MERGE_STATE_UNSTABLE"
+      ],
+      "classification": "INTENTIONAL_HOLD_OR_RED",
+      "draft": false,
+      "eligible": false,
+      "id": "szl-holdings/szl-forge#57",
+      "merge_state": "UNSTABLE",
+      "title": "docs(chaski): stamp 6a91bf10 COMPLETED, weights AVAILABLE"
+    },
+    {
+      "blockers": [
+        "CHANGED_PATH_COLLISION",
+        "EXPLICIT_HOLD_OR_INTENDED_RED",
+        "MERGE_STATE_BLOCKED",
+        "UNRESOLVED_DEPENDENCIES"
+      ],
+      "classification": "INTENTIONAL_HOLD_OR_RED",
+      "draft": false,
+      "eligible": false,
+      "id": "szl-holdings/a11oy#1397",
+      "merge_state": "BLOCKED",
+      "title": "test(ci): required s1-s12 smoke gate"
+    },
+    {
+      "blockers": [
+        "CHANGED_PATH_COLLISION",
+        "DRAFT",
+        "EXPLICIT_HOLD_OR_INTENDED_RED",
+        "MERGE_STATE_DIRTY"
+      ],
+      "classification": "INTENTIONAL_HOLD_OR_RED",
+      "draft": true,
+      "eligible": false,
+      "id": "szl-holdings/a11oy#1395",
+      "merge_state": "DIRTY",
+      "title": "fix(atelier): lock Try Khipu to inference-lab /v1 only"
+    },
+    {
+      "blockers": [
+        "CHANGED_PATH_COLLISION",
+        "DRAFT",
+        "EXPLICIT_HOLD_OR_INTENDED_RED",
+        "MERGE_STATE_DIRTY"
+      ],
+      "classification": "INTENTIONAL_HOLD_OR_RED",
+      "draft": true,
+      "eligible": false,
+      "id": "szl-holdings/a11oy#1393",
+      "merge_state": "DIRTY",
+      "title": "fix(ui): strip KORA/LUMINA/PARAGON from live web UI"
+    },
+    {
+      "blockers": [
+        "CHANGED_PATH_COLLISION",
+        "DRAFT",
+        "MERGE_STATE_DIRTY"
+      ],
+      "classification": "DRAFT_NEEDS_QUALIFICATION",
+      "draft": true,
+      "eligible": false,
+      "id": "szl-holdings/a11oy#1391",
+      "merge_state": "DIRTY",
+      "title": "fix(ui): honest UNKNOWN empty states and killinchu SIMULATED"
+    },
+    {
+      "blockers": [
+        "DRAFT",
+        "MERGE_STATE_BLOCKED",
+        "UNRESOLVED_DEPENDENCIES"
+      ],
+      "classification": "DRAFT_NEEDS_QUALIFICATION",
+      "draft": true,
+      "eligible": false,
+      "id": "szl-holdings/governed-norm-holo#7",
+      "merge_state": "BLOCKED",
+      "title": "fix(release): authorize exact post-merge PR inventory"
+    },
+    {
+      "blockers": [
+        "DRAFT",
+        "MERGE_STATE_BLOCKED",
+        "UNRESOLVED_DEPENDENCIES"
+      ],
+      "classification": "DRAFT_NEEDS_QUALIFICATION",
+      "draft": true,
+      "eligible": false,
+      "id": "szl-holdings/lambda-gate-holo#8",
+      "merge_state": "BLOCKED",
+      "title": "fix(release): authorize exact post-merge PR inventory"
+    },
+    {
+      "blockers": [
+        "EXPLICIT_HOLD_OR_INTENDED_RED",
+        "MERGE_STATE_BLOCKED",
+        "UNRESOLVED_DEPENDENCIES"
+      ],
+      "classification": "INTENTIONAL_HOLD_OR_RED",
+      "draft": false,
+      "eligible": false,
+      "id": "szl-holdings/.github#465",
+      "merge_state": "BLOCKED",
+      "title": "fix(app): grant qillqaq secret-name read"
+    },
+    {
+      "blockers": [
+        "MERGE_STATE_BLOCKED"
+      ],
+      "classification": "CANDIDATE_REVIEW",
+      "draft": false,
+      "eligible": false,
+      "id": "szl-holdings/a11oy#1368",
+      "merge_state": "BLOCKED",
+      "title": "feat(ops): add read-only solo estate inventory"
+    },
+    {
+      "blockers": [
+        "MERGE_STATE_BLOCKED",
+        "UNRESOLVED_DEPENDENCIES"
+      ],
+      "classification": "WAITING_ON_DEPENDENCY",
+      "draft": false,
+      "eligible": false,
+      "id": "szl-holdings/a11oy#1366",
+      "merge_state": "BLOCKED",
+      "title": "fix(memory): harden covenant post-merge controls"
+    },
+    {
+      "blockers": [
+        "EXPLICIT_HOLD_OR_INTENDED_RED",
+        "MERGE_STATE_BLOCKED",
+        "UNRESOLVED_DEPENDENCIES"
+      ],
+      "classification": "INTENTIONAL_HOLD_OR_RED",
+      "draft": false,
+      "eligible": false,
+      "id": "szl-holdings/a11oy#1363",
+      "merge_state": "BLOCKED",
+      "title": "fix(hf): repair universal frontend rollout invariants"
+    },
+    {
+      "blockers": [
+        "CHANGED_PATH_COLLISION",
+        "MERGE_STATE_UNKNOWN",
+        "UNRESOLVED_DEPENDENCIES"
+      ],
+      "classification": "WAITING_ON_DEPENDENCY",
+      "draft": false,
+      "eligible": false,
+      "id": "szl-holdings/a11oy#1358",
+      "merge_state": "UNKNOWN",
+      "title": "fix(readiness): preserve runtime evidence boundaries"
+    },
+    {
+      "blockers": [
+        "MERGE_STATE_BLOCKED",
+        "UNRESOLVED_DEPENDENCIES"
+      ],
+      "classification": "WAITING_ON_DEPENDENCY",
+      "draft": false,
+      "eligible": false,
+      "id": "szl-holdings/a11oy#1333",
+      "merge_state": "BLOCKED",
+      "title": "feat(oro): add standalone obligation-ranked orbit control plane"
+    }
+  ],
+  "schema": "szl.pr.dag/v2"
+}

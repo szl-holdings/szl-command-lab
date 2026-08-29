@@ -1,0 +1,39 @@
+{
+  "captured_at": "2026-08-29T05:04:00Z",
+  "counts": {
+    "artifact_classes": {
+      "CARD_ONLY_ROADMAP": 11,
+      "DATASET": 28,
+      "QUANTIZED_DERIVATIVE": 2,
+      "SOFTWARE_KERNEL_CARD": 16,
+      "SPACE_RUNTIME": 34,
+      "TRAINED_ADAPTER": 10,
+      "TRAINED_OR_CONVERTED_WEIGHTS_REQUIRES_RECEIPT": 1
+    },
+    "collections": 13,
+    "datasets": 28,
+    "executable_serialization_remaining": [],
+    "models": 40,
+    "spaces": 34,
+    "state": "MEASURED_PUBLIC"
+  },
+  "label": "MEASURED public",
+  "org": "SZLHOLDINGS",
+  "publishers_this_run": {
+    "szl-atelier/hf-space.yml": {
+      "run": 33235279910,
+      "conclusion": "success",
+      "head": "5531c4390a58d4de20958148b2d93574821efff1"
+    },
+    "szl-khipu/publish-hf.yml": {
+      "run": 33235270675,
+      "conclusion": "failure",
+      "reason": "HF_ORG_TOKEN unset on szl-khipu. GitHub remains source of truth. No Hub bytes faked."
+    },
+    "szl-khipu/publish-atelier-space.yml": {
+      "run": 33235271049,
+      "conclusion": "failure",
+      "reason": "HF_ORG_TOKEN unset on szl-khipu."
+    }
+  }
+}

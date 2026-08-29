@@ -1,0 +1,51 @@
+[
+  {
+    "pattern": "governance, access control, audit, lineage, evaluation",
+    "szl_action": "Bind every action, policy, evidence object, and deployment to one inspectable ontology and receipt graph.",
+    "szl_surface": "/trajectory",
+    "url": "https://palantir.com/docs/foundry/aip/ethics-governance/",
+    "vendor": "Palantir AIP"
+  },
+  {
+    "pattern": "managed agent lifecycle, identity, tracing, metrics, evaluations",
+    "szl_action": "Ship one lifecycle plane for build, test, deploy, observe, approve, and retire\u2014not disconnected demos.",
+    "szl_surface": "/lifecycle",
+    "url": "https://learn.microsoft.com/en-us/azure/foundry/agents/overview",
+    "vendor": "Microsoft Foundry Agent Service"
+  },
+  {
+    "pattern": "deterministic tool policy boundary and production observability",
+    "szl_action": "Keep tool authorization outside the model and make deny/refuse evidence first-class.",
+    "szl_surface": "/command",
+    "url": "https://aws.amazon.com/bedrock/agentcore/",
+    "vendor": "AWS AgentCore"
+  },
+  {
+    "pattern": "unified build, deploy, govern, optimize, identity, trajectory evaluation",
+    "szl_action": "Add trajectory-level evaluation and stable agent/runtime identity to the proof chain.",
+    "szl_surface": "/trajectory",
+    "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/overview",
+    "vendor": "Google Gemini Enterprise Agent Platform"
+  },
+  {
+    "pattern": "guardrails, tracing, workflow composition, evaluations, human oversight",
+    "szl_action": "Expose trace-linked guardrail outcomes and turn incidents into permanent regression evaluations.",
+    "szl_surface": "/command",
+    "url": "https://developers.openai.com/api/docs/guides/agents",
+    "vendor": "OpenAI Agents"
+  },
+  {
+    "pattern": "guardrails, observability, evaluation, secure operational telemetry",
+    "szl_action": "Separate sensitive trace payloads from public receipts and define retention/redaction contracts.",
+    "szl_surface": "/verify",
+    "url": "https://developer.nvidia.com/nemo-guardrails",
+    "vendor": "NVIDIA NeMo Agent Toolkit / Guardrails"
+  },
+  {
+    "pattern": "tracing, evaluation, deployment gates, production feedback",
+    "szl_action": "Make evaluation thresholds release-blocking and connect production failures to dataset/eval growth.",
+    "szl_surface": "/lifecycle",
+    "url": "https://docs.langchain.com/langsmith/observability",
+    "vendor": "LangSmith"
+  }
+]

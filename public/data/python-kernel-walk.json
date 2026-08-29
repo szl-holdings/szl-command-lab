@@ -1,0 +1,228 @@
+{
+  "kind": "PYTHON_KERNEL_WALK",
+  "honesty": "SOFTWARE",
+  "source": "github.com/szl-holdings/szl-khipu",
+  "head": "c74ba6544438479c37751b9225d0721fa21ac149",
+  "hub_mirror": "huggingface.co/SZLHOLDINGS/szl-khipu",
+  "captured_at": "2026-08-29T05:04:44.518392+00:00",
+  "verdict": null,
+  "live_count": 5,
+  "blocked": false,
+  "energy": "UNAVAILABLE",
+  "energy_j": null,
+  "conjecture_1": "OPEN",
+  "proven_trust": false,
+  "reason": "organ integrity 5/5 LIVE \u00b7 \u039b advisory \u00b7 energy UNAVAILABLE \u00b7 Conjecture 1 OPEN",
+  "organs": [
+    {
+      "id": "brain",
+      "name": "BRAIN",
+      "quechua": "YACHAY",
+      "formulas": [
+        "F1"
+      ],
+      "status": "LIVE",
+      "honesty": "LIVE",
+      "detail": "read-only cortex \u00b7 canal leak 0.000e+00 \u00b7 no write authority",
+      "metric": 0.0
+    },
+    {
+      "id": "heart",
+      "name": "HEART",
+      "quechua": "YUYAY",
+      "formulas": [
+        "F4",
+        "F11"
+      ],
+      "status": "LIVE",
+      "honesty": "ADVISORY",
+      "detail": "\u039b 0.9075 \u00b7 advisory \u00b7 Conjecture 1 OPEN",
+      "metric": 0.9075174525062149
+    },
+    {
+      "id": "circulatory",
+      "name": "CIRCULATORY",
+      "quechua": "YAWAR",
+      "formulas": [
+        "F7",
+        "F22"
+      ],
+      "status": "LIVE",
+      "honesty": "LIVE",
+      "detail": "3-hop SHA-256 \u00b7 depth 3 \u00b7 head 994a50cea5ad",
+      "metric": 0.0
+    },
+    {
+      "id": "nervous",
+      "name": "NERVOUS",
+      "quechua": "OTel",
+      "formulas": [
+        "F12"
+      ],
+      "status": "LIVE",
+      "honesty": "UNAVAILABLE",
+      "detail": "loop-tax converged \u00b7 energy UNAVAILABLE \u00b7 never a fabricated joule",
+      "metric": 0.0
+    },
+    {
+      "id": "skeleton",
+      "name": "SKELETON",
+      "quechua": "Khipu",
+      "formulas": [
+        "F18",
+        "F19"
+      ],
+      "status": "LIVE",
+      "honesty": "ADVISORY",
+      "detail": "locked-8 silhouettes 8/8 \u00b7 CHECKED \u2260 Lean PROVEN @ c7c0ba17",
+      "metric": 8.0
+    }
+  ],
+  "locked_formulas": [
+    {
+      "id": "F1",
+      "ok": true,
+      "residual": 0.0,
+      "epsilon": 0.0,
+      "proof_status": "STRUCTURAL",
+      "family": "puriq_locked8"
+    },
+    {
+      "id": "F4",
+      "ok": true,
+      "residual": 0.0,
+      "epsilon": 0.0,
+      "proof_status": "STRUCTURAL",
+      "family": "puriq_locked8"
+    },
+    {
+      "id": "F7",
+      "ok": true,
+      "residual": 0.0,
+      "epsilon": 0.0,
+      "proof_status": "STRUCTURAL",
+      "family": "puriq_locked8"
+    },
+    {
+      "id": "F11",
+      "ok": true,
+      "residual": 0.0,
+      "epsilon": 0.0,
+      "proof_status": "STRUCTURAL",
+      "family": "puriq_locked8"
+    },
+    {
+      "id": "F12",
+      "ok": true,
+      "residual": 0.0,
+      "epsilon": 0.0,
+      "proof_status": "STRUCTURAL",
+      "family": "puriq_locked8"
+    },
+    {
+      "id": "F18",
+      "ok": true,
+      "residual": 0.0,
+      "epsilon": 0.0,
+      "proof_status": "STRUCTURAL",
+      "family": "puriq_locked8"
+    },
+    {
+      "id": "F19",
+      "ok": true,
+      "residual": 0.0,
+      "epsilon": 0.0,
+      "proof_status": "STRUCTURAL",
+      "family": "puriq_locked8"
+    },
+    {
+      "id": "F22",
+      "ok": true,
+      "residual": 0.0,
+      "epsilon": 0.0,
+      "proof_status": "STRUCTURAL",
+      "family": "puriq_locked8"
+    }
+  ],
+  "numeric_formulas": [
+    {
+      "id": "softmax_row_sum",
+      "ok": true,
+      "residual": 2.220446049250313e-16,
+      "epsilon": 1e-06,
+      "proof_status": "CHECKED",
+      "family": "numeric"
+    },
+    {
+      "id": "cauchy_schwarz",
+      "ok": true,
+      "residual": 0.0,
+      "epsilon": 1e-09,
+      "proof_status": "CHECKED",
+      "family": "numeric"
+    },
+    {
+      "id": "parseval_dft",
+      "ok": true,
+      "residual": 0.0,
+      "epsilon": 1e-09,
+      "proof_status": "CHECKED",
+      "family": "numeric"
+    },
+    {
+      "id": "wgm_homogeneous",
+      "ok": true,
+      "residual": 0.0,
+      "epsilon": 0.0,
+      "proof_status": "CHECKED",
+      "family": "numeric"
+    },
+    {
+      "id": "wgm_bounded",
+      "ok": true,
+      "residual": 0.0,
+      "epsilon": 0.0,
+      "proof_status": "CHECKED",
+      "family": "numeric"
+    },
+    {
+      "id": "wgm_zero_route",
+      "ok": true,
+      "residual": 0.0,
+      "epsilon": 0.0,
+      "proof_status": "CHECKED",
+      "family": "numeric"
+    },
+    {
+      "id": "rms_unit",
+      "ok": true,
+      "residual": 1.1208578747146092e-05,
+      "epsilon": 0.0001,
+      "proof_status": "CHECKED",
+      "family": "numeric"
+    },
+    {
+      "id": "wgm_egyptian_bundle",
+      "ok": true,
+      "residual": 0.0,
+      "epsilon": 0.0,
+      "proof_status": "CHECKED",
+      "family": "numeric"
+    }
+  ],
+  "doctrine": {
+    "version": "v11 LOCKED",
+    "lockedProvenCount": 8,
+    "lockedIds": [
+      "F1",
+      "F4",
+      "F7",
+      "F11",
+      "F12",
+      "F18",
+      "F19",
+      "F22"
+    ]
+  },
+  "sha256": "81726bee68e5795a727f0e30f28e5436f7d4609a45ff3df50638a9d4a8bfffe6"
+}

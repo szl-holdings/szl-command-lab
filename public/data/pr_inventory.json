@@ -1,0 +1,738 @@
+[
+  {
+    "base_ref": "main",
+    "base_sha": "c038cc952b5adffeb6a7bc1a1328100464996745",
+    "blockers": [
+      "CHANGED_PATH_COLLISION",
+      "DRAFT",
+      "EXPLICIT_HOLD_OR_INTENDED_RED",
+      "MERGE_STATE_UNSTABLE"
+    ],
+    "changed_paths": [
+      "CHANGELOG.md",
+      "a11oy_model_intel.py",
+      "pages/console.html",
+      "pages/estate.html",
+      "serve.py",
+      "static/shared/szl_command_bar.css",
+      "static/shared/szl_command_bar.js",
+      "tests/test_demo_critical_routes.py",
+      "tests/test_holographic_command_bar.py",
+      "tests/test_model_intel_frontier_estate.py",
+      "tests/test_series_a_estate.py"
+    ],
+    "classification": "INTENTIONAL_HOLD_OR_RED",
+    "collisions": [
+      "szl-holdings/a11oy#1397",
+      "szl-holdings/a11oy#1395",
+      "szl-holdings/a11oy#1393",
+      "szl-holdings/a11oy#1391",
+      "szl-holdings/a11oy#1358"
+    ],
+    "dependencies": [],
+    "draft": true,
+    "eligible": false,
+    "head_sha": "ffd27dccb43e8a092b9269f071a74d71ba15e2f4",
+    "key": "szl-holdings/a11oy#1405",
+    "labels": [],
+    "merge_state": "UNSTABLE",
+    "number": 1405,
+    "repository": "szl-holdings/a11oy",
+    "review_decision": null,
+    "title": "feat(ui): bind Series A models and kernels as holographic estate cards",
+    "updated_at": "2026-08-28T23:15:20Z",
+    "url": "https://github.com/szl-holdings/a11oy/pull/1405"
+  },
+  {
+    "base_ref": "main",
+    "base_sha": "952a26576d26fbbf2c7bd6265486a4c9ea7c5db4",
+    "blockers": [
+      "CHANGED_PATH_COLLISION",
+      "DRAFT"
+    ],
+    "changed_paths": [
+      "README.md",
+      "chaski_r2/.gitignore",
+      "chaski_r2/README.md",
+      "chaski_r2/eval_chaski_r2.py",
+      "chaski_r2/jobs/launch_chaski_r2_job.py",
+      "chaski_r2/serve_chaski_r2.py",
+      "chaski_r2/test_chaski_r2.py",
+      "chaski_r2/train.jsonl",
+      "chaski_r2/train_chaski_r2.py",
+      "tools/test_fall2026_alignment.py"
+    ],
+    "classification": "DRAFT_NEEDS_QUALIFICATION",
+    "collisions": [
+      "szl-holdings/szl-forge#65",
+      "szl-holdings/szl-forge#64",
+      "szl-holdings/szl-forge#59"
+    ],
+    "dependencies": [],
+    "draft": true,
+    "eligible": false,
+    "head_sha": "eecbbcb187192d1aa3e33b8085cf2bb3a349a1f1",
+    "key": "szl-holdings/szl-forge#66",
+    "labels": [],
+    "merge_state": "CLEAN",
+    "number": 66,
+    "repository": "szl-holdings/szl-forge",
+    "review_decision": null,
+    "title": "feat(chaski_r2): CHAWPI Qwen3.5-0.8B silhouette as a separate SKU",
+    "updated_at": "2026-08-28T23:10:44Z",
+    "url": "https://github.com/szl-holdings/szl-forge/pull/66"
+  },
+  {
+    "base_ref": "main",
+    "base_sha": "952a26576d26fbbf2c7bd6265486a4c9ea7c5db4",
+    "blockers": [
+      "CHANGED_PATH_COLLISION"
+    ],
+    "changed_paths": [
+      ".github/workflows/model-kernel-frontier.yml",
+      "README.md",
+      "chakana/.gitignore",
+      "chakana/HF_MODEL_CARD.md",
+      "chakana/README.md",
+      "chakana/eval_chakana.py",
+      "chakana/eval_receipt.stub.json",
+      "chakana/held_out.schema.json",
+      "chakana/jobs/launch_chakana_job.py",
+      "chakana/pairs.schema.json",
+      "chakana/serve_chakana.py",
+      "chakana/sign_receipt.py",
+      "chakana/test_chakana.py",
+      "chakana/train_chakana.py",
+      "chakana/training_receipt.stub.json"
+    ],
+    "classification": "CANDIDATE_REVIEW",
+    "collisions": [
+      "szl-holdings/szl-forge#66",
+      "szl-holdings/szl-forge#64",
+      "szl-holdings/szl-forge#59"
+    ],
+    "dependencies": [],
+    "draft": false,
+    "eligible": false,
+    "head_sha": "920fce63ff23de342e0c22fe5724609d2acb5b06",
+    "key": "szl-holdings/szl-forge#65",
+    "labels": [],
+    "merge_state": "CLEAN",
+    "number": 65,
+    "repository": "szl-holdings/szl-forge",
+    "review_decision": null,
+    "title": "feat(chakana): first-class embedding kit for SZLHOLDINGS/chakana",
+    "updated_at": "2026-08-28T23:10:50Z",
+    "url": "https://github.com/szl-holdings/szl-forge/pull/65"
+  },
+  {
+    "base_ref": "main",
+    "base_sha": "952a26576d26fbbf2c7bd6265486a4c9ea7c5db4",
+    "blockers": [
+      "CHANGED_PATH_COLLISION",
+      "EXPLICIT_HOLD_OR_INTENDED_RED"
+    ],
+    "changed_paths": [
+      "README.md",
+      "khipu_r2/README.md",
+      "khipu_r2/eval_khipu_r2.py",
+      "khipu_r2/jobs/launch_khipu_r2_job.py",
+      "khipu_r2/serve_khipu_r2.py",
+      "khipu_r2/test_khipu_r2.py",
+      "khipu_r2/train_khipu_r2.py",
+      "tools/test_fall2026_alignment.py"
+    ],
+    "classification": "INTENTIONAL_HOLD_OR_RED",
+    "collisions": [
+      "szl-holdings/szl-forge#66",
+      "szl-holdings/szl-forge#65",
+      "szl-holdings/szl-forge#59"
+    ],
+    "dependencies": [],
+    "draft": false,
+    "eligible": false,
+    "head_sha": "cec43f8776edc1cbb52d9b8259f8fdfadd9930e9",
+    "key": "szl-holdings/szl-forge#64",
+    "labels": [],
+    "merge_state": "CLEAN",
+    "number": 64,
+    "repository": "szl-holdings/szl-forge",
+    "review_decision": null,
+    "title": "fix(khipu_r2): CHAWPI lock Hub receipt ddf6c50 (3/6 not a pass)",
+    "updated_at": "2026-08-28T21:24:04Z",
+    "url": "https://github.com/szl-holdings/szl-forge/pull/64"
+  },
+  {
+    "base_ref": "main",
+    "base_sha": "bb56741413085082906aae3af8be09aa730d0e04",
+    "blockers": [
+      "EXPLICIT_HOLD_OR_INTENDED_RED",
+      "MERGE_STATE_BLOCKED",
+      "UNRESOLVED_DEPENDENCIES"
+    ],
+    "changed_paths": [
+      ".github/BRANCH_PROTECTION.md",
+      ".github/workflows/investor-smoke-gate.yml",
+      ".github/workflows/link-check.yml",
+      "CHANGELOG.md",
+      "README.md",
+      "docs/INVESTOR_SMOKE_GATE.md",
+      "docs/investor/screenshot-catalog.md",
+      "scripts/check_honest_kernel_bind.py",
+      "scripts/investor_smoke_gate.py",
+      "tests/fixtures/investor_smoke/health_missing_signer.json",
+      "tests/fixtures/investor_smoke/kernel_slot_footer_js_bind.html",
+      "tests/fixtures/investor_smoke/kernel_slot_genome_bind.html",
+      "tests/fixtures/investor_smoke/kernel_slot_honest_bind.html",
+      "tests/fixtures/investor_smoke/kernel_slot_static_eight.html",
+      "tests/test_investor_smoke_bind.py",
+      "tests/test_investor_smoke_gate.py"
+    ],
+    "classification": "INTENTIONAL_HOLD_OR_RED",
+    "dependencies": [
+      "szl-holdings/a11oy#1394",
+      "szl-holdings/a11oy#1396"
+    ],
+    "draft": false,
+    "eligible": false,
+    "head_sha": "946425b5cd5c3d9b9d56832578c7ea8e6c9488a2",
+    "key": "szl-holdings/a11oy-net#23",
+    "labels": [],
+    "merge_state": "BLOCKED",
+    "number": 23,
+    "repository": "szl-holdings/a11oy-net",
+    "review_decision": null,
+    "title": "test(ci): add fail-closed investor smoke gate",
+    "updated_at": "2026-08-28T18:49:24Z",
+    "url": "https://github.com/szl-holdings/a11oy-net/pull/23"
+  },
+  {
+    "base_ref": "main",
+    "base_sha": "1077f76a6e6abe2dbdd23e46cfc52b621ac20a68",
+    "blockers": [
+      "CHANGED_PATH_COLLISION",
+      "EXPLICIT_HOLD_OR_INTENDED_RED",
+      "MERGE_STATE_DIRTY"
+    ],
+    "changed_paths": [
+      ".github/workflows/model-kernel-frontier.yml",
+      "chaski/.gitignore",
+      "chaski/HF_MODEL_CARD_5050.md",
+      "chaski/README_5050.md",
+      "chaski/eval_chaski_5050.py",
+      "chaski/serve_chaski_5050.py",
+      "chaski/test_train_chaski_bf16_5050.py",
+      "chaski/train_chaski_bf16_5050.py",
+      "tools/test_fall2026_alignment.py"
+    ],
+    "classification": "INTENTIONAL_HOLD_OR_RED",
+    "collisions": [
+      "szl-holdings/szl-forge#66",
+      "szl-holdings/szl-forge#65",
+      "szl-holdings/szl-forge#64"
+    ],
+    "dependencies": [],
+    "draft": false,
+    "eligible": false,
+    "head_sha": "125d8e471033ad2a8f9f49a0784b5f6762d8cf16",
+    "key": "szl-holdings/szl-forge#59",
+    "labels": [],
+    "merge_state": "DIRTY",
+    "number": 59,
+    "repository": "szl-holdings/szl-forge",
+    "review_decision": null,
+    "title": "feat(chaski): local RTX 5050 kit (alpha=16, QLoRA banned)",
+    "updated_at": "2026-08-28T18:09:18Z",
+    "url": "https://github.com/szl-holdings/szl-forge/pull/59"
+  },
+  {
+    "base_ref": "main",
+    "base_sha": "1077f76a6e6abe2dbdd23e46cfc52b621ac20a68",
+    "blockers": [
+      "EXPLICIT_HOLD_OR_INTENDED_RED",
+      "MERGE_STATE_UNSTABLE"
+    ],
+    "changed_paths": [
+      "chaski/HF_MODEL_CARD.md",
+      "chaski/README.md",
+      "chaski/train_chaski.py"
+    ],
+    "classification": "INTENTIONAL_HOLD_OR_RED",
+    "dependencies": [],
+    "draft": false,
+    "eligible": false,
+    "head_sha": "a246658e8707faea9311ca36d63a94fd6c2864ad",
+    "key": "szl-holdings/szl-forge#57",
+    "labels": [],
+    "merge_state": "UNSTABLE",
+    "number": 57,
+    "repository": "szl-holdings/szl-forge",
+    "review_decision": null,
+    "title": "docs(chaski): stamp 6a91bf10 COMPLETED, weights AVAILABLE",
+    "updated_at": "2026-08-28T17:32:49Z",
+    "url": "https://github.com/szl-holdings/szl-forge/pull/57"
+  },
+  {
+    "base_ref": "main",
+    "base_sha": "c038cc952b5adffeb6a7bc1a1328100464996745",
+    "blockers": [
+      "CHANGED_PATH_COLLISION",
+      "EXPLICIT_HOLD_OR_INTENDED_RED",
+      "MERGE_STATE_BLOCKED",
+      "UNRESOLVED_DEPENDENCIES"
+    ],
+    "changed_paths": [
+      ".github/BRANCH_PROTECTION.md",
+      ".github/workflows/investor-smoke-gate.yml",
+      "CHANGELOG.md",
+      "docs/INVESTOR_SMOKE_GATE.md",
+      "scripts/investor_smoke_gate.py",
+      "tests/fixtures/investor_smoke/kernel_slot_genome_bind.html",
+      "tests/fixtures/investor_smoke/kernel_slot_honest_bind.html",
+      "tests/test_investor_smoke_bind.py",
+      "tests/test_investor_smoke_gate.py"
+    ],
+    "classification": "INTENTIONAL_HOLD_OR_RED",
+    "collisions": [
+      "szl-holdings/a11oy#1405",
+      "szl-holdings/a11oy#1395",
+      "szl-holdings/a11oy#1393",
+      "szl-holdings/a11oy#1391"
+    ],
+    "dependencies": [
+      "szl-holdings/a11oy#1394",
+      "szl-holdings/a11oy#1396"
+    ],
+    "draft": false,
+    "eligible": false,
+    "head_sha": "b42b4e8461d86280aa230e84ed20e84ad6f6e9c7",
+    "key": "szl-holdings/a11oy#1397",
+    "labels": [],
+    "merge_state": "BLOCKED",
+    "number": 1397,
+    "repository": "szl-holdings/a11oy",
+    "review_decision": null,
+    "title": "test(ci): required s1-s12 smoke gate",
+    "updated_at": "2026-08-28T23:07:21Z",
+    "url": "https://github.com/szl-holdings/a11oy/pull/1397"
+  },
+  {
+    "base_ref": "main",
+    "base_sha": "11076cc05d189f385f09c1abec2103debe57a253",
+    "blockers": [
+      "CHANGED_PATH_COLLISION",
+      "DRAFT",
+      "EXPLICIT_HOLD_OR_INTENDED_RED",
+      "MERGE_STATE_DIRTY"
+    ],
+    "changed_paths": [
+      "CHANGELOG.md",
+      "a11oy_khipu_chat.py",
+      "packages/inference/src/voters/khipu_gguf.py",
+      "pages/console.html",
+      "szl_spaces_proxy.py",
+      "szl_spaces_surface.py",
+      "tests/test_atelier_console_lock.py",
+      "tests/test_khipu_chat_proxy.py",
+      "tests/test_khipu_console_panel.py",
+      "tests/test_khipu_gguf_voter.py",
+      "tests/test_szl_spaces_inventory.py"
+    ],
+    "classification": "INTENTIONAL_HOLD_OR_RED",
+    "collisions": [
+      "szl-holdings/a11oy#1405",
+      "szl-holdings/a11oy#1397",
+      "szl-holdings/a11oy#1393",
+      "szl-holdings/a11oy#1391"
+    ],
+    "dependencies": [],
+    "draft": true,
+    "eligible": false,
+    "head_sha": "a3c95f0dec8723f892844f81ab0126b0113e2d5c",
+    "key": "szl-holdings/a11oy#1395",
+    "labels": [],
+    "merge_state": "DIRTY",
+    "number": 1395,
+    "repository": "szl-holdings/a11oy",
+    "review_decision": null,
+    "title": "fix(atelier): lock Try Khipu to inference-lab /v1 only",
+    "updated_at": "2026-08-28T21:24:56Z",
+    "url": "https://github.com/szl-holdings/a11oy/pull/1395"
+  },
+  {
+    "base_ref": "main",
+    "base_sha": "11076cc05d189f385f09c1abec2103debe57a253",
+    "blockers": [
+      "CHANGED_PATH_COLLISION",
+      "DRAFT",
+      "EXPLICIT_HOLD_OR_INTENDED_RED",
+      "MERGE_STATE_DIRTY"
+    ],
+    "changed_paths": [
+      "CHANGELOG.md",
+      "tests/test_live_ui_stale_product_names.py",
+      "web/src/App.tsx",
+      "web/src/components/HeroCanvas.tsx",
+      "web/src/components/KnowledgeGraphViz.tsx",
+      "web/src/components/command/ambient-signal-ranker.tsx",
+      "web/src/components/command/atlas-kpi-section.tsx",
+      "web/src/components/command/correlation-map-viz.tsx",
+      "web/src/components/command/signal-chains-panel.tsx",
+      "web/src/components/command/voice-command-panel.tsx",
+      "web/src/components/marketing/MarketingFooter.tsx",
+      "web/src/components/marketing/MarketingNav.tsx",
+      "web/src/components/operations/governed-decision/decision-summary-card.tsx",
+      "web/src/components/operations/lyte-layout.tsx",
+      "web/src/data/atelierData.ts",
+      "web/src/data/brands.ts",
+      "web/src/data/components.ts",
+      "web/src/data/pluginHubData.ts"
+    ],
+    "classification": "INTENTIONAL_HOLD_OR_RED",
+    "collisions": [
+      "szl-holdings/a11oy#1405",
+      "szl-holdings/a11oy#1397",
+      "szl-holdings/a11oy#1395",
+      "szl-holdings/a11oy#1391"
+    ],
+    "dependencies": [],
+    "draft": true,
+    "eligible": false,
+    "head_sha": "2c54c8286e0bb8cf2dc241f09c0bbf2110179da4",
+    "key": "szl-holdings/a11oy#1393",
+    "labels": [],
+    "merge_state": "DIRTY",
+    "number": 1393,
+    "repository": "szl-holdings/a11oy",
+    "review_decision": null,
+    "title": "fix(ui): strip KORA/LUMINA/PARAGON from live web UI",
+    "updated_at": "2026-08-28T22:54:40Z",
+    "url": "https://github.com/szl-holdings/a11oy/pull/1393"
+  },
+  {
+    "base_ref": "main",
+    "base_sha": "36900db7b6f102cc74e5d06aad15a9b2c46dc573",
+    "blockers": [
+      "CHANGED_PATH_COLLISION",
+      "DRAFT",
+      "MERGE_STATE_DIRTY"
+    ],
+    "changed_paths": [
+      "CHANGELOG.md",
+      "pages/console.html",
+      "pages/landing.html",
+      "tests/test_series_a_chrome.py"
+    ],
+    "classification": "DRAFT_NEEDS_QUALIFICATION",
+    "collisions": [
+      "szl-holdings/a11oy#1405",
+      "szl-holdings/a11oy#1397",
+      "szl-holdings/a11oy#1395",
+      "szl-holdings/a11oy#1393"
+    ],
+    "dependencies": [],
+    "draft": true,
+    "eligible": false,
+    "head_sha": "fceb0d4768530029f63515873549f727d561fbbf",
+    "key": "szl-holdings/a11oy#1391",
+    "labels": [],
+    "merge_state": "DIRTY",
+    "number": 1391,
+    "repository": "szl-holdings/a11oy",
+    "review_decision": null,
+    "title": "fix(ui): honest UNKNOWN empty states and killinchu SIMULATED",
+    "updated_at": "2026-08-28T18:18:22Z",
+    "url": "https://github.com/szl-holdings/a11oy/pull/1391"
+  },
+  {
+    "base_ref": "main",
+    "base_sha": "62576728275705de60f064522c9ea307813d6d57",
+    "blockers": [
+      "DRAFT",
+      "MERGE_STATE_BLOCKED",
+      "UNRESOLVED_DEPENDENCIES"
+    ],
+    "changed_paths": [
+      "scripts/hf_static_space.py",
+      "tasks/HF_STATIC_SPACE_POSTMERGE_AUTHORITY_20260828.md",
+      "tests/test_hf_static_space.py"
+    ],
+    "classification": "DRAFT_NEEDS_QUALIFICATION",
+    "dependencies": [
+      "FRESH_REVIEW",
+      "HF_RELEASE_READBACK"
+    ],
+    "draft": true,
+    "eligible": false,
+    "head_sha": "7015294225f8edcfe1e14a9afe464f18d63dd7c3",
+    "key": "szl-holdings/governed-norm-holo#7",
+    "labels": [],
+    "merge_state": "BLOCKED",
+    "number": 7,
+    "repository": "szl-holdings/governed-norm-holo",
+    "review_decision": null,
+    "title": "fix(release): authorize exact post-merge PR inventory",
+    "updated_at": "2026-08-28T17:01:01Z",
+    "url": "https://github.com/szl-holdings/governed-norm-holo/pull/7"
+  },
+  {
+    "base_ref": "main",
+    "base_sha": "b05a426a69e11cc8947fb4f03aca23552e679dfe",
+    "blockers": [
+      "DRAFT",
+      "MERGE_STATE_BLOCKED",
+      "UNRESOLVED_DEPENDENCIES"
+    ],
+    "changed_paths": [
+      "scripts/hf_static_space.py",
+      "tasks/HF_STATIC_SPACE_POSTMERGE_AUTHORITY_20260828.md",
+      "tests/test_hf_static_space.py"
+    ],
+    "classification": "DRAFT_NEEDS_QUALIFICATION",
+    "dependencies": [
+      "FRESH_REVIEW",
+      "HF_RELEASE_READBACK"
+    ],
+    "draft": true,
+    "eligible": false,
+    "head_sha": "a907f9c012154511459cfc56d55fbbb6f0ff7b1e",
+    "key": "szl-holdings/lambda-gate-holo#8",
+    "labels": [],
+    "merge_state": "BLOCKED",
+    "number": 8,
+    "repository": "szl-holdings/lambda-gate-holo",
+    "review_decision": null,
+    "title": "fix(release): authorize exact post-merge PR inventory",
+    "updated_at": "2026-08-28T16:52:50Z",
+    "url": "https://github.com/szl-holdings/lambda-gate-holo/pull/8"
+  },
+  {
+    "base_ref": "main",
+    "base_sha": "9731db892fdf0fe59d1b635b55a74a60ba0b7d6d",
+    "blockers": [
+      "EXPLICIT_HOLD_OR_INTENDED_RED",
+      "MERGE_STATE_BLOCKED",
+      "UNRESOLVED_DEPENDENCIES"
+    ],
+    "changed_paths": [
+      ".github/scripts/test_code_security_drift.py",
+      ".github/scripts/verify_forge9_governance.py",
+      ".github/workflows/attest-and-approve.yml",
+      ".github/workflows/secret-health.yml",
+      ".governance/github-app-manifest.json"
+    ],
+    "classification": "INTENTIONAL_HOLD_OR_RED",
+    "dependencies": [
+      "SIGNED_SUCCESSOR",
+      "LIVE_APP_PERMISSION_PROOF"
+    ],
+    "draft": false,
+    "eligible": false,
+    "head_sha": "442e990080e55c5497d058e71ade52e58c266fca",
+    "key": "szl-holdings/.github#465",
+    "labels": [],
+    "merge_state": "BLOCKED",
+    "number": 465,
+    "repository": "szl-holdings/.github",
+    "review_decision": null,
+    "title": "fix(app): grant qillqaq secret-name read",
+    "updated_at": "2026-08-28T16:01:10Z",
+    "url": "https://github.com/szl-holdings/.github/pull/465"
+  },
+  {
+    "base_ref": "main",
+    "base_sha": "c038cc952b5adffeb6a7bc1a1328100464996745",
+    "blockers": [
+      "MERGE_STATE_BLOCKED"
+    ],
+    "changed_paths": [
+      ".github/scripts/solo_estate_readonly_inventory.py",
+      ".github/solo-estate-readonly-policy.json",
+      ".github/workflows/solo-estate-readonly-inventory.yml",
+      "docs/operations/SOLO_ESTATE_READONLY_INVENTORY.md",
+      "tests/test_solo_estate_readonly_inventory.py"
+    ],
+    "classification": "CANDIDATE_REVIEW",
+    "dependencies": [],
+    "draft": false,
+    "eligible": false,
+    "head_sha": "a7fca429be5571f3b3cf3298fe04c9b27fab125a",
+    "key": "szl-holdings/a11oy#1368",
+    "labels": [],
+    "merge_state": "BLOCKED",
+    "number": 1368,
+    "repository": "szl-holdings/a11oy",
+    "review_decision": null,
+    "title": "feat(ops): add read-only solo estate inventory",
+    "updated_at": "2026-08-28T23:01:09Z",
+    "url": "https://github.com/szl-holdings/a11oy/pull/1368"
+  },
+  {
+    "base_ref": "main",
+    "base_sha": "c038cc952b5adffeb6a7bc1a1328100464996745",
+    "blockers": [
+      "MERGE_STATE_BLOCKED",
+      "UNRESOLVED_DEPENDENCIES"
+    ],
+    "changed_paths": [
+      ".github/workflows/memory-covenant-v2.yml",
+      ".github/workflows/zz-repair-memory-membership-acceptance.yml",
+      "artifacts/proof-packets/20260820-memory-covenant-postmerge-hardening.md",
+      "audit/P1-2026-08-20-memory-covenant-postmerge-hardening.md",
+      "migrations/20260811_memory_covenant_v2.sql",
+      "migrations/20260811_memory_covenant_v2_security_hardening.sql",
+      "migrations/20260820_memory_covenant_v2_postmerge_hardening.sql",
+      "scripts/validate_memory_covenant_v2.py",
+      "tests/memory_covenant_acceptance.sql",
+      "tests/test_memory_covenant_exact_head_review.py",
+      "tests/test_memory_covenant_v2.py"
+    ],
+    "classification": "WAITING_ON_DEPENDENCY",
+    "dependencies": [
+      "POSTGRESQL18_HOSTED_PROOF",
+      "FRESH_REVIEW"
+    ],
+    "draft": false,
+    "eligible": false,
+    "head_sha": "6a50c58d437082b641457f946287ad5593069086",
+    "key": "szl-holdings/a11oy#1366",
+    "labels": [],
+    "merge_state": "BLOCKED",
+    "number": 1366,
+    "repository": "szl-holdings/a11oy",
+    "review_decision": null,
+    "title": "fix(memory): harden covenant post-merge controls",
+    "updated_at": "2026-08-28T23:01:31Z",
+    "url": "https://github.com/szl-holdings/a11oy/pull/1366"
+  },
+  {
+    "base_ref": "main",
+    "base_sha": "c038cc952b5adffeb6a7bc1a1328100464996745",
+    "blockers": [
+      "EXPLICIT_HOLD_OR_INTENDED_RED",
+      "MERGE_STATE_BLOCKED",
+      "UNRESOLVED_DEPENDENCIES"
+    ],
+    "changed_paths": [
+      ".github/requirements/hf-universal-frontend-ci.in",
+      ".github/requirements/hf-universal-frontend-ci.txt",
+      ".github/requirements/hf-universal-frontend-runtime.in",
+      ".github/requirements/hf-universal-frontend-runtime.txt",
+      ".github/scripts/require-current-main.sh",
+      ".github/workflows/hf-universal-frontend-estate.yml",
+      ".github/workflows/hf-universal-frontend-rollout.yml",
+      "docs/HF_UNIVERSAL_FRONTEND_CONTRACT.md",
+      "docs/HF_UNIVERSAL_FRONTEND_RUNBOOK.md",
+      "docs/HUGGINGFACE_SPACE_SOURCE_MAP_V1.md",
+      "docs/huggingface-space-source-map-v1.json",
+      "scripts/build_hf_space_source_map_v1.py",
+      "scripts/hf_universal_frontend_control.py",
+      "tests/test_hf_space_source_map_v1.py",
+      "tests/test_hf_universal_frontend_control.py"
+    ],
+    "classification": "INTENTIONAL_HOLD_OR_RED",
+    "dependencies": [
+      "CURRENT_MAIN_INTEGRATION",
+      "DEPLOYED_SHELL_P1"
+    ],
+    "draft": false,
+    "eligible": false,
+    "head_sha": "6aa7e686e02b6614c474bf311735fad605808f40",
+    "key": "szl-holdings/a11oy#1363",
+    "labels": [],
+    "merge_state": "BLOCKED",
+    "number": 1363,
+    "repository": "szl-holdings/a11oy",
+    "review_decision": null,
+    "title": "fix(hf): repair universal frontend rollout invariants",
+    "updated_at": "2026-08-28T23:01:27Z",
+    "url": "https://github.com/szl-holdings/a11oy/pull/1363"
+  },
+  {
+    "base_ref": "main",
+    "base_sha": "dffd0c03b9dfcc3af4f0a5f6576a854e3bc0f894",
+    "blockers": [
+      "CHANGED_PATH_COLLISION",
+      "MERGE_STATE_UNKNOWN",
+      "UNRESOLVED_DEPENDENCIES"
+    ],
+    "changed_paths": [
+      ".github/workflows/readiness-phase-b.yml",
+      "a11oy_live_feeds.py",
+      "routers/frontier_reads.py",
+      "serve.py",
+      "szl_b2_secdata.py",
+      "tests/test_readiness_deep_vertical_contract.py",
+      "tests/test_readiness_phase_b_observation_contract.py",
+      "tools/readiness-harness/gen_tabs_matrix.py",
+      "tools/readiness-harness/probe_runner.mjs",
+      "tools/readiness-harness/probe_runner.test.mjs",
+      "tools/readiness-harness/tabs.json"
+    ],
+    "classification": "WAITING_ON_DEPENDENCY",
+    "collisions": [
+      "szl-holdings/a11oy#1405"
+    ],
+    "dependencies": [
+      "PROTECTED_DEPLOYMENT",
+      "LIVE_READBACK"
+    ],
+    "draft": false,
+    "eligible": false,
+    "head_sha": "c6d1b7f00fa1005012721b3020783cb7e4799a67",
+    "key": "szl-holdings/a11oy#1358",
+    "labels": [],
+    "merge_state": "UNKNOWN",
+    "number": 1358,
+    "repository": "szl-holdings/a11oy",
+    "review_decision": null,
+    "title": "fix(readiness): preserve runtime evidence boundaries",
+    "updated_at": "2026-08-28T17:30:38Z",
+    "url": "https://github.com/szl-holdings/a11oy/pull/1358"
+  },
+  {
+    "base_ref": "main",
+    "base_sha": "c038cc952b5adffeb6a7bc1a1328100464996745",
+    "blockers": [
+      "MERGE_STATE_BLOCKED",
+      "UNRESOLVED_DEPENDENCIES"
+    ],
+    "changed_paths": [
+      ".github/workflows/oro-control-plane.yml",
+      "deploy/oro/Dockerfile",
+      "deploy/oro/compose.yaml",
+      "oro/README.md",
+      "oro/__init__.py",
+      "oro/api.py",
+      "oro/auth.py",
+      "oro/core.py",
+      "oro/dashboard.py",
+      "oro/service.py",
+      "oro/signing.py",
+      "oro/store.py",
+      "schemas/oro/v1/barrier-receipt.schema.json",
+      "schemas/oro/v1/codex.schema.json",
+      "schemas/oro/v1/plan.schema.json",
+      "schemas/oro/v1/rank.schema.json",
+      "scripts/_apply_oro_v3_repairs.py",
+      "tests/test_oro_operational_v3.py"
+    ],
+    "classification": "WAITING_ON_DEPENDENCY",
+    "dependencies": [
+      "FRESH_EXACT_HEAD_REVIEW",
+      "ACTIVATION_SUCCESSOR"
+    ],
+    "draft": false,
+    "eligible": false,
+    "head_sha": "09fe1045b8df554d5547ca52f0751192db7226fc",
+    "key": "szl-holdings/a11oy#1333",
+    "labels": [],
+    "merge_state": "BLOCKED",
+    "number": 1333,
+    "repository": "szl-holdings/a11oy",
+    "review_decision": null,
+    "title": "feat(oro): add standalone obligation-ranked orbit control plane",
+    "updated_at": "2026-08-28T23:01:37Z",
+    "url": "https://github.com/szl-holdings/a11oy/pull/1333"
+  }
+]

@@ -1,0 +1,91 @@
+{
+  "schema": "szl.run-receipt/v1",
+  "controller_sha256": "690b55372055415d5bef1e2865aa1b2958baf16d16c98332cd38afcec64c0576",
+  "mode": "PROTECTED_EXECUTION",
+  "started_at": "2026-08-29T00:49:00Z",
+  "finished_at": "2026-08-29T00:56:00Z",
+  "credentials": {
+    "github": "AUTHENTICATED stephenlutar2-hash",
+    "huggingface_cli": "UNAVAILABLE",
+    "admin_bypass": "NOT_USED",
+    "self_approval": "NOT_USED"
+  },
+  "not_used": [
+    "--admin",
+    "force-push",
+    "branch-protection removal",
+    "self-approval identity"
+  ],
+  "recommendation_executed": [
+    "Keep Product | Proof split",
+    "Fold MEASURED inventory into a11oy.net /estate/ (recapture after #1366 + szl-khipu)",
+    "Do not publish this Grok preview as a fourth public origin",
+    "Never a11oy.com",
+    "Never clone /verify onto a11oy.net",
+    "Never force-merge HOLD/draft/dirty/failed PRs",
+    "Consolidate unpublished lab: primary nav + /estate \u2192 /registry"
+  ],
+  "origins": {
+    "product": {
+      "host": "https://a-11-oy.com",
+      "honest_git_sha": "08df558d7dedef602382399d269fe7e1f54a6e4b",
+      "locked_formula_count": 8,
+      "matches_a11oy_main": false,
+      "a11oy_main": "4783ee5597c2129df0feddd3620f07f1fc73a5ff"
+    },
+    "proof": {
+      "host": "https://a11oy.net",
+      "pages_sha": "e738e05f3652b9e65bbd7a0b10ae1615d0485f35",
+      "estate_captured_at": "2026-08-29T00:39:00Z",
+      "next_snapshot": "2026-08-29T00:56:00Z"
+    },
+    "hub": {
+      "org": "SZLHOLDINGS",
+      "models": 33,
+      "datasets": 28,
+      "spaces": 27,
+      "remaining_joblib": 0,
+      "write": "UNAVAILABLE"
+    }
+  },
+  "github": {
+    "org": 76,
+    "public": 71,
+    "private": 5,
+    "archived": 7,
+    "open_prs": 11,
+    "merge_qualified": 0,
+    "additions_vs_63": [
+      "YARQA-ATTN",
+      "szl-block-kv",
+      "szl-blocked",
+      "szl-formulas",
+      "szl-govsign",
+      "szl-invariants",
+      "szl-maskmod",
+      "szl-ouroboros",
+      "szl-provctl",
+      "szl-receipt-attn",
+      "szl-serve",
+      "szl-nemo",
+      "szl-khipu"
+    ]
+  },
+  "merged_this_run_observed": [
+    "a11oy#1366"
+  ],
+  "open_not_merged": [
+    "a11oy#1409",
+    "platform#675",
+    ".github#481",
+    ".github#480",
+    "governed-norm-holo#8",
+    "a11oy#1405",
+    "a11oy-net#23",
+    "a11oy#1393",
+    ".github#465",
+    "a11oy#1363",
+    "a11oy#1333"
+  ],
+  "sha256": "5e3af7fba69b2bf2088fe7671dee75035d2962be7a30ee930bff98e4f0f1dae4"
+}

@@ -1,0 +1,74 @@
+[
+  {
+    "id": ".github#483",
+    "title": "chore(hf): relock SZLHOLDINGS organization card",
+    "draft": false,
+    "mergeable": "MERGEABLE",
+    "mergeState": "UNSTABLE",
+    "review": "",
+    "head": "a8a4788e94a495f6ef8b049617efcec1ff9248a8",
+    "hold_text": false,
+    "checks": {
+      "success": 0,
+      "failed": [],
+      "pending_n": 1,
+      "pending": [
+        "Analyze (javascript-typescript)"
+      ],
+      "total": 1
+    },
+    "url": "https://github.com/szl-holdings/.github/pull/483",
+    "author": "stephenlutar2-hash",
+    "dco_in_last_commit": true,
+    "merge_qualified": false,
+    "note": "Auto-merge queued. Extra-approval likely. No self-approval."
+  },
+  {
+    "id": ".github#484",
+    "title": "docs(hf): record public estate alignment",
+    "draft": false,
+    "mergeable": "MERGEABLE",
+    "mergeState": "UNSTABLE",
+    "review": "",
+    "head": "268cf60921589b6cd2ec0b3801067631e57d2440",
+    "hold_text": false,
+    "checks": {
+      "success": 0,
+      "failed": [],
+      "pending_n": 1,
+      "pending": [
+        "Analyze (javascript-typescript)"
+      ],
+      "total": 1
+    },
+    "url": "https://github.com/szl-holdings/.github/pull/484",
+    "author": "stephenlutar2-hash",
+    "dco_in_last_commit": true,
+    "merge_qualified": false,
+    "note": "Auto-merge queued. Extra-approval likely. No self-approval."
+  },
+  {
+    "id": ".github#465",
+    "title": "fix(app): grant qillqaq secret-name read",
+    "draft": false,
+    "mergeable": "UNKNOWN",
+    "mergeState": "BLOCKED",
+    "review": "",
+    "head": "442e990080e55c5497d058e71ade52e58c266fca",
+    "hold_text": false,
+    "checks": {
+      "success": 0,
+      "failed": [
+        "Governed organization secret-name health"
+      ],
+      "pending_n": 0,
+      "pending": [],
+      "total": 1
+    },
+    "url": "https://github.com/szl-holdings/.github/pull/465",
+    "author": "stephenlutar2-hash",
+    "dco_in_last_commit": true,
+    "merge_qualified": false,
+    "note": "BLOCKED_EXTERNAL_AUTHORITY. GitHub App grant required."
+  }
+]

@@ -1,0 +1,81 @@
+{
+  "captured_at": "2026-08-28T19:15:00+00:00",
+  "workflow_run": 33202953171,
+  "github_main": "11076cc05d189f385f09c1abec2103debe57a253",
+  "merged_discussions": 8,
+  "remaining_joblib": 0,
+  "models": [
+    {
+      "id": "SZLHOLDINGS/szl-governed-norm",
+      "sha": "f3a865834c9a1dc316864dfdf8ba9014976cd88d",
+      "private": false,
+      "siblings_unsafe": [],
+      "tree_unsafe": [],
+      "n_siblings": 18,
+      "card": "apache-2.0"
+    },
+    {
+      "id": "SZLHOLDINGS/szl-blocked",
+      "sha": "85ddca7a5e190ef9c13f8fdd288f52e61416d7d2",
+      "private": false,
+      "siblings_unsafe": [],
+      "tree_unsafe": [],
+      "n_siblings": 18,
+      "card": "apache-2.0"
+    },
+    {
+      "id": "SZLHOLDINGS/szl-govsign",
+      "sha": "8d7b5ce19c797d272b8baa4fd7ad8d7a41b2c6c1",
+      "private": false,
+      "siblings_unsafe": [],
+      "tree_unsafe": [],
+      "n_siblings": 16,
+      "card": "apache-2.0"
+    },
+    {
+      "id": "SZLHOLDINGS/szl-provctl",
+      "sha": "6610c614e08a3d424fff9e94fc4c946215fbffee",
+      "private": false,
+      "siblings_unsafe": [],
+      "tree_unsafe": [],
+      "n_siblings": 16,
+      "card": "apache-2.0"
+    },
+    {
+      "id": "SZLHOLDINGS/szl-nemo",
+      "sha": "6f5e0ce5ca3884bf267286e17b79e2f1f8058c51",
+      "private": false,
+      "siblings_unsafe": [],
+      "tree_unsafe": [],
+      "n_siblings": 9,
+      "card": "apache-2.0"
+    },
+    {
+      "id": "SZLHOLDINGS/szl-invariants",
+      "sha": "35b0c1217faef03d219d3f45b82e0104c4ac39dd",
+      "private": false,
+      "siblings_unsafe": [],
+      "tree_unsafe": [],
+      "n_siblings": 13,
+      "card": "apache-2.0"
+    },
+    {
+      "id": "SZLHOLDINGS/szl-ouroboros",
+      "sha": "dcdc15a36edcc78cc6ed4a42a9b5e561521192a2",
+      "private": false,
+      "siblings_unsafe": [],
+      "tree_unsafe": [],
+      "n_siblings": 14,
+      "card": "apache-2.0"
+    },
+    {
+      "id": "SZLHOLDINGS/szl-formulas",
+      "sha": "421dbeddfc8bcb349e524fa5aa8920afe188061d",
+      "private": false,
+      "siblings_unsafe": [],
+      "tree_unsafe": [],
+      "n_siblings": 15,
+      "card": "apache-2.0"
+    }
+  ]
+}

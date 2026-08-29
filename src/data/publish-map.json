@@ -1,0 +1,44 @@
+{
+  "captured_at": "2026-08-29T00:56:00Z",
+  "label": "MEASURED",
+  "recommendation": "Consolidate MEASURED inventory into a11oy.net. Do not publish this preview as a fourth public origin.",
+  "origins": [
+    {
+      "host": "a-11-oy.com",
+      "role": "product_runtime",
+      "status": "LIVE",
+      "honest_git_sha": "08df558d7dedef602382399d269fe7e1f54a6e4b",
+      "space": "SZLHOLDINGS/a11oy",
+      "note": "Live honest git_sha is #1408. Protected a11oy main is 4783ee55 (#1366). They currently diverge. Relock is platform#675, not force-merged."
+    },
+    {
+      "host": "a11oy.net",
+      "role": "proof_registry",
+      "status": "LIVE",
+      "pages_sha": "e738e05f3652b9e65bbd7a0b10ae1615d0485f35",
+      "note": "GitHub Pages. RECORD, diligence, /estate/ snapshot from #29 (75/11). Recapture PR will stamp 76/11 after #1366 and szl-khipu."
+    },
+    {
+      "host": "huggingface.co/SZLHOLDINGS",
+      "role": "artifact_registry",
+      "status": "LIVE",
+      "models": 33,
+      "datasets": 28,
+      "spaces": 27,
+      "remaining_joblib": 0
+    },
+    {
+      "host": "this_preview",
+      "role": "unpublished_demo_lab",
+      "status": "NOT_PUBLISHED",
+      "note": "Grok Build SPA. DEMO HMAC. Fold tables into a11oy.net. Frontier admission set is DEMO-only."
+    },
+    {
+      "host": "a11oy.com",
+      "role": "foreign",
+      "status": "FOREIGN",
+      "title": "Alloy \u2013 Home and Garden Store",
+      "note": "Never canonical."
+    }
+  ]
+}

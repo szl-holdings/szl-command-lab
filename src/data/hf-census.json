@@ -1,0 +1,22 @@
+{
+  "captured_at": "2026-08-29T01:18:00Z",
+  "counts": {
+    "artifact_classes": {
+      "CARD_ONLY_ROADMAP": 11,
+      "DATASET": 28,
+      "QUANTIZED_DERIVATIVE": 2,
+      "SOFTWARE_KERNEL_CARD": 16,
+      "SPACE_RUNTIME": 28,
+      "TRAINED_ADAPTER": 8,
+      "TRAINED_OR_CONVERTED_WEIGHTS_REQUIRES_RECEIPT": 1
+    },
+    "collections": 13,
+    "datasets": 28,
+    "executable_serialization_remaining": [],
+    "models": 38,
+    "spaces": 28,
+    "state": "MEASURED_PUBLIC"
+  },
+  "label": "MEASURED public",
+  "org": "SZLHOLDINGS"
+}

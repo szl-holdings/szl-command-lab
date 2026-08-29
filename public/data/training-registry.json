@@ -1,0 +1,103 @@
+{
+  "candidates": [
+    {
+      "acceptance": {
+        "abstention": "preregistered threshold",
+        "calibration": "preregistered threshold"
+      },
+      "approved": false,
+      "artifact_class": "trained_model_or_adapter",
+      "base_repo": "SELECT_AFTER_RIGHTS_COMPATIBLE_BASELINE_BAKEOFF",
+      "base_revision": "REQUIRED_EXACT_REVISION",
+      "blockers": [
+        "NOT_APPROVED",
+        "RIGHTS_NOT_CLEARED",
+        "BASE_REVISION_NOT_EXACT",
+        "DATASET_REVISION_NOT_EXACT",
+        "IMAGE_DIGEST_INVALID",
+        "COST_CAP_NOT_SET",
+        "JOB_COMMAND_NOT_BOUND"
+      ],
+      "command": [],
+      "container_image_digest": "sha256:REQUIRED",
+      "dataset_repo": "SZLHOLDINGS/WILLAY-DATASET-TO-BE-CREATED",
+      "dataset_revision": "REQUIRED_EXACT_REVISION",
+      "id": "willay-v1",
+      "max_cost_usd": 0,
+      "notes": "Highest-value next genuinely trained HF model. Fail-closed until rights and exact revisions bound.",
+      "priority": 1,
+      "rights_status": "PENDING",
+      "seed": 17,
+      "state": "REJECTED_WITH_REASON"
+    },
+    {
+      "acceptance": {
+        "abstain": "pass all preregistered abstention cases; do not lower threshold"
+      },
+      "approved": false,
+      "artifact_class": "trained_adapter",
+      "base_repo": "BIND_R2_BASE_LINEAGE",
+      "base_revision": "REQUIRED_EXACT_REVISION",
+      "blockers": [
+        "NOT_APPROVED",
+        "RIGHTS_NOT_CLEARED",
+        "BASE_REVISION_NOT_EXACT",
+        "DATASET_REVISION_NOT_EXACT",
+        "IMAGE_DIGEST_INVALID",
+        "COST_CAP_NOT_SET",
+        "JOB_COMMAND_NOT_BOUND"
+      ],
+      "command": [],
+      "container_image_digest": "sha256:REQUIRED",
+      "dataset_repo": "BIND_R2_TRAINING_DATA_PLUS_NEW_CHALLENGE_SET",
+      "dataset_revision": "REQUIRED_EXACT_REVISION",
+      "id": "khipu-r3",
+      "max_cost_usd": 0,
+      "notes": "R2 remains immutable research evidence.",
+      "priority": 2,
+      "rights_status": "PENDING",
+      "seed": 23,
+      "state": "REJECTED_WITH_REASON"
+    },
+    {
+      "acceptance": {
+        "human_approval": "mandatory",
+        "proposal_only": true
+      },
+      "approved": false,
+      "artifact_class": "trained_object_detection_model",
+      "base_repo": "SELECT_AFTER_REVIEW",
+      "base_revision": "REQUIRED_EXACT_REVISION",
+      "blockers": [
+        "NOT_APPROVED",
+        "RIGHTS_NOT_CLEARED",
+        "BASE_REVISION_NOT_EXACT",
+        "DATASET_REVISION_NOT_EXACT",
+        "IMAGE_DIGEST_INVALID",
+        "COST_CAP_NOT_SET",
+        "JOB_COMMAND_NOT_BOUND"
+      ],
+      "command": [],
+      "container_image_digest": "sha256:REQUIRED",
+      "dataset_repo": "RIGHTS_CLEARED_DATASET_REQUIRED",
+      "dataset_revision": "REQUIRED_EXACT_REVISION",
+      "id": "waman-killinchu-eye",
+      "max_cost_usd": 0,
+      "notes": "Blocked until legal and data gates close.",
+      "priority": 3,
+      "rights_status": "REQUIRES_DATA_PRIVACY_EXPORT_DUAL_USE_REVIEW",
+      "seed": 31,
+      "state": "REJECTED_WITH_REASON"
+    }
+  ],
+  "captured_at": "2026-08-28T23:18:28Z",
+  "default_state": "NOT_APPROVED",
+  "rules": [
+    "Only genuine weight-bearing model or adapter jobs may enter this registry.",
+    "Kernels, cards, wrappers, aliases, and quantizations are not training jobs.",
+    "Every job requires exact base/data revisions, rights clearance, cost cap, seed, image digest, holdout, challenge set, and terminal receipt.",
+    "Submission requires --apply --submit-training and approved=true."
+  ],
+  "schema": "szl.training.registry/v2",
+  "submit_this_run": false
+}

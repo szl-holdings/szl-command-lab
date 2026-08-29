@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" shape-rendering="crispEdges" role="img" aria-label="SZL Command">
+  <rect width="16" height="16" fill="#09090b"/>
+  <rect x="2" y="2" width="12" height="2" fill="#f2efe8"/>
+  <rect x="3" y="4" width="2" height="11" fill="#b8c2cc"/>
+  <rect x="7" y="4" width="2" height="11" fill="#b8c2cc"/>
+  <rect x="11" y="4" width="2" height="11" fill="#b8c2cc"/>
+  <rect x="2" y="7" width="4" height="2" fill="#8fa38c"/>
+  <rect x="6" y="10" width="4" height="2" fill="#f2efe8"/>
+  <rect x="10" y="6" width="4" height="2" fill="#c17b74"/>
+</svg>

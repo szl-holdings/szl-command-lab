@@ -1,0 +1,586 @@
+{
+  "captured_at": "2026-08-29T01:42:00Z",
+  "counts": {
+    "archived": 7,
+    "founder": 2,
+    "label": "MEASURED",
+    "open_prs": 3,
+    "org": 76,
+    "private": 5,
+    "public": 71
+  },
+  "label": "MEASURED",
+  "organization": "szl-holdings",
+  "protected_mains": {
+    "a11oy": {
+      "sha": "23dc4d86bd92055e5f202a01e1dc84bcacf49332",
+      "date": "2026-08-29T01:40:32Z",
+      "message": "feat(oro): add standalone obligation-ranked orbit control plane (#1333)",
+      "verified": true
+    },
+    "a11oy-net": {
+      "sha": "caca903a23cdc8a98d563158395b729bd86b5882",
+      "date": "2026-08-29T01:38:50Z",
+      "message": "feat(estate): recapture MEASURED inventory after #1412 (#32)",
+      "verified": true
+    },
+    "killinchu": {
+      "sha": "62cb7359edd7b49cb62eacc76d71a29f2cfa7ee4",
+      "date": "2026-08-29T01:28:50Z",
+      "message": "docs(status): scope LIVE decision layer and bind HF manifest (#343)",
+      "verified": true
+    },
+    "platform": {
+      "sha": "de08cf8ec5836b0cef968d6560a92ecbd1bc6f4b",
+      "date": "2026-08-29T01:35:14Z",
+      "message": "fix(ui): replace LUMINA/PARAGON in vendored a11oy brand data (#676)",
+      "verified": true
+    },
+    ".github": {
+      "sha": "16c361b42ec04fa02e4f05efd18c79b1c423da25",
+      "date": "2026-08-29T01:27:49Z",
+      "message": "chore(hf): refresh exact organization-card publication (#480)",
+      "verified": true
+    },
+    "szl-forge": {
+      "sha": "1c988e0983433df9d73179f3bfcb009e8ed7b0a0",
+      "date": "2026-08-29T01:33:05Z",
+      "message": "fix(portfolio): update contracts for software Lambda Gate",
+      "verified": true
+    }
+  },
+  "repositories": [
+    {
+      "full_name": "szl-holdings/.github",
+      "private": false,
+      "archived": false,
+      "description": "SZL Holdings org profile \u2014 governed-AI company overview, community health files, reusable workflows, and doctrine. Products: a11oy + killinchu. Visit a-11-oy.com.",
+      "pushed_at": "2026-08-29T00:59:44Z"
+    },
+    {
+      "full_name": "szl-holdings/a11oy",
+      "private": false,
+      "archived": false,
+      "description": "a11oy \u2014 full orchestrator application (Command Center, Five Superpowers, Warhacker, Observability, Wires, Mesh, Formulas, Evidence, LLM Router). Signed-receipt substrate; receipts.in \u2261 receipts.out. SLSA L1 honest \u00b7 L2 roadmap \u00b7 \u039b = Conjecture 1 \u00b7 Apache-2.0.",
+      "pushed_at": "2026-08-29T00:59:03Z"
+    },
+    {
+      "full_name": "szl-holdings/a11oy-net",
+      "private": false,
+      "archived": false,
+      "description": "a11oy.net \u2014 Alloy, the Agentic Orchestrator (flagship static site)",
+      "pushed_at": "2026-08-29T00:59:18Z"
+    },
+    {
+      "full_name": "szl-holdings/anatomy",
+      "private": false,
+      "archived": false,
+      "description": "SZL Living Anatomy \u2014 3D navigable governed-AI organ substrate. Visualizes the 5 organs (reasoning cortex, trust gate, receipt bus, consensus, egress) powering a11oy + killinchu. Doctrine v11 LOCKED \u00b7 8 proven formulas \u00b7 \u039b = Conjecture 1.",
+      "pushed_at": "2026-08-02T01:19:23Z"
+    },
+    {
+      "full_name": "szl-holdings/david-leads",
+      "private": false,
+      "archived": false,
+      "description": "David Leads \u2014 public-data insurance intelligence with transparent decision traces and signed receipts. Apache-2.0.",
+      "pushed_at": "2026-08-28T18:48:14Z"
+    },
+    {
+      "full_name": "szl-holdings/developers",
+      "private": false,
+      "archived": true,
+      "description": "Build on SZL \u2014 developer hub: API reference for all 5 flagships, 5-min quickstart, MCP integration (Claude/Cursor), substrate packages, runnable examples. Doctrine v11. Apache-2.0.",
+      "pushed_at": "2026-07-29T23:07:25Z"
+    },
+    {
+      "full_name": "szl-holdings/docs-site",
+      "private": false,
+      "archived": false,
+      "description": "SZL Holdings unified documentation \u2014 math-grounded, Quechua-rooted governed-AI docs (VitePress). Doctrine v11 LOCKED (749/14/163). docs.szlholdings.com",
+      "pushed_at": "2026-08-28T15:41:19Z"
+    },
+    {
+      "full_name": "szl-holdings/energy-attest-holo",
+      "private": false,
+      "archived": false,
+      "description": "Honest holographic energy-attestation surface for the SZL sovereign mesh \u2014 RED/UNAVAILABLE when there are no live NVML meters (the honest launch state). GB grid carbon intensity is REPORTED context. 0 runtime CDN. \u039b = Conjecture 1.",
+      "pushed_at": "2026-08-18T00:23:33Z"
+    },
+    {
+      "full_name": "szl-holdings/evidence-doctrine",
+      "private": false,
+      "archived": false,
+      "description": "Decision-SLSA v1.4 fail-closed maturity model and TypeScript/Python reference evaluators",
+      "pushed_at": "2026-07-28T18:35:00Z"
+    },
+    {
+      "full_name": "szl-holdings/evidence-typed-formula-governance",
+      "private": false,
+      "archived": true,
+      "description": "Archival preprint and reproducibility package for evidence-typed governance of a mixed Lean and executable formula corpus.",
+      "pushed_at": "2026-07-21T03:28:34Z"
+    },
+    {
+      "full_name": "szl-holdings/fail-closed-governed-ai-services",
+      "private": false,
+      "archived": true,
+      "description": "Archival preprint and reproducibility package for fail-closed epistemic boundaries in governed AI services.",
+      "pushed_at": "2026-07-21T03:28:38Z"
+    },
+    {
+      "full_name": "szl-holdings/gdw-frontier",
+      "private": true,
+      "archived": false,
+      "description": "MODELED self-defending observability core for the Governed Delta Workspace",
+      "pushed_at": "2026-08-26T13:45:06Z"
+    },
+    {
+      "full_name": "szl-holdings/governed-inference-meter",
+      "private": false,
+      "archived": false,
+      "description": "Energy-metered governed inference receipts \u2014 NVML joules, tokens/joule, advisory policy gate. Hash-chained, DSSE-signed. Honest UNAVAILABLE when NVML unset. \u039b = Conjecture 1 \u00b7 Apache-2.0.",
+      "pushed_at": "2026-08-29T00:10:29Z"
+    },
+    {
+      "full_name": "szl-holdings/governed-norm-holo",
+      "private": false,
+      "archived": false,
+      "description": "Holographic, inspectable view of the a11oy WILLAY refusal classifiers \u2014 live keyless data, honest REPORTED/UNAVAILABLE labels.",
+      "pushed_at": "2026-08-29T00:06:37Z"
+    },
+    {
+      "full_name": "szl-holdings/governed-receipt-spec",
+      "private": false,
+      "archived": false,
+      "description": "Open format for a governed AI inference decision receipt (decision, \u039b status, measured-or-null energy, hash chain, DSSE) + a dependency-free offline verifier. Receipt-tier trust: honest, replayable, not zero-knowledge. By SZL Holdings.",
+      "pushed_at": "2026-08-28T14:11:27Z"
+    },
+    {
+      "full_name": "szl-holdings/hatun-mcp",
+      "private": false,
+      "archived": false,
+      "description": "Hatun-MCP \u2014 doctrine-aware Model Context Protocol server. 16 SZL tools under PURIQ governance (Yuyay-13 gate, Khipu receipts, DSSE-signed). Streamable HTTP + SSE.",
+      "pushed_at": "2026-08-26T14:32:19Z"
+    },
+    {
+      "full_name": "szl-holdings/immune",
+      "private": false,
+      "archived": false,
+      "description": "IMMUNE \u2014 Verifiable-AI Defense Matrix. Append-only SHA-256 receipt chain (YAWAR) + SENTRA/GATE admission + HUKLLA tripwires. Source of the live Hugging Face Space SZLHOLDINGS/immune.",
+      "pushed_at": "2026-08-26T14:32:34Z"
+    },
+    {
+      "full_name": "szl-holdings/khipu-consensus",
+      "private": false,
+      "archived": false,
+      "description": "BFT 3-of-4 multi-party-witnessed agreement \u2014 each witness signs an action hash with its own ECDSA P-256 cosign key over DSSE. The category SZL invents: multi-party-witnessed AI. Doctrine v11 LOCKED (749/14/163).",
+      "pushed_at": "2026-08-26T13:33:22Z"
+    },
+    {
+      "full_name": "szl-holdings/khipu-sda-core",
+      "private": false,
+      "archived": false,
+      "description": "SZL khipu-sda-core \u2014 sovereign clean-room anomaly/SDA engine (Domain-Superiority). Signed receipts + \u039b-gated honest confidence. Doctrine v11. Clean-room from permissive lineage; inspired by True Anomaly Mosaic (not affiliated).",
+      "pushed_at": "2026-08-26T13:47:24Z"
+    },
+    {
+      "full_name": "szl-holdings/killinchu",
+      "private": false,
+      "archived": false,
+      "description": "killinchu \u2014 full counter-UAS application at /elite (16 views: Live Track Board, Sensor-Fusion, ROE, 13-axis \u039b, 3-of-4 BFT, DSSE Verifier, PQC, Geofence, Swarm, Threat DB, Mesh). DSSE receipt per interdiction. SLSA L1 honest \u00b7 L2 roadmap \u00b7 \u039b = Conjecture 1 \u00b7 Apache-2.0.",
+      "pushed_at": "2026-08-29T00:58:40Z"
+    },
+    {
+      "full_name": "szl-holdings/lambda-gate-holo",
+      "private": false,
+      "archived": false,
+      "description": "Holographic explainer of the \u039b trust gate \u2014 Conjecture 1, never a theorem. Status sourced live from szl-formula-ledger.",
+      "pushed_at": "2026-08-29T00:08:48Z"
+    },
+    {
+      "full_name": "szl-holdings/lean-kernel",
+      "private": false,
+      "archived": false,
+      "description": "Live Lean v4.13.0 kernel for the Lutar Invariant \u2014 \u039b uniqueness as Conjecture 1. 749/14/163, source-mirrored from HF Space SZLHOLDINGS/lean-kernel. Doctrine v11 LOCKED \u00b7 Apache-2.0.",
+      "pushed_at": "2026-08-28T04:49:20Z"
+    },
+    {
+      "full_name": "szl-holdings/lutar-lean",
+      "private": false,
+      "archived": false,
+      "description": "Lean 4 + Mathlib formalization of the \u039b aggregator \u2014 \u039b uniqueness as Conjecture 1 (not a closed theorem). 749 declarations \u00b7 14 axioms \u00b7 163 tracked sorries. Backs the SZL governance gate. Doctrine v11 LOCKED \u00b7 DOI 10.5281/zenodo.20434308",
+      "pushed_at": "2026-08-26T13:46:57Z"
+    },
+    {
+      "full_name": "szl-holdings/ouroboros",
+      "private": false,
+      "archived": false,
+      "description": "Ouroboros bounded-recursion runtime \u2014 agentic loops, dual-witness emitters, governance budgets. Doctrine v11 LOCKED (749/14/163)",
+      "pushed_at": "2026-08-28T04:40:58Z"
+    },
+    {
+      "full_name": "szl-holdings/pitch-collateral",
+      "private": true,
+      "archived": false,
+      "description": "SZL Holdings Series-A pitch collateral (PRIVATE, IP-sensitive) \u2014 one-pager, deck outline, demo scripts, design-partner outreach. Doctrine v11 LOCKED (749/14/163).",
+      "pushed_at": "2026-08-26T19:18:37Z"
+    },
+    {
+      "full_name": "szl-holdings/platform",
+      "private": false,
+      "archived": false,
+      "description": "SZL Holdings monorepo \u2014 substrate runtime, agentic loops, MCP server (11 tools), reusable workflows, CI gates. Doctrine v11 LOCKED (749/14/163)",
+      "pushed_at": "2026-08-29T00:59:10Z"
+    },
+    {
+      "full_name": "szl-holdings/receipt-chain-live",
+      "private": false,
+      "archived": false,
+      "description": "Live SHA3-256 Khipu hash-chain verifier \u2014 fetches the a11oy receipt lake and re-verifies the chain IN YOUR BROWSER. Honest MEASURED vs REPORTED; UNAVAILABLE when the lake is down.",
+      "pushed_at": "2026-08-26T16:17:28Z"
+    },
+    {
+      "full_name": "szl-holdings/sda",
+      "private": false,
+      "archived": false,
+      "description": "Investor-facing sovereign domain-awareness surface for khipu-sda-core: anomaly detection, sensor fusion, governed advisory verdicts, and receipt evidence.",
+      "pushed_at": "2026-08-08T21:22:12Z"
+    },
+    {
+      "full_name": "szl-holdings/szl-block-kv",
+      "private": false,
+      "archived": false,
+      "description": "Original SZL Triton paged KV cache with block-table SHA3 receipts. PagedAttention silhouette, not a rehost. Doctrine v11, Apache-2.0.",
+      "pushed_at": "2026-08-29T00:10:25Z"
+    },
+    {
+      "full_name": "szl-holdings/szl-blocked",
+      "private": false,
+      "archived": false,
+      "description": "Canonical GitHub source for the szl-blocked Kernel Hub package (honest BLOCKED, fail-closed). Hub is the publish mirror. Apache-2.0 \u00b7 Doctrine v11.",
+      "pushed_at": "2026-08-29T00:11:01Z"
+    },
+    {
+      "full_name": "szl-holdings/szl-brand",
+      "private": false,
+      "archived": false,
+      "description": "Brand assets, logos, social-preview templates, and visual doctrine for SZL Holdings \u2014 Sovereign Governed AI. Doctrine v11 LOCKED.",
+      "pushed_at": "2026-08-26T13:46:49Z"
+    },
+    {
+      "full_name": "szl-holdings/szl-build-env",
+      "private": false,
+      "archived": false,
+      "description": "SZL local build environment: kind + Istio ambient mesh + OpenTelemetry Collector + 5-organ stack with cosign verification gate. <10 min quickstart for SZL engineers.",
+      "pushed_at": "2026-08-28T15:41:13Z"
+    },
+    {
+      "full_name": "szl-holdings/szl-cookbook",
+      "private": false,
+      "archived": false,
+      "description": "Recipes and how-to guides for SZL governance infrastructure. Doctrine v11",
+      "pushed_at": "2026-08-26T13:48:56Z"
+    },
+    {
+      "full_name": "szl-holdings/szl-defensive-control-plane",
+      "private": true,
+      "archived": false,
+      "description": "Evidence-bound defensive security control plane for signed event ingestion, governed response, and tamper-evident case evidence.",
+      "pushed_at": "2026-08-26T19:27:34Z"
+    },
+    {
+      "full_name": "szl-holdings/szl-doctrine",
+      "private": false,
+      "archived": false,
+      "description": "SZL doctrine + org-wide governance workflows (secret health, etc.)",
+      "pushed_at": "2026-08-28T17:18:39Z"
+    },
+    {
+      "full_name": "szl-holdings/szl-energy-attest",
+      "private": false,
+      "archived": false,
+      "description": "Attestable energy receipts for governed compute \u2014 MEASURED-NVML joules (or honest UNAVAILABLE null), cheapest-watt placement, hash-chained signable receipts. Vendors szl_energy_core. \u039b = Conjecture 1 (advisory) \u00b7 never fabricates a joule \u00b7 Mirrors HF SZLHOLDINGS/szl-energy-attest \u00b7 Apache-2.0.",
+      "pushed_at": "2026-08-26T13:47:27Z"
+    },
+    {
+      "full_name": "szl-holdings/szl-estate-os",
+      "private": true,
+      "archived": false,
+      "description": "Governed, evidence-aware control plane for the SZL GitHub, Hugging Face, and domain estate.",
+      "pushed_at": "2026-08-11T06:18:09Z"
+    },
+    {
+      "full_name": "szl-holdings/szl-fleet-overlay",
+      "private": false,
+      "archived": false,
+      "description": "UDS Operator packages + Helm chart + Zarf bundle + peat-mesh nodes for the 5 SZL service surfaces. Layers doctrine-pinned DSSE receipts on top of UDS Fleet. SLSA L1+L2 honest.",
+      "pushed_at": "2026-08-26T14:25:23Z"
+    },
+    {
+      "full_name": "szl-holdings/szl-forge",
+      "private": false,
+      "archived": false,
+      "description": "SZL Forge \u2014 train SZL Holdings own sovereign model (SZL-1) on SZL own hardware. QLoRA fine-tune kit: dataset, Unsloth training script, Ollama Modelfile, runbook.",
+      "pushed_at": "2026-08-29T00:48:10Z"
+    },
+    {
+      "full_name": "szl-holdings/szl-formula-ledger",
+      "private": false,
+      "archived": false,
+      "description": "Honest, machine-checked ledger of the SZL formula corpus (proof-harness + CI). Lambda = Conjecture-1, never proven.",
+      "pushed_at": "2026-07-22T03:31:12Z"
+    },
+    {
+      "full_name": "szl-holdings/szl-formulas",
+      "private": false,
+      "archived": false,
+      "description": "Canonical GitHub source for the szl-formulas Kernel Hub package (21 canonical formulas, locked-proven exactly 8). Hub is the publish mirror. Apache-2.0 \u00b7 Doctrine v11.",
+      "pushed_at": "2026-08-29T00:11:18Z"
+    },
+    {
+      "full_name": "szl-holdings/szl-governed-norm",
+      "private": false,
+      "archived": false,
+      "description": "Governed RMSNorm/LayerNorm universal kernel \u2014 correctness-verified normalization with optional SHA3-256 hash-chained provenance receipts. Mirrors HF SZLHOLDINGS/szl-governed-norm. \u039b = Conjecture 1 (advisory) \u00b7 Apache-2.0.",
+      "pushed_at": "2026-08-08T23:49:00Z"
+    },
+    {
+      "full_name": "szl-holdings/szl-govsign",
+      "private": false,
+      "archived": false,
+      "description": "Canonical GitHub source for the szl-govsign Kernel Hub package (DSSE/in-toto governance signatures). Hub is the publish mirror. Apache-2.0 \u00b7 Doctrine v11.",
+      "pushed_at": "2026-08-29T00:11:05Z"
+    },
+    {
+      "full_name": "szl-holdings/szl-gpu-bridge",
+      "private": false,
+      "archived": false,
+      "description": "Doctrine-governed training bridge: DSSE-signed job specs \u2192 owner GPU metal \u2192 signed receipts back. Fail-closed both directions.",
+      "pushed_at": "2026-08-01T18:43:58Z"
+    },
+    {
+      "full_name": "szl-holdings/szl-guardrail-receipt",
+      "private": false,
+      "archived": false,
+      "description": "Wrap any LLM guardrail (Llama-Guard / NeMo / guardrails-ai / your callable) and emit a signed, hash-chained DSSE decision receipt \u2014 aligned with governed-receipt-spec. UNSIGNED-honest fallback; never fabricates a signature, energy joule, or a \u039b 'proven'.",
+      "pushed_at": "2026-07-09T15:35:14Z"
+    },
+    {
+      "full_name": "szl-holdings/szl-holdings.github.io",
+      "private": false,
+      "archived": false,
+      "description": "SZL Holdings \u2014 cryptographic proof infrastructure. One doctrine, many organs.",
+      "pushed_at": "2026-08-28T15:38:54Z"
+    },
+    {
+      "full_name": "szl-holdings/szl-invariants",
+      "private": false,
+      "archived": false,
+      "description": "Canonical GitHub source for the szl-invariants Kernel Hub package (8 falsifiable receipt invariants). Hub is the publish mirror. Apache-2.0 \u00b7 Doctrine v11.",
+      "pushed_at": "2026-08-29T00:11:15Z"
+    },
+    {
+      "full_name": "szl-holdings/szl-kernels",
+      "private": false,
+      "archived": false,
+      "description": "Canonical source for the SZL governed-kernel suite and receipted MiniEmbed artifact",
+      "pushed_at": "2026-08-28T18:43:06Z"
+    },
+    {
+      "full_name": "szl-holdings/szl-kernels-live",
+      "private": false,
+      "archived": false,
+      "description": "Governed-kernel suite hub \u2014 one page linking every live SZL kernel hologram, with per-Space LIVE/ROADMAP status fetched from the Hugging Face API in your browser. Honest, never faked green.",
+      "pushed_at": "2026-08-18T00:24:31Z"
+    },
+    {
+      "full_name": "szl-holdings/szl-khipu",
+      "private": false,
+      "archived": false,
+      "description": "SZL KHIPU \u2014 live Python kernels and tiny trained models. Knot the run. Hash the proof. Fail closed. Doctrine v11 LOCKED. Apache-2.0.",
+      "pushed_at": "2026-08-29T00:47:08Z"
+    },
+    {
+      "full_name": "szl-holdings/szl-lake",
+      "private": false,
+      "archived": false,
+      "description": "SZL Holdings Lake \u2014 append-only DSSE receipt store (GitHub origin, HF dataset SZLHOLDINGS/szl-lake mirror). Doctrine v11 LOCKED. Live receipt infrastructure for the a11oy command platform.",
+      "pushed_at": "2026-08-29T00:49:29Z"
+    },
+    {
+      "full_name": "szl-holdings/szl-lambda-gate",
+      "private": false,
+      "archived": false,
+      "description": "\u039b (Lambda-Spine) aggregator universal kernel \u2014 weighted geometric mean over axis scores in [0,1] with an ADVISORY governance gate + A1-A4 axiom self-checks. \u039b = Conjecture 1 (advisory, uniqueness open) \u00b7 NOT proven trust. Mirrors HF SZLHOLDINGS/szl-lambda-gate \u00b7 Apache-2.0.",
+      "pushed_at": "2026-08-26T13:47:20Z"
+    },
+    {
+      "full_name": "szl-holdings/szl-maskmod",
+      "private": false,
+      "archived": false,
+      "description": "Original SZL Triton score_mod + block-sparse mask attention with receipts. FlexAttention silhouette, not a rehost. Doctrine v11, Apache-2.0.",
+      "pushed_at": "2026-08-28T18:17:30Z"
+    },
+    {
+      "full_name": "szl-holdings/szl-mesh",
+      "private": false,
+      "archived": false,
+      "description": "Doctrine-pinned CRDT mesh layered on peat \u2014 BFT wiring, 3-of-4 Khipu quorum, seven inventions beyond UDS Fleet. Doctrine v11 LOCKED (749/14/163).",
+      "pushed_at": "2026-08-26T13:49:48Z"
+    },
+    {
+      "full_name": "szl-holdings/szl-nemo",
+      "private": false,
+      "archived": false,
+      "description": "SOFTWARE/SURROGATE: doctrine rule_check for recipe conformance. Not Nemotron, not an LLM, not a CUDA kernel. joblib quarantined.",
+      "pushed_at": "2026-08-29T00:13:14Z"
+    },
+    {
+      "full_name": "szl-holdings/szl-org-health",
+      "private": true,
+      "archived": false,
+      "description": "Live org-health dashboard \u2014 real GitHub CI/security, Hugging Face Space health, and DNS/email-auth posture. Honest UNKNOWN over fabricated green.",
+      "pushed_at": "2026-08-28T15:48:31Z"
+    },
+    {
+      "full_name": "szl-holdings/szl-otel-mesh",
+      "private": false,
+      "archived": true,
+      "description": "szl-otel-mesh \u2014 UDS cross-component OTel span schemas + DSSE governance receipts onto Khipu Merkle DAG. Layer-5 observability for the SZL 5-organ mesh. Doctrine v11 LOCKED \u00b7 DOI 10.5281/zenodo.20434276 \u00b7 Apache-2.0.",
+      "pushed_at": "2026-07-17T15:11:02Z"
+    },
+    {
+      "full_name": "szl-holdings/szl-ouroboros",
+      "private": false,
+      "archived": false,
+      "description": "Canonical GitHub source for the szl-ouroboros Kernel Hub package (bounded loop-tax accounting). Hub is the publish mirror. Apache-2.0 \u00b7 Doctrine v11.",
+      "pushed_at": "2026-08-29T00:11:12Z"
+    },
+    {
+      "full_name": "szl-holdings/szl-papers",
+      "private": false,
+      "archived": false,
+      "description": "SZL Holdings academic corpus \u2014 preprints, thesis lineage, bounty problems, prior-art disclosures. Doctrine v11 LOCKED 749/14/163.",
+      "pushed_at": "2026-08-17T20:46:10Z"
+    },
+    {
+      "full_name": "szl-holdings/szl-provctl",
+      "private": false,
+      "archived": false,
+      "description": "Canonical GitHub source for the szl-provctl Kernel Hub package (in-toto/SLSA provenance controller). Hub is the publish mirror. Apache-2.0 \u00b7 Doctrine v11.",
+      "pushed_at": "2026-08-29T00:11:08Z"
+    },
+    {
+      "full_name": "szl-holdings/szl-provctl-live",
+      "private": false,
+      "archived": false,
+      "description": "Provenance-DAG verify hologram \u2014 renders a real szl-provctl in-toto v1 / SLSA v1 chain and re-hashes every SHA3-256 receipt in your browser. Honest labels, 0 runtime CDN. \u039b = Conjecture 1.",
+      "pushed_at": "2026-08-18T00:23:15Z"
+    },
+    {
+      "full_name": "szl-holdings/szl-quant",
+      "private": false,
+      "archived": false,
+      "description": "Doctrine-governed quant research engine \u2014 every advisory signal ships a DSSE-signed receipt. Paper-only. Not financial advice.",
+      "pushed_at": "2026-08-29T00:56:52Z"
+    },
+    {
+      "full_name": "szl-holdings/szl-quant-witness",
+      "private": false,
+      "archived": false,
+      "description": "Second observer for the szl-quant ledger \u2014 independent scheduled vantage point that cross-logs signed gossip observations (REPORTED, offline-replayable). Paper-only estate; not financial advice.",
+      "pushed_at": "2026-08-28T14:19:57Z"
+    },
+    {
+      "full_name": "szl-holdings/szl-receipt",
+      "private": false,
+      "archived": false,
+      "description": "Shared signed-receipt library \u2014 DSSE/ECDSA-P256, cosign-compatible, UNSIGNED-honest fallback. The one signing primitive every SZL component shares.",
+      "pushed_at": "2026-08-26T13:47:10Z"
+    },
+    {
+      "full_name": "szl-holdings/szl-receipt-attn",
+      "private": false,
+      "archived": false,
+      "description": "Original SZL Triton tiled fused attention with UnifiedReceiptChain. FlashAttention silhouette, not a rehost. Doctrine v11, \u039b=Conjecture 1, Apache-2.0.",
+      "pushed_at": "2026-08-28T16:53:24Z"
+    },
+    {
+      "full_name": "szl-holdings/szl-router",
+      "private": false,
+      "archived": false,
+      "description": "Our own unified, OpenAI-compatible LLM router (sovereign-first, honest provenance).",
+      "pushed_at": "2026-08-26T13:47:06Z"
+    },
+    {
+      "full_name": "szl-holdings/szl-serve",
+      "private": false,
+      "archived": false,
+      "description": "Canonical SZL governed serve recipe: llama.cpp/Ollama CPU honest path for Khipu GGUF, schema validation outside the weights, energy MEASURED or UNAVAILABLE, GPU ROADMAP. Not a vLLM/TGI/TRT-LLM copy. Doctrine v11, Apache-2.0.",
+      "pushed_at": "2026-08-28T16:49:33Z"
+    },
+    {
+      "full_name": "szl-holdings/szl-substrate",
+      "private": false,
+      "archived": false,
+      "description": "szl-substrate \u2014 installable shared substrate package for a11oy + killinchu. Eliminates 69-file source duplication. Pure-stdlib where possible; DSSE-signed receipts; \u039b = Conjecture 1 (advisory). SLSA L1 honest \u00b7 L2 roadmap \u00b7 Apache-2.0. Doctrine v11 LOCKED (749/14/163).",
+      "pushed_at": "2026-07-26T03:52:59Z"
+    },
+    {
+      "full_name": "szl-holdings/szl-telemetry",
+      "private": false,
+      "archived": false,
+      "description": "Daily public-API telemetry snapshots for the SZLHOLDINGS Hugging Face estate \u2014 honest counters, DERIVED deltas, no adoption claims.",
+      "pushed_at": "2026-08-28T18:48:54Z"
+    },
+    {
+      "full_name": "szl-holdings/szl-trust",
+      "private": false,
+      "archived": false,
+      "description": "SZL Holdings Public Trust Portal \u2014 Covenant Proof Standard run artifacts, deterministic replay receipts. Doctrine v11 LOCKED (749/14/163)",
+      "pushed_at": "2026-08-26T13:46:39Z"
+    },
+    {
+      "full_name": "szl-holdings/szl-uds-deployment",
+      "private": false,
+      "archived": true,
+      "description": "Live UDS governance-receipt deployment (Warhacker 2026) \u2014 k3d + uds-cli + Pepr DSSE receipt policy, cosign-verified. Doctrine v11 LOCKED (749/14/163).",
+      "pushed_at": "2026-07-01T22:05:30Z"
+    },
+    {
+      "full_name": "szl-holdings/uds-bundles",
+      "private": false,
+      "archived": true,
+      "description": "SZL UDS Zarf bundles for the two products (a11oy + killinchu) and their capability services \u2014 airgap-deployable, cosign-signed, SLSA L1+L2. Doctrine v11 LOCKED (749/14/163) \u00b7 Apache-2.0.",
+      "pushed_at": "2026-06-30T01:19:53Z"
+    },
+    {
+      "full_name": "szl-holdings/vsp-otel",
+      "private": false,
+      "archived": false,
+      "description": "\u039b-signed OpenTelemetry exporter for SZL audit fibers. Doctrine v11 LOCKED (749/14/163) \u00b7 DOI 10.5281/zenodo.20424995",
+      "pushed_at": "2026-08-26T13:49:32Z"
+    },
+    {
+      "full_name": "szl-holdings/warhacker-demo",
+      "private": false,
+      "archived": true,
+      "description": "SOVEREIGN Warhacker demo dry-run for the RTX 4060 Ti tower: one-command tower verification, GPU k3d + UDS deploy, airgap test, thermal guard, Khipu 3-of-4 kill-move. Apache-2.0. Doctrine v11 LOCKED (749/14/163).",
+      "pushed_at": "2026-07-21T03:28:30Z"
+    },
+    {
+      "full_name": "szl-holdings/yarqa",
+      "private": false,
+      "archived": false,
+      "description": "yarqa \u2014 plug-flow compartmentalization with signed provenance receipts. Converts CFD velocity fields into auditable compartmental networks. Clean-room Apache-2.0. Quechua: irrigation canal that divides flow.",
+      "pushed_at": "2026-08-28T14:13:05Z"
+    },
+    {
+      "full_name": "szl-holdings/YARQA-ATTN",
+      "private": false,
+      "archived": false,
+      "description": "KERNEL original SZL attention kernel (YARQA canal/compartment silhouette). Receipt-aware, honesty-labeled. Not a Flash/Sage/Flex clone, not a weight, not an alias of the Triton trio. Doctrine v11, \u039b=Conjecture 1, Apache-2.0.",
+      "pushed_at": "2026-08-29T00:10:22Z"
+    }
+  ]
+}
