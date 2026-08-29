@@ -4,7 +4,8 @@
 # Signed-off-by: Lutar, Stephen P. <stephenlutar2@gmail.com>
 """Command-lab fail-closed integrity kernel.
 
-Stdlib only. Real SHA-256. Advisory Λ. Energy UNAVAILABLE.
+Stdlib only. Real SHA-256. Advisory Λ.
+Energy joule MEASURED only when RAPL/NVML wraps a run. Never fabricated.
 Locked-proven stays exactly 8. Λ uniqueness is Conjecture 1 OPEN.
 proven_trust is False. Not a-11-oy.com. Not an ATO.
 """
@@ -13,6 +14,7 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+import time
 from datetime import datetime, timezone
 from typing import Any, Sequence
 
@@ -21,10 +23,23 @@ YUYAY_FLOORS = (0.95, 0.95) + (0.90,) * 11
 ZERO = "0" * 64
 CHAIN_OPS = ("anatomy.brain", "anatomy.heart", "anatomy.skeleton")
 proven_trust = False
+BURN_MIN_S = 0.05
+BURN_MAX_S = 3.0
+BURN_DEFAULT_S = 1.0
 
 
 def _sha256_hex(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def clamp_duration(duration_s: float | None) -> float:
+    try:
+        value = float(duration_s) if duration_s is not None else BURN_DEFAULT_S
+    except (TypeError, ValueError):
+        value = BURN_DEFAULT_S
+    if not math.isfinite(value):
+        value = BURN_DEFAULT_S
+    return min(max(value, BURN_MIN_S), BURN_MAX_S)
 
 
 def wgm(xs: Sequence[float], ws: Sequence[float]) -> float:
@@ -114,6 +129,37 @@ def evaluate_anatomy(*, zero_heart: bool = False, tamper_chain: bool = False, fa
     }
 
 
+def burn_kernel(*, duration_s: float = BURN_DEFAULT_S, seed: int = 11) -> dict[str, Any]:
+    """Bounded SHA-256 storm so RAPL/NVML millijoule counters can tick.
+
+    Board energy during the wrap is MEASURED. This is not isolated GPU FLOP
+    joule and not a fabricated number. Organ cycle stays advisory.
+    """
+    target = clamp_duration(duration_s)
+    digest = _sha256_hex(f"burn|{int(seed)}")
+    rounds = 0
+    t0 = time.perf_counter()
+    while time.perf_counter() - t0 < target:
+        digest = hashlib.sha256(f"{digest}|{rounds}|{seed}".encode()).hexdigest()
+        rounds += 1
+    dt = time.perf_counter() - t0
+    anatomy = evaluate_anatomy(seed=int(seed))
+    return {
+        "ok": True,
+        "kind": "sha256_storm",
+        "rounds": rounds,
+        "duration_s": dt,
+        "digest": digest,
+        "anatomy_head": anatomy["chain_head"],
+        "anatomy_verdict": anatomy["verdict"],
+        "proven_trust": False,
+        "note": (
+            "SHA-256 storm so NVML/RAPL can tick. Board energy during wrap, "
+            "not isolated GPU FLOP. Never a fabricated joule."
+        ),
+    }
+
+
 def selftest() -> dict[str, Any]:
     healthy = evaluate_anatomy(seed=11)
     assert healthy["live_count"] == 5
@@ -126,7 +172,13 @@ def selftest() -> dict[str, Any]:
     assert t["blocked"] is True
     j = evaluate_anatomy(fabricate_joule=True)
     assert j["blocked"] is True
-    return {"ok": True, "cases": 4, "healthy_head": healthy["chain_head"]}
+    burned = burn_kernel(duration_s=0.05, seed=11)
+    assert burned["ok"] is True
+    assert burned["rounds"] >= 1
+    assert burned["kind"] == "sha256_storm"
+    assert clamp_duration(99) == BURN_MAX_S
+    assert clamp_duration(-1) == BURN_MIN_S
+    return {"ok": True, "cases": 7, "healthy_head": healthy["chain_head"], "burn_rounds": burned["rounds"]}
 
 
 if __name__ == "__main__":

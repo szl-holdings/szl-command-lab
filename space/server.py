@@ -21,7 +21,7 @@ sys.path.insert(0, str(HERE / "python"))
 
 try:
     from energy import hardware, measure_run, probe
-    from kernel import evaluate_anatomy, selftest
+    from kernel import burn_kernel, clamp_duration, evaluate_anatomy, selftest
 except ImportError:
     # Immune flatten historically copied only server.py. Keep a local fallback.
     import hashlib
@@ -125,6 +125,34 @@ except ImportError:
             energy["energy_j"] = energy["inference_energy_j"]
             energy["note"] = f"RAPL delta around kernel · {dt:.4f}s"
         return result, energy
+
+    def clamp_duration(duration_s):
+        try:
+            v = float(duration_s)
+        except (TypeError, ValueError):
+            v = 1.0
+        if v != v:
+            v = 1.0
+        return min(max(v, 0.05), 3.0)
+
+    def burn_kernel(*, duration_s=1.0, seed=11):
+        target = clamp_duration(duration_s)
+        digest = _sha256_hex(f"burn|{int(seed)}")
+        rounds = 0
+        t0 = time.perf_counter()
+        while time.perf_counter() - t0 < target:
+            digest = __import__("hashlib").sha256(f"{digest}|{rounds}|{seed}".encode()).hexdigest()
+            rounds += 1
+        return {
+            "ok": True,
+            "kind": "sha256_storm",
+            "rounds": rounds,
+            "duration_s": time.perf_counter() - t0,
+            "digest": digest,
+            "proven_trust": False,
+            "note": "SHA-256 storm so NVML/RAPL can tick. Never a fabricated joule.",
+        }
+
 
     def _sha256_hex(text: str) -> str:
         return hashlib.sha256(text.encode("utf-8")).hexdigest()
@@ -344,7 +372,7 @@ a{color:var(--proof)}
 <main>
   <div class="eyebrow">SZL Holdings · Command lab · GitHub canonical · Hub operational</div>
   <h1>Holographic command body. Fail closed.</h1>
-  <p class="lede">One kernel. Ten estate surfaces. Energy channel LIVE. Joules MEASURED only from RAPL or NVML. Never a fabricated joule. Λ uniqueness is Conjecture 1 OPEN. Not a-11-oy.com. Not an ATO. Not an elevation.</p>
+  <p class="lede">One kernel. Ten estate surfaces. Energy channel LIVE. Package joule MEASURED from RAPL/NVML. Inference joule MEASURED only when a kernel is wrapped. Never fabricated. Λ uniqueness is Conjecture 1 OPEN. Not a-11-oy.com. Not an ATO. Not an elevation.</p>
   <div class="badges" id="badges"></div>
   <div class="stage" id="stage"></div>
   <div class="grid" id="metrics"></div>
@@ -353,6 +381,7 @@ a{color:var(--proof)}
     <label><input type="checkbox" id="tamper_chain"> Tamper YAWAR</label>
     <label><input type="checkbox" id="fabricate_joule"> Fabricate joule</label>
     <button id="run">Run organ cycle</button>
+    <button id="wrap" type="button">Wrap kernel 1s</button>
   </div>
   <p class="eyebrow" style="margin-top:28px">Estate recapture</p>
   <div class="surfaces" id="surfaces"></div>
@@ -395,7 +424,24 @@ async function estate(){
     return `<div class="card"><div class="k">${s.role}</div><div class="v ${cls}">${s.honesty}</div><div class="k">${s.id}</div></div>`;
   }).join('');
 }
+async function wrap(){
+  document.getElementById('out').textContent='wrapping kernel…';
+  const r=await fetch('/api/energy/inference?duration_s=1');
+  const j=await r.json();
+  const energy=j.energy||{};
+  document.getElementById('out').textContent=JSON.stringify({wrap:j.body, energy},null,2);
+  const eh=energy.honesty||'UNAVAILABLE';
+  const inf=energy.inference_energy_j;
+  document.getElementById('badges').innerHTML=[
+    ['organs','wrap'],
+    ['joule', eh],
+    ['inference J', inf==null?'none':String(inf)],
+    ['source', energy.source||'none'],
+    ['proven_trust','false'],
+  ].map(([k,v])=>`<span class="badge">${k} <b>${v}</b></span>`).join('');
+}
 document.getElementById('run').onclick=cycle;
+document.getElementById('wrap').onclick=wrap;
 cycle();
 estate();
 </script>
@@ -403,7 +449,9 @@ estate();
 </html>
 """
 
-JSON_PATHS = {"/healthz", "/readyz", "/api/energy", "/api/energy/hardware", "/api/organs/integrity", "/v1/organs/integrity", "/api/estate"}
+ENERGY_STATE = {"last_inference": None}
+
+JSON_PATHS = {"/healthz", "/readyz", "/api/energy", "/api/energy/hardware", "/api/energy/inference", "/api/organs/integrity", "/v1/organs/integrity", "/api/estate"}
 HTML_PATHS = {"/", "/index.html"}
 
 
@@ -432,7 +480,29 @@ class Handler(BaseHTTPRequestHandler):
             self._send(200, {"ok": True, "energy": probe(), "proven_trust": False, "channel": "LIVE", "space": "szl-command-lab"})
             return
         if path == "/api/energy":
-            self._send(200, probe())
+            payload = probe()
+            if ENERGY_STATE["last_inference"] is not None:
+                payload["last_inference"] = ENERGY_STATE["last_inference"]
+                wrap = (ENERGY_STATE["last_inference"] or {}).get("energy") or {}
+                if wrap.get("inference_energy_j") is not None:
+                    payload["inference_energy_j"] = wrap.get("inference_energy_j")
+                    payload["energy_j"] = wrap.get("inference_energy_j")
+                payload["note"] = (
+                    payload.get("note") or ""
+                ) + " Last wrap stored. Board package counter is not the inference joule."
+            self._send(200, payload)
+            return
+        if path == "/api/energy/inference":
+            duration = clamp_duration((qs.get("duration_s") or ["1"])[0])
+            body, energy = measure_run(lambda: burn_kernel(duration_s=duration, seed=11))
+            ENERGY_STATE["last_inference"] = {
+                "captured_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                "kind": body.get("kind"),
+                "rounds": body.get("rounds"),
+                "duration_s": energy.get("duration_s"),
+                "energy": energy,
+            }
+            self._send(200, {"ok": True, "body": body, "energy": energy, "last_inference": ENERGY_STATE["last_inference"], "proven_trust": False})
             return
         if path == "/api/energy/hardware":
             try:
