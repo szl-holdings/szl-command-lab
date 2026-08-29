@@ -29,7 +29,7 @@ tags:
 # SZL Command lab
 
 Holographic command body for the SZL estate. Five organs. SHA-256 receipts.
-Energy **channel LIVE**. Energy **joule UNAVAILABLE** until RAPL or NVML exists.
+Energy **channel LIVE**. Package joule **MEASURED** from RAPL/NVML when readable. Inference joule **MEASURED** only when a kernel is wrapped.
 Λ uniqueness is **Conjecture 1 — OPEN**. `proven_trust` is always false.
 
 GitHub is canonical. Hub is the publish mirror. This is **not** a-11-oy.com,
@@ -44,7 +44,8 @@ Stdlib HTTP on 7860. No npm.
 |---|---|
 | `GET /` | holographic body + estate recapture |
 | `GET /healthz` | energy channel LIVE, joule UNAVAILABLE without RAPL/NVML |
-| `GET /api/energy` | RAPL/NVML probe. Never a fabricated joule. |
+| `GET /api/energy` | RAPL/NVML package probe. Last wrap stored when present. Never a fabricated joule. |
+| `GET /api/energy/inference` | Wrap a 1s SHA-256 storm. Inference joule is the board delta. |
 | `GET /api/organs/integrity` | 5-organ kernel. `proven_trust` always false. |
 | `GET /api/estate` | live recapture of 10 Hub surfaces |
 | `HEAD /` | 200 |

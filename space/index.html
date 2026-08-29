@@ -37,7 +37,7 @@ a{color:var(--proof)}
 <main>
   <div class="eyebrow">SZL Holdings · Command lab · GitHub canonical · Hub operational</div>
   <h1>Holographic command body. Fail closed.</h1>
-  <p class="lede">One kernel. Ten estate surfaces. Energy channel LIVE. Joules MEASURED only from RAPL or NVML. Never a fabricated joule. Λ uniqueness is Conjecture 1 OPEN. Not a-11-oy.com. Not an ATO. Not an elevation.</p>
+  <p class="lede">One kernel. Ten estate surfaces. Energy channel LIVE. Package joule MEASURED from RAPL/NVML. Inference joule MEASURED only when a kernel is wrapped. Never fabricated. Λ uniqueness is Conjecture 1 OPEN. Not a-11-oy.com. Not an ATO. Not an elevation.</p>
   <div class="badges" id="badges"></div>
   <div class="stage" id="stage"></div>
   <div class="grid" id="metrics"></div>
@@ -46,6 +46,7 @@ a{color:var(--proof)}
     <label><input type="checkbox" id="tamper_chain"> Tamper YAWAR</label>
     <label><input type="checkbox" id="fabricate_joule"> Fabricate joule</label>
     <button id="run">Run organ cycle</button>
+    <button id="wrap" type="button">Wrap kernel 1s</button>
   </div>
   <p class="eyebrow" style="margin-top:28px">Estate recapture</p>
   <div class="surfaces" id="surfaces"></div>
@@ -88,7 +89,24 @@ async function estate(){
     return `<div class="card"><div class="k">${s.role}</div><div class="v ${cls}">${s.honesty}</div><div class="k">${s.id}</div></div>`;
   }).join('');
 }
+async function wrap(){
+  document.getElementById('out').textContent='wrapping kernel…';
+  const r=await fetch('/api/energy/inference?duration_s=1');
+  const j=await r.json();
+  const energy=j.energy||{};
+  document.getElementById('out').textContent=JSON.stringify({wrap:j.body, energy},null,2);
+  const eh=energy.honesty||'UNAVAILABLE';
+  const inf=energy.inference_energy_j;
+  document.getElementById('badges').innerHTML=[
+    ['organs','wrap'],
+    ['joule', eh],
+    ['inference J', inf==null?'none':String(inf)],
+    ['source', energy.source||'none'],
+    ['proven_trust','false'],
+  ].map(([k,v])=>`<span class="badge">${k} <b>${v}</b></span>`).join('');
+}
 document.getElementById('run').onclick=cycle;
+document.getElementById('wrap').onclick=wrap;
 cycle();
 estate();
 </script>
