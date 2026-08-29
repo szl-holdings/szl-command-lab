@@ -6,6 +6,7 @@ on:
       - "space/energy.py"
       - "space/requirements.txt"
       - ".github/workflows/energy-probe.yml"
+  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -16,8 +17,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
       - name: Install NVML bindings (no GPU expected on ubuntu-latest)
@@ -40,8 +41,3 @@ jobs:
               assert p["inference_energy_j"] is None
           print("energy-probe", p["honesty"], p.get("source"), p.get("note"))
           PY
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: energy-probe
-          path: energy-probe.json
