@@ -22,6 +22,7 @@ sys.path.insert(0, str(HERE / "python"))
 try:
     from energy import hardware, measure_run, probe
     from kernel import burn_kernel, clamp_duration, evaluate_anatomy, selftest
+    from train import gate as train_gate, toy as train_toy
 except ImportError:
     # Immune flatten historically copied only server.py. Keep a local fallback.
     import hashlib
@@ -372,7 +373,7 @@ a{color:var(--proof)}
 <main>
   <div class="eyebrow">SZL Holdings · Command lab · GitHub canonical · Hub operational</div>
   <h1>Holographic command body. Fail closed.</h1>
-  <p class="lede">One kernel. Ten estate surfaces. Energy channel LIVE. Package joule MEASURED from RAPL/NVML. Inference joule MEASURED only when a kernel is wrapped. Never fabricated. Λ uniqueness is Conjecture 1 OPEN. Not a-11-oy.com. Not an ATO. Not an elevation.</p>
+  <p class="lede">One kernel. Ten estate surfaces. Energy channel LIVE. Package joule MEASURED from RAPL/NVML. Inference joule MEASURED only when a kernel is wrapped. GPU train stays BLOCKED until CUDA and an approved job exist. Never fabricated. Λ uniqueness is Conjecture 1 OPEN. Not a-11-oy.com. Not an ATO. Not an elevation.</p>
   <div class="badges" id="badges"></div>
   <div class="stage" id="stage"></div>
   <div class="grid" id="metrics"></div>
@@ -382,6 +383,7 @@ a{color:var(--proof)}
     <label><input type="checkbox" id="fabricate_joule"> Fabricate joule</label>
     <button id="run">Run organ cycle</button>
     <button id="wrap" type="button">Wrap kernel 1s</button>
+    <button id="train" type="button">Train gate</button>
   </div>
   <p class="eyebrow" style="margin-top:28px">Estate recapture</p>
   <div class="surfaces" id="surfaces"></div>
@@ -440,8 +442,22 @@ async function wrap(){
     ['proven_trust','false'],
   ].map(([k,v])=>`<span class="badge">${k} <b>${v}</b></span>`).join('');
 }
+async function trainGate(){
+  document.getElementById('out').textContent='train gate…';
+  const r=await fetch('/api/train');
+  const j=await r.json();
+  document.getElementById('out').textContent=JSON.stringify(j,null,2);
+  document.getElementById('badges').innerHTML=[
+    ['train', j.decision||'BLOCKED'],
+    ['cuda', String(!!(j.gpu&&j.gpu.cuda_available))],
+    ['nvml', String(!!(j.gpu&&j.gpu.nvml_readable))],
+    ['approved', String(j.approved===true)],
+    ['proven_trust','false'],
+  ].map(([k,v])=>`<span class="badge">${k} <b>${v}</b></span>`).join('');
+}
 document.getElementById('run').onclick=cycle;
 document.getElementById('wrap').onclick=wrap;
+document.getElementById('train').onclick=trainGate;
 cycle();
 estate();
 </script>
@@ -450,8 +466,15 @@ estate();
 """
 
 ENERGY_STATE = {"last_inference": None}
+try:
+    train_gate  # noqa: B018
+except NameError:
+    def train_gate(*, job=None):
+        return {"ok": False, "decision": "BLOCKED", "honesty": "UNAVAILABLE", "missing": ["TRAIN_MODULE_ABSENT"], "proven_trust": False, "note": "train.py missing on this flatten. Never a fabricated train."}
+    def train_toy(*, duration_s=1.0):
+        return train_gate()
 
-JSON_PATHS = {"/healthz", "/readyz", "/api/energy", "/api/energy/hardware", "/api/energy/inference", "/api/organs/integrity", "/v1/organs/integrity", "/api/estate"}
+JSON_PATHS = {"/healthz", "/readyz", "/api/energy", "/api/energy/hardware", "/api/energy/inference", "/api/train", "/api/train/toy", "/api/organs/integrity", "/v1/organs/integrity", "/api/estate"}
 HTML_PATHS = {"/", "/index.html"}
 
 
@@ -513,6 +536,13 @@ class Handler(BaseHTTPRequestHandler):
             return
         if path == "/api/estate":
             self._send(200, recapture_estate())
+            return
+        if path == "/api/train":
+            job = (qs.get("job") or [None])[0]
+            self._send(200, train_gate(job=job))
+            return
+        if path == "/api/train/toy":
+            self._send(200, train_toy())
             return
         if path in {"/api/organs/integrity", "/v1/organs/integrity"}:
             def run():

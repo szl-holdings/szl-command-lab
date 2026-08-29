@@ -46,6 +46,7 @@ Stdlib HTTP on 7860. No npm.
 | `GET /healthz` | energy channel LIVE, joule UNAVAILABLE without RAPL/NVML |
 | `GET /api/energy` | RAPL/NVML package probe. Last wrap stored when present. Never a fabricated joule. |
 | `GET /api/energy/inference` | Wrap a 1s SHA-256 storm. Inference joule is the board delta. |
+| `GET /api/train` | GPU train gate. BLOCKED until CUDA + approved job. Never a fabricated train. |
 | `GET /api/organs/integrity` | 5-organ kernel. `proven_trust` always false. |
 | `GET /api/estate` | live recapture of 10 Hub surfaces |
 | `HEAD /` | 200 |

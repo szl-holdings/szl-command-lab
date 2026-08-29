@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import json
+import subprocess
 import time
 from pathlib import Path
 from typing import Any
@@ -63,10 +64,43 @@ def _nvml_mj() -> float | None:
         return None
 
 
+def _cuda_inventory() -> dict[str, Any]:
+    """Driver/runtime inventory. NVML readable ≠ CUDA trainable."""
+    torch_import = False
+    torch_version = None
+    cuda_available = False
+    cuda_device = None
+    nvidia_smi = None
+    try:
+        import torch  # type: ignore
+
+        torch_import = True
+        torch_version = str(torch.__version__)
+        cuda_available = bool(torch.cuda.is_available())
+        if cuda_available:
+            cuda_device = str(torch.cuda.get_device_name(0))
+    except Exception:
+        pass
+    try:
+        proc = subprocess.run(["nvidia-smi", "-L"], capture_output=True, text=True, timeout=3)
+        if proc.returncode == 0 and proc.stdout.strip():
+            nvidia_smi = proc.stdout.strip().splitlines()[0][:200]
+    except Exception:
+        pass
+    return {
+        "torch_import": torch_import,
+        "torch_version": torch_version,
+        "cuda_available": cuda_available,
+        "cuda_device": cuda_device,
+        "nvidia_smi": nvidia_smi,
+    }
+
+
 def hardware() -> dict[str, Any]:
     """Inventory only. Never a joule. RAPL/NVML readable ⇒ a later probe can MEASURE."""
     rapl = _rapl_uj()
     nv = _nvml_mj()
+    cuda = _cuda_inventory()
     return {
         "powercap_dir": POWERCAP.is_dir(),
         "rapl_readable": rapl is not None,
@@ -74,6 +108,7 @@ def hardware() -> dict[str, Any]:
         "pynvml_import": _pynvml_importable(),
         "nvml_readable": nv is not None,
         "nvml_mj": nv,
+        **cuda,
     }
 
 

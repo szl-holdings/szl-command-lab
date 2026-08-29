@@ -37,7 +37,7 @@ a{color:var(--proof)}
 <main>
   <div class="eyebrow">SZL Holdings · Command lab · GitHub canonical · Hub operational</div>
   <h1>Holographic command body. Fail closed.</h1>
-  <p class="lede">One kernel. Ten estate surfaces. Energy channel LIVE. Package joule MEASURED from RAPL/NVML. Inference joule MEASURED only when a kernel is wrapped. Never fabricated. Λ uniqueness is Conjecture 1 OPEN. Not a-11-oy.com. Not an ATO. Not an elevation.</p>
+  <p class="lede">One kernel. Ten estate surfaces. Energy channel LIVE. Package joule MEASURED from RAPL/NVML. Inference joule MEASURED only when a kernel is wrapped. GPU train stays BLOCKED until CUDA and an approved job exist. Never fabricated. Λ uniqueness is Conjecture 1 OPEN. Not a-11-oy.com. Not an ATO. Not an elevation.</p>
   <div class="badges" id="badges"></div>
   <div class="stage" id="stage"></div>
   <div class="grid" id="metrics"></div>
@@ -47,6 +47,7 @@ a{color:var(--proof)}
     <label><input type="checkbox" id="fabricate_joule"> Fabricate joule</label>
     <button id="run">Run organ cycle</button>
     <button id="wrap" type="button">Wrap kernel 1s</button>
+    <button id="train" type="button">Train gate</button>
   </div>
   <p class="eyebrow" style="margin-top:28px">Estate recapture</p>
   <div class="surfaces" id="surfaces"></div>
@@ -105,8 +106,22 @@ async function wrap(){
     ['proven_trust','false'],
   ].map(([k,v])=>`<span class="badge">${k} <b>${v}</b></span>`).join('');
 }
+async function trainGate(){
+  document.getElementById('out').textContent='train gate…';
+  const r=await fetch('/api/train');
+  const j=await r.json();
+  document.getElementById('out').textContent=JSON.stringify(j,null,2);
+  document.getElementById('badges').innerHTML=[
+    ['train', j.decision||'BLOCKED'],
+    ['cuda', String(!!(j.gpu&&j.gpu.cuda_available))],
+    ['nvml', String(!!(j.gpu&&j.gpu.nvml_readable))],
+    ['approved', String(j.approved===true)],
+    ['proven_trust','false'],
+  ].map(([k,v])=>`<span class="badge">${k} <b>${v}</b></span>`).join('');
+}
 document.getElementById('run').onclick=cycle;
 document.getElementById('wrap').onclick=wrap;
+document.getElementById('train').onclick=trainGate;
 cycle();
 estate();
 </script>
