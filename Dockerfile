@@ -1,6 +1,7 @@
 # Operational Command lab Space — stdlib Python, no npm.
-# Explicit COPY. ECR Public Python so HF builders skip Docker Hub rate limits.
-FROM public.ecr.aws/docker/library/python:3.11-slim-bookworm
+# HF factory cannot pull public.ecr.aws (exit 128). Anatomy Space already
+# runs from this GCR pin. Explicit COPY — no `COPY .`.
+FROM mirror.gcr.io/library/python:3.12-slim
 
 WORKDIR /app
 COPY python ./python
@@ -11,6 +12,7 @@ COPY LICENSE ./
 ENV HOST=0.0.0.0
 ENV PORT=7860
 ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
 
 EXPOSE 7860
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=5 \
