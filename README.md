@@ -35,6 +35,22 @@ Energy **channel LIVE**. Energy **joule UNAVAILABLE** until RAPL or NVML exists.
 GitHub is canonical. Hub is the publish mirror. This is **not** a-11-oy.com,
 **not** a11oy the flagship, **not** an ATO.
 
+## Hub runtime
+
+Flatten payload is `space/server.py` (Immune copies that file to Space root).
+Stdlib HTTP on 7860. No npm.
+
+| Path | Honesty |
+|---|---|
+| `GET /` | holographic body + estate recapture |
+| `GET /healthz` | energy channel LIVE, joule UNAVAILABLE without RAPL/NVML |
+| `GET /api/energy` | RAPL/NVML probe. Never a fabricated joule. |
+| `GET /api/organs/integrity` | 5-organ kernel. `proven_trust` always false. |
+| `GET /api/estate` | live recapture of 10 Hub surfaces |
+| `HEAD /` | 200 |
+
+Λ uniqueness stays **Conjecture 1 OPEN**. This Space is not flagship.
+
 ## What it is
 
 - Command, organs, formulas, Hub inventory, killinchu bound, ledger, verify.

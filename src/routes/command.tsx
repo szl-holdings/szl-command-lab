@@ -5,6 +5,7 @@ import { Hologram } from "@/components/hologram";
 import { KhipuLedger } from "@/components/khipu-ledger";
 import { PageHeader } from "@/components/page-header";
 import { ReceiptCard } from "@/components/receipt-card";
+import { LiveStrip } from "@/components/live-strip";
 import { Button } from "@/components/ui/button";
 import {
   DEMO_PHASES,
@@ -186,6 +187,9 @@ function Command() {
         lede="A proposal hits independent policy and the five-organ kernel before a human knots the receipt. HARD_DENY cannot be waived. Run demo walks F1 through F22 on the real silhouettes."
         claims={["DEMO", "MODELED"]}
       />
+      <div className="mt-6">
+        <LiveStrip />
+      </div>
 
       <div className="mt-6">
         <DemoRail phases={DEMO_PHASES} current={phase} done={walkDone} traces={traces} />

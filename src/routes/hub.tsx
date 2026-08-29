@@ -4,6 +4,7 @@ import { ClaimChip } from "@/components/claim-chip";
 import { PageHeader } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
 import { CAPTURED_AT, HF, HF_CLASS } from "@/lib/census";
+import { LiveStrip, useLiveEstate } from "@/components/live-strip";
 
 export const Route = createFileRoute("/hub")({ component: Hub });
 
@@ -63,17 +64,17 @@ type KernelWalk = {
 const FLAGSHIPS = [
   { id: "SZLHOLDINGS/a11oy", role: "Product command", href: "https://huggingface.co/spaces/SZLHOLDINGS/a11oy" },
   { id: "SZLHOLDINGS/killinchu", role: "Bounded vertical", href: "https://huggingface.co/spaces/SZLHOLDINGS/killinchu" },
-  { id: "SZLHOLDINGS/szl-atelier", role: "Forty-model walk", href: "https://huggingface.co/spaces/SZLHOLDINGS/szl-atelier" },
+  { id: "SZLHOLDINGS/szl-command-lab", role: "This lab (GitHub canonical)", href: "https://huggingface.co/spaces/SZLHOLDINGS/szl-command-lab" },
   { id: "SZLHOLDINGS/szl-khipu", role: "Python kernels", href: "https://huggingface.co/spaces/SZLHOLDINGS/szl-khipu" },
   { id: "SZLHOLDINGS/anatomy", role: "Living body", href: "https://huggingface.co/spaces/SZLHOLDINGS/anatomy" },
   { id: "SZLHOLDINGS/immune", role: "Defense matrix", href: "https://huggingface.co/spaces/SZLHOLDINGS/immune" },
 ] as const;
 
 const PUBLISHERS = [
+  { name: "immune#62/#63 Mirror khipu Hub", state: "success" as const, note: "Run 33255789788 SUCCESS. Published command-lab, sovereign-os, real-estate, cosmos, counsel, ayllu, experiments. Live command-lab: organs 5/5, energy channel LIVE, joule UNAVAILABLE." },
   { name: "immune deploy-hf-space", state: "success" as const, note: "Write-scoped HF_TOKEN proved. DEMO operator, not an ATO." },
-  { name: "immune#57 Mirror khipu Hub", state: "success" as const, note: "Run 33254164465. Write token authenticated. Hub already matched GitHub — empty commits skipped. Not a fabricated republish." },
-  { name: "szl-atelier#4 sidecar", state: "blocked" as const, note: "Merged. Job skipped: atelier token UNAVAILABLE this run." },
-  { name: "szl-khipu publish-hf", state: "blocked" as const, note: "Repo secret still unset. GitHub remains source. Immune sidecar is the write path that actually ran." },
+  { name: "szl-command-lab hf-deploy", state: "blocked" as const, note: "Repo secret unset. Skip is not a Hub write. Immune sidecar is the write path that ran." },
+  { name: "szl-khipu publish-hf", state: "blocked" as const, note: "Repo secret still unset. GitHub remains source." },
 ] as const;
 
 const MODEL_CLASSES = [
@@ -92,6 +93,7 @@ export function Hub() {
   const [walk, setWalk] = useState<KernelWalk | null>(null);
   const [filter, setFilter] = useState<(typeof MODEL_CLASSES)[number]>("ALL");
   const [error, setError] = useState<string | null>(null);
+  const { estate } = useLiveEstate();
 
   useEffect(() => {
     Promise.all([
@@ -129,6 +131,10 @@ export function Hub() {
         claims={["MEASURED", "UNAVAILABLE"]}
       />
 
+      <div className="mt-6">
+        <LiveStrip />
+      </div>
+
       <section className="mt-8 grid gap-px overflow-hidden rounded-xl border border-line bg-line sm:grid-cols-4">
         <Stat label="Models" value={portfolio?.counts.models ?? HF.models} />
         <Stat label="Datasets" value={portfolio?.counts.datasets ?? HF.datasets} />
@@ -139,9 +145,16 @@ export function Hub() {
       {error && <p className="mt-4 text-sm text-deny">{error}</p>}
 
       <section className="mt-8">
-        <p className="font-mono text-xs uppercase tracking-[0.16em] text-mute">Flagship Spaces</p>
+        <p className="font-mono text-xs uppercase tracking-[0.16em] text-mute">Operational Spaces · this recapture</p>
         <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-          {FLAGSHIPS.map((space) => (
+          {(estate?.surfaces ?? FLAGSHIPS.map((space) => ({
+            id: space.id.replace("SZLHOLDINGS/", ""),
+            role: space.role,
+            href: space.href,
+            honesty: "UNAVAILABLE" as const,
+            detail: "pending recapture",
+            http: null,
+          }))).map((space) => (
             <a
               key={space.id}
               href={space.href}
@@ -151,6 +164,14 @@ export function Hub() {
             >
               <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-mute">{space.role}</p>
               <p className="mt-1 font-display text-xl text-bone">{space.id.replace("SZLHOLDINGS/", "")}</p>
+              <div className="mt-3">
+                <Badge tone={space.honesty === "LIVE" ? "allow" : space.honesty === "REACHABLE" ? "hold" : "deny"}>
+                  {space.honesty}
+                </Badge>
+              </div>
+              {"detail" in space && space.detail ? (
+                <p className="mt-2 font-mono text-[11px] text-faint">{space.detail}</p>
+              ) : null}
             </a>
           ))}
         </div>
@@ -158,13 +179,18 @@ export function Hub() {
 
       <section className="mt-8 grid gap-4 lg:grid-cols-2">
         <article className="rounded-xl border border-line bg-ink-2 p-5">
-          <p className="font-mono text-xs uppercase tracking-[0.14em] text-mute">Python kernel walk · szl-khipu</p>
+          <p className="font-mono text-xs uppercase tracking-[0.14em] text-mute">Live command-lab kernel</p>
           <p className="mt-3 font-display text-2xl text-bone">
-            {walk ? `${walk.live_count ?? "—"}/5 LIVE · ${walk.reason ?? "Evaluating"}` : "Loading kernel walk"}
+            {estate
+              ? `${estate.kernel.live_count}/5 LIVE · ${estate.kernel.reason}`
+              : walk
+                ? `${walk.live_count ?? "—"}/5 LIVE · ${walk.reason ?? "Evaluating"}`
+                : "Recapturing kernel"}
           </p>
           <p className="mt-2 text-sm text-mute">
-            Locked-8 ran STRUCTURAL, not Lean PROVEN. Energy {walk?.energy ?? "UNAVAILABLE"}. Λ uniqueness{" "}
-            {walk?.conjecture_1 ?? "OPEN"}. proven_trust stays {String(walk?.proven_trust ?? false)}.
+            Locked-8 remains STRUCTURAL, not Lean PROVEN. Energy channel{" "}
+            {estate?.kernel.energy.channel ?? "UNAVAILABLE"}, joule {estate?.kernel.energy.honesty ?? walk?.energy ?? "UNAVAILABLE"}.
+            Λ uniqueness {estate?.kernel.conjecture_1 ?? walk?.conjecture_1 ?? "OPEN"}. proven_trust stays false.
           </p>
           <ul className="mt-4 flex flex-wrap gap-1">
             {(walk?.locked_formulas ?? []).map((row) => (
