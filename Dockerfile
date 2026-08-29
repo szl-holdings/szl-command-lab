@@ -1,31 +1,19 @@
-# SZL Command lab — Hugging Face Space (port 7860)
-# Explicit COPY sources: the org deployer forbids bare `COPY .`.
-FROM public.ecr.aws/docker/library/node:22-bookworm-slim@sha256:83f487e0a63425e5b4d146fb5e5be574bcbe1b7b843d3ebafdd95eaf7767a7e5
+# Operational Command lab Space — stdlib Python, no npm.
+# Explicit COPY. ECR Public Python so HF builders skip Docker Hub rate limits.
+FROM public.ecr.aws/docker/library/python:3.11-slim-bookworm
 
 WORKDIR /app
-ENV npm_config_cache=/tmp/npm-cache
-
-COPY package.json package-lock.json ./
-RUN npm ci
-
-COPY src ./src
-COPY scripts ./scripts
-COPY public ./public
-COPY server ./server
-COPY migrations ./migrations
 COPY python ./python
-COPY vite.config.ts ./
-COPY tsconfig.json ./
+COPY app.py ./
+COPY README.md ./
 COPY LICENSE ./
-COPY .dockerignore ./
 
 ENV HOST=0.0.0.0
 ENV PORT=7860
-ENV NODE_ENV=development
+ENV PYTHONUNBUFFERED=1
 
 EXPOSE 7860
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=5 \
+  CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:7860/healthz', timeout=4)"
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=5 \
-  CMD node -e "fetch('http://127.0.0.1:7860/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
-
-CMD ["node", "scripts/with-app-env.mjs", "vite", "dev", "--host", "0.0.0.0", "--port", "7860"]
+CMD ["python", "-u", "app.py"]
