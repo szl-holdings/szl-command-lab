@@ -9,7 +9,7 @@ import json
 import os
 import sys
 import time
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
@@ -27,7 +27,6 @@ except ImportError:
     import hashlib
     import math
     from datetime import datetime, timezone
-    from typing import Any, Sequence
 
     LOCKED_EIGHT = ("F1", "F4", "F7", "F11", "F12", "F18", "F19", "F22")
     YUYAY_FLOORS = (0.95, 0.95) + (0.90,) * 11
