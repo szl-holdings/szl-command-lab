@@ -34,11 +34,11 @@ export const ORIGINS = [
     note: "Grok Build SPA. DEMO HMAC receipts. Not a fourth public origin. Fold MEASURED tables into a11oy.net; keep /command and /verify off Proof.",
   },
   {
-    host: "a11oy.com",
+    host: "a-11-oy.com",
     role: "Not SZL",
     status: "FOREIGN",
     claim: "MEASURED" as const,
-    href: "https://a11oy.com",
+    href: "https://a-11-oy.com",
     note: "Cloudways storefront titled Alloy Home and Garden. Doctrine: never a11oy.com. Do not point product or proof here.",
   },
 ] as const;
