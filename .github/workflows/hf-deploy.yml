@@ -1,47 +1,48 @@
 # Copyright 2026 SZL Holdings — SPDX-License-Identifier: Apache-2.0
-name: Deploy to HuggingFace Space
+name: Hugging Face publication pipeline
 
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
+    paths:
+      - .github/workflows/hf-deploy.yml
+      - Dockerfile
+      - server.py
+      - index.html
+      - README.md
   workflow_dispatch: {}
 
 permissions:
   contents: read
+  security-events: write
 
 concurrency:
-  group: hf-deploy-${{ github.ref }}
+  group: hf-deploy-${{ github.repository }}-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
+  validate:
+    name: Validate publisher caller (no provider write)
+    if: github.event_name == 'pull_request'
+    uses: szl-holdings/.github/.github/workflows/reusable-workflow-lint.yml@c889276e51e7d954c4bba8b216f86fc7577721fa
+    with:
+      fail-on-zizmor-warning: false
+
   deploy:
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
-        with:
-          python-version: "3.12"
-      - run: pip install huggingface_hub
-      - name: Publish Space SZLHOLDINGS/szl-command-lab
-        env:
-          HF_TOKEN: ${{ secrets.HF_ORG_TOKEN || secrets.HF_TOKEN }}
-        run: |
-          python - <<'PY'
-          import os, sys
-          token = os.environ.get("HF_TOKEN") or ""
-          if not token:
-              print("HF_TOKEN UNAVAILABLE — Space publish skipped. GitHub remains the source. Not fabricated LIVE.")
-              print("::error::HF_TOKEN / HF_ORG_TOKEN is not set — Space publish cannot run. A mirror that cannot write must not report success.")
-              sys.exit(1)
-          from huggingface_hub import HfApi, create_repo
-          api = HfApi(token=token)
-          create_repo("SZLHOLDINGS/szl-command-lab", repo_type="space", space_sdk="docker", exist_ok=True, token=token)
-          api.upload_folder(
-              folder_path=".",
-              repo_id="SZLHOLDINGS/szl-command-lab",
-              repo_type="space",
-              ignore_patterns=[".git*", "node_modules/*", ".venv/*", "screenshots/*"],
-          )
-          print("published SZLHOLDINGS/szl-command-lab")
-          PY
+    name: Publish exact source and attest live state
+    if: github.event_name != 'pull_request'
+    uses: szl-holdings/.github/.github/workflows/reusable-hf-deploy.yml@c889276e51e7d954c4bba8b216f86fc7577721fa
+    with:
+      hf-repo: SZLHOLDINGS/szl-command-lab
+      ref: ${{ github.sha }}
+      dockerfile-path: Dockerfile
+      include-readme: true
+      prune: true
+      require-default-branch-tip: true
+      restart-space: true
+      wait-running: 1200
+      smoke-paths: '["/","/healthz"]'
+    secrets:
+      HF_TOKEN: ${{ secrets.HF_ORG_TOKEN || secrets.HF_ORG_TOKEN1 || secrets.HF_TOKEN || secrets.HF_WRITE_TOKEN }}
