@@ -14,7 +14,7 @@ on:
       - .github/workflows/hf-deploy.yml
       - Dockerfile
       - server.py
-      - index.html
+      - space/index.html
       - README.md
   workflow_dispatch: {}
 
@@ -57,6 +57,34 @@ jobs:
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12.10"
+
+      - name: Validate Dockerfile-derived source closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -I -P <<'PY'
+          from pathlib import Path
+          import re
+
+          root = Path('source')
+          dockerfile = root / 'Dockerfile'
+          source = root / 'space/index.html'
+          if not dockerfile.is_file():
+              raise SystemExit('Dockerfile is missing')
+          if not source.is_file() or source.stat().st_size == 0:
+              raise SystemExit('space/index.html is missing or empty')
+          text = dockerfile.read_text(encoding='utf-8')
+          pattern = re.compile(
+              r'(?m)^COPY\s+space/index\.html\s+\./index\.html\s*$'
+          )
+          if not pattern.search(text):
+              raise SystemExit(
+                  'Dockerfile must copy space/index.html to /app/index.html'
+              )
+          if re.search(r'(?m)^COPY\s+index\.html\b', text):
+              raise SystemExit('Dockerfile references nonexistent root index.html')
+          print('Dockerfile-derived source closure: PASS')
+          PY
 
       - name: Prove delegation and emit receipt
         shell: bash
