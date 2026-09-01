@@ -1,6 +1,6 @@
 # Operational Command lab Space — stdlib Python hologram, no npm.
 # GCR pin: HF builders fail public.ecr.aws with exit 128. Anatomy already runs this FROM.
-# Flatten-compatible: Hub payload is Dockerfile + server.py + index.html + README (immune mirrors space/ → root).
+# Dockerfile-derived Hub payload: server.py + space/index.html + README.
 FROM mirror.gcr.io/library/python:3.12-slim
 
 WORKDIR /app
@@ -10,7 +10,7 @@ ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 
 COPY server.py ./server.py
-COPY index.html ./index.html
+COPY space/index.html ./index.html
 
 EXPOSE 7860
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=5 \
