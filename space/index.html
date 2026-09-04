@@ -1,131 +1,1315 @@
 <!doctype html>
-<html lang="en" data-szl-holo-space-v2="szl-command-lab">
+<html lang="en" data-szl-surface="atlas-v1">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>SZL Command lab</title>
-<style>
-:root{--bg:#05070d;--void:#080c14;--panel:#0b121b;--line:#1b2734;--proof:#3af4c8;--gold:#e8c074;--cream:#eef3f6;--para:#9fb1bf;--dim:#6c7d8c;--false:#d76a6a}
-*{box-sizing:border-box}
-html,body{margin:0;background:var(--bg);color:var(--cream);font:15px/1.5 ui-sans-serif,system-ui,sans-serif;min-height:100%}
-body{background:radial-gradient(120% 90% at 50% -10%,rgba(232,192,116,.09),transparent 60%),var(--bg)}
-main{max-width:960px;margin:0 auto;padding:28px 18px 64px}
-.eyebrow{font:10.5px ui-monospace,monospace;letter-spacing:1.4px;text-transform:uppercase;color:var(--gold)}
-h1{font-size:clamp(22px,4vw,32px);margin:.2em 0 .4em}
-.lede{color:var(--para);max-width:70ch}
-.badges{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 22px}
-.badge{font:10.5px ui-monospace,monospace;padding:3px 9px;border:1px solid var(--line);border-radius:6px;color:var(--para);background:#10171f}
-.badge b{color:var(--gold)}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:18px 0}
-.card{border:1px solid var(--line);border-radius:11px;background:var(--panel);padding:14px}
-.card .k{font:10px ui-monospace,monospace;letter-spacing:.8px;text-transform:uppercase;color:var(--dim)}
-.card .v{font:22px/1.2 ui-monospace,monospace;margin-top:4px}
-.ok{color:var(--proof)} .hold{color:var(--gold)} .down{color:var(--false)}
-button{min-height:44px;padding:0 16px;border-radius:8px;border:1px solid var(--proof);background:var(--proof);color:var(--bg);font:600 12px ui-monospace,monospace;letter-spacing:.8px;text-transform:uppercase;cursor:pointer}
-.row{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
-label{font:12px ui-monospace,monospace;color:var(--para);display:flex;align-items:center;gap:6px}
-pre{overflow:auto;background:var(--void);border:1px solid var(--line);border-radius:11px;padding:12px;font:11px/1.45 ui-monospace,monospace;color:var(--cream)}
-a{color:var(--proof)}
-.stage{height:280px;border:1px solid var(--line);border-radius:14px;position:relative;background:linear-gradient(180deg,rgba(58,244,200,.05),var(--void));margin:16px 0;overflow:hidden}
-.node{position:absolute;transform:translate(-50%,-50%);border:1px solid var(--proof);border-radius:10px;padding:8px 10px;font:11px ui-monospace,monospace;background:rgba(11,18,27,.9)}
-.node.down{border-color:var(--false);color:var(--false)}
-.foot{margin-top:28px;border-top:1px solid var(--line);padding-top:14px;color:var(--dim);font:11px ui-monospace,monospace}
-.surfaces{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin-top:12px}
-</style>
-  <link rel="stylesheet" href="./szl-holo-v2.css" data-szl-holo-space-asset="style-v2" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#05070b" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="description" content="Explore the SZL governed AI estate: public systems, models, kernels, datasets, source revisions, and evidence boundaries." />
+  <meta name="keywords" content="governed AI, AI provenance, model governance, inference kernels, verifiable AI, agentic systems, SZL" />
+  <meta name="author" content="SZL Holdings" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="SZL Atlas — Governed AI Estate" />
+  <meta property="og:description" content="Systems that can explain, constrain, and verify action." />
+  <meta property="og:image" content="https://huggingface.co/spaces/SZLHOLDINGS/README/resolve/main/assets/estate-command-system.svg" />
+  <meta property="og:url" content="https://huggingface.co/spaces/SZLHOLDINGS/szl-command-lab" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="SZL Atlas — Governed AI Estate" />
+  <meta name="twitter:description" content="Explore public systems, models, kernels, datasets, and evidence." />
+  <meta name="twitter:image" content="https://huggingface.co/spaces/SZLHOLDINGS/README/resolve/main/assets/estate-command-system.svg" />
+  <link rel="canonical" href="https://huggingface.co/spaces/SZLHOLDINGS/szl-command-lab" />
+  <title>SZL Atlas — Governed AI Estate</title>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "SZL Atlas",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Web",
+    "description": "A public, evidence-first explorer for the SZL governed AI estate.",
+    "url": "https://huggingface.co/spaces/SZLHOLDINGS/szl-command-lab",
+    "codeRepository": "https://github.com/szl-holdings/szl-command-lab",
+    "author": {"@type": "Organization", "name": "SZL Holdings", "url": "https://a-11-oy.com"},
+    "license": "https://www.apache.org/licenses/LICENSE-2.0"
+  }
+  </script>
+  <style>
+    :root {
+      --void: #05070b;
+      --ink: #080c12;
+      --panel: #0c121a;
+      --panel-2: #101823;
+      --line: rgba(190, 207, 222, 0.16);
+      --line-bright: rgba(190, 207, 222, 0.34);
+      --bone: #f5f2e9;
+      --paper: #d9d4c8;
+      --muted: #9aa8b6;
+      --faint: #637181;
+      --mint: #63e6c5;
+      --blue: #5bbcff;
+      --violet: #b18cff;
+      --gold: #e3bd72;
+      --rose: #e58b91;
+      --allow: #68ddb8;
+      --hold: #dfbd78;
+      --deny: #ec8b91;
+      --shadow: 0 28px 90px rgba(0, 0, 0, 0.38);
+      --radius: 22px;
+      --serif: Iowan Old Style, Baskerville, "Times New Roman", serif;
+      --sans: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      --max: 1220px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 88px; }
+    body {
+      margin: 0;
+      min-width: 280px;
+      color: var(--bone);
+      background:
+        radial-gradient(900px 660px at 82% -10%, rgba(91, 188, 255, 0.12), transparent 70%),
+        radial-gradient(760px 560px at 8% 10%, rgba(99, 230, 197, 0.09), transparent 72%),
+        linear-gradient(180deg, #05070b 0%, #070b11 46%, #05070b 100%);
+      font: 15px/1.55 var(--sans);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      pointer-events: none;
+      opacity: 0.24;
+      background-image:
+        linear-gradient(rgba(183, 201, 218, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(183, 201, 218, 0.045) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: linear-gradient(to bottom, black 0, transparent 88%);
+    }
+
+    a { color: inherit; }
+    button, input, select { font: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    img, svg { max-width: 100%; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1, h2, h3 { text-wrap: balance; }
+    p { text-wrap: pretty; }
+
+    :focus-visible {
+      outline: 2px solid var(--mint);
+      outline-offset: 4px;
+    }
+
+    .skip {
+      position: fixed;
+      left: 16px;
+      top: -80px;
+      z-index: 100;
+      padding: 12px 16px;
+      border-radius: 10px;
+      color: var(--void);
+      background: var(--bone);
+      font-weight: 700;
+      transition: top 160ms ease;
+    }
+    .skip:focus { top: 16px; }
+
+    .shell { width: min(calc(100% - 32px), var(--max)); margin-inline: auto; }
+    .mono { font-family: var(--mono); }
+    .eyebrow {
+      margin: 0;
+      color: var(--mint);
+      font: 700 11px/1.3 var(--mono);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+    .subtle { color: var(--muted); }
+    .faint { color: var(--faint); }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      border-bottom: 1px solid rgba(190, 207, 222, 0.1);
+      background: rgba(5, 7, 11, 0.78);
+      backdrop-filter: blur(20px) saturate(130%);
+    }
+    .nav {
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 11px;
+      text-decoration: none;
+      flex: 0 0 auto;
+    }
+    .brand-mark {
+      position: relative;
+      width: 38px;
+      height: 38px;
+      border: 1px solid var(--line-bright);
+      border-radius: 11px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(145deg, rgba(99, 230, 197, 0.1), rgba(177, 140, 255, 0.05));
+      box-shadow: inset 0 0 22px rgba(91, 188, 255, 0.08);
+    }
+    .brand-mark::after {
+      content: "";
+      position: absolute;
+      inset: 7px;
+      border: 1px solid rgba(99, 230, 197, 0.34);
+      transform: rotate(45deg);
+    }
+    .brand-name { font: 700 19px/1 var(--serif); letter-spacing: 0.02em; }
+    .brand-tag { display: block; color: var(--faint); font: 9px/1.3 var(--mono); letter-spacing: 0.13em; text-transform: uppercase; }
+
+    nav ul {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    nav a.nav-link {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 12px;
+      border-radius: 10px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 13px;
+    }
+    nav a.nav-link:hover { color: var(--bone); background: rgba(255,255,255,0.035); }
+    .nav-cta {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 16px;
+      border: 1px solid rgba(99, 230, 197, 0.4);
+      border-radius: 11px;
+      color: var(--bone);
+      background: rgba(99, 230, 197, 0.08);
+      text-decoration: none;
+      font-weight: 650;
+      white-space: nowrap;
+    }
+    .nav-cta:hover { background: rgba(99, 230, 197, 0.14); border-color: rgba(99, 230, 197, 0.65); }
+    .menu-button {
+      display: none;
+      min-width: 44px;
+      min-height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      color: var(--bone);
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .hero {
+      min-height: calc(100svh - 72px);
+      display: grid;
+      grid-template-columns: minmax(0, 1.06fr) minmax(360px, 0.94fr);
+      align-items: center;
+      gap: clamp(34px, 6vw, 90px);
+      padding-block: clamp(68px, 10vw, 128px) 72px;
+    }
+    .hero-copy h1 {
+      max-width: 820px;
+      margin: 20px 0 24px;
+      font: 500 clamp(3.25rem, 8vw, 7.7rem)/0.88 var(--serif);
+      letter-spacing: -0.055em;
+    }
+    .hero-copy h1 span {
+      display: block;
+      color: transparent;
+      background: linear-gradient(100deg, var(--bone) 0%, var(--mint) 32%, var(--blue) 61%, var(--gold) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+    .lede {
+      max-width: 700px;
+      color: var(--paper);
+      font-size: clamp(1.08rem, 1.7vw, 1.36rem);
+      line-height: 1.6;
+    }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 34px; }
+    .button {
+      min-height: 48px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      padding: 0 18px;
+      border: 1px solid var(--line-bright);
+      border-radius: 12px;
+      color: var(--bone);
+      background: rgba(255,255,255,0.03);
+      text-decoration: none;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+    }
+    .button:hover { transform: translateY(-1px); border-color: rgba(99,230,197,.55); background: rgba(99,230,197,.07); }
+    .button.primary { color: #03100d; border-color: var(--mint); background: var(--mint); }
+    .button.primary:hover { background: #83f0d3; }
+    .button.ghost { border-color: transparent; color: var(--muted); }
+    .button.ghost:hover { color: var(--bone); background: rgba(255,255,255,.035); }
+    .arrow { font-size: 1.1em; }
+
+    .truth-line {
+      margin-top: 28px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--faint);
+      font: 11px/1.45 var(--mono);
+    }
+    .pulse {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--allow);
+      box-shadow: 0 0 0 0 rgba(99,230,197,.55);
+      animation: pulse 2.8s ease-out infinite;
+      flex: 0 0 auto;
+    }
+
+    .hero-orbit {
+      position: relative;
+      aspect-ratio: 1 / 1;
+      max-width: 560px;
+      justify-self: end;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 50% 50%, rgba(91,188,255,.16), transparent 18%),
+        radial-gradient(circle at 50% 50%, rgba(177,140,255,.08), transparent 52%),
+        rgba(8, 12, 18, 0.74);
+      box-shadow: var(--shadow), inset 0 0 110px rgba(91,188,255,.04);
+      isolation: isolate;
+    }
+    .hero-orbit::before,
+    .hero-orbit::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid rgba(190,207,222,.15);
+      inset: 12%;
+      transform: rotate(19deg) scaleY(.54);
+    }
+    .hero-orbit::after { inset: 21%; transform: rotate(-31deg) scaleY(.62); border-color: rgba(99,230,197,.25); }
+    .orbit-ring {
+      position: absolute;
+      inset: 8%;
+      border: 1px dashed rgba(91,188,255,.27);
+      border-radius: 50%;
+      animation: spin 42s linear infinite;
+    }
+    .orbit-ring.two { inset: 27%; animation-direction: reverse; animation-duration: 26s; border-color: rgba(227,189,114,.28); }
+    .core {
+      position: absolute;
+      inset: 34%;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      border: 1px solid rgba(245,242,233,.32);
+      background: radial-gradient(circle at 40% 35%, rgba(245,242,233,.24), rgba(91,188,255,.12) 36%, rgba(5,7,11,.9) 75%);
+      box-shadow: 0 0 60px rgba(91,188,255,.18), inset 0 0 30px rgba(99,230,197,.09);
+      text-align: center;
+    }
+    .core strong { display: block; font: 600 clamp(2rem, 5vw, 4.2rem)/1 var(--serif); letter-spacing: -.04em; }
+    .core span { color: var(--muted); font: 9px/1.4 var(--mono); letter-spacing: .16em; text-transform: uppercase; }
+    .orbit-node {
+      position: absolute;
+      width: 86px;
+      min-height: 54px;
+      padding: 9px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line-bright);
+      border-radius: 12px;
+      color: var(--paper);
+      background: rgba(10,16,24,.92);
+      box-shadow: 0 14px 40px rgba(0,0,0,.28);
+      font: 700 9px/1.35 var(--mono);
+      letter-spacing: .1em;
+      text-align: center;
+      text-transform: uppercase;
+    }
+    .orbit-node:nth-of-type(3) { top: 4%; left: 50%; transform: translateX(-50%); border-color: rgba(99,230,197,.42); }
+    .orbit-node:nth-of-type(4) { top: 26%; right: -3%; border-color: rgba(91,188,255,.42); }
+    .orbit-node:nth-of-type(5) { bottom: 11%; right: 6%; border-color: rgba(177,140,255,.42); }
+    .orbit-node:nth-of-type(6) { bottom: 4%; left: 27%; border-color: rgba(227,189,114,.42); }
+    .orbit-node:nth-of-type(7) { top: 31%; left: -5%; border-color: rgba(99,230,197,.32); }
+    .scan {
+      position: absolute;
+      inset: 4%;
+      border-radius: 50%;
+      pointer-events: none;
+      background: linear-gradient(180deg, transparent 45%, rgba(99,230,197,.08) 50%, transparent 55%);
+      animation: scan 6s ease-in-out infinite;
+      mix-blend-mode: screen;
+    }
+
+    .metric-band { border-block: 1px solid var(--line); background: rgba(10,15,22,.58); }
+    .metrics { display: grid; grid-template-columns: repeat(4, 1fr); }
+    .metric {
+      min-height: 142px;
+      padding: 28px clamp(18px, 3vw, 34px);
+      border-right: 1px solid var(--line);
+    }
+    .metric:last-child { border-right: 0; }
+    .metric-label { color: var(--muted); font: 700 10px/1.3 var(--mono); letter-spacing: .16em; text-transform: uppercase; }
+    .metric-value { margin-top: 8px; font: 500 clamp(2.5rem, 6vw, 4.4rem)/1 var(--serif); letter-spacing: -.04em; }
+    .metric-note { margin: 9px 0 0; color: var(--faint); font-size: 12px; }
+
+    section.content { padding-block: clamp(84px, 10vw, 136px); }
+    .section-head {
+      display: grid;
+      grid-template-columns: minmax(0, .8fr) minmax(280px, .55fr);
+      gap: 36px;
+      align-items: end;
+      margin-bottom: 40px;
+    }
+    .section-head h2 {
+      margin: 12px 0 0;
+      font: 500 clamp(2.5rem, 6vw, 5.4rem)/.98 var(--serif);
+      letter-spacing: -.045em;
+    }
+    .section-head p:last-child { margin: 0; color: var(--muted); font-size: 16px; }
+
+    .status-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 22px;
+      color: var(--faint);
+      font: 10px/1.45 var(--mono);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 0 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      background: rgba(255,255,255,.025);
+    }
+    .status-pill.live { color: var(--allow); border-color: rgba(99,230,197,.32); }
+    .status-pill.partial { color: var(--hold); border-color: rgba(227,189,114,.34); }
+    .status-pill.down { color: var(--deny); border-color: rgba(229,139,145,.34); }
+
+    .surface-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+    .surface-card, .asset-card, .persona, .loop-panel, .explorer, .manifest-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background:
+        radial-gradient(420px 190px at 0% 0%, rgba(91,188,255,.06), transparent 66%),
+        linear-gradient(150deg, rgba(16,24,35,.9), rgba(8,12,18,.94));
+      box-shadow: 0 20px 55px rgba(0,0,0,.2);
+    }
+    .surface-card {
+      min-height: 250px;
+      display: flex;
+      flex-direction: column;
+      padding: 22px;
+      text-decoration: none;
+      position: relative;
+      overflow: hidden;
+      transition: transform 180ms ease, border-color 180ms ease;
+    }
+    .surface-card::after {
+      content: "";
+      position: absolute;
+      width: 140px;
+      height: 140px;
+      right: -54px;
+      bottom: -54px;
+      border: 1px solid rgba(99,230,197,.16);
+      border-radius: 50%;
+      box-shadow: 0 0 0 22px rgba(91,188,255,.025), 0 0 0 44px rgba(177,140,255,.018);
+    }
+    .surface-card:hover { transform: translateY(-3px); border-color: rgba(99,230,197,.42); }
+    .surface-index { color: var(--faint); font: 10px/1 var(--mono); }
+    .surface-card h3 { margin: auto 0 8px; font: 500 2rem/1 var(--serif); letter-spacing: -.03em; }
+    .surface-card p { margin: 0; color: var(--muted); font-size: 13px; }
+    .surface-card .go { margin-top: 18px; color: var(--mint); font: 700 10px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; }
+
+    .spotlight-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .asset-card {
+      min-height: 290px;
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      text-decoration: none;
+      transition: transform 180ms ease, border-color 180ms ease;
+    }
+    .asset-card:hover { transform: translateY(-3px); border-color: rgba(91,188,255,.42); }
+    .asset-type { color: var(--blue); font: 700 10px/1.3 var(--mono); letter-spacing: .15em; text-transform: uppercase; }
+    .asset-card h3 { margin: 20px 0 11px; font: 500 2rem/1.02 var(--serif); letter-spacing: -.035em; overflow-wrap: anywhere; }
+    .asset-card .body { color: var(--muted); font-size: 13px; }
+    .asset-meta { margin-top: auto; padding-top: 24px; display: flex; flex-wrap: wrap; gap: 8px; }
+    .tiny {
+      min-height: 26px;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 8px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      color: var(--faint);
+      font: 9px/1 var(--mono);
+      letter-spacing: .05em;
+    }
+
+    .fabric {
+      position: relative;
+      overflow: hidden;
+      padding: clamp(28px, 5vw, 56px);
+      border: 1px solid var(--line);
+      border-radius: 30px;
+      background:
+        radial-gradient(650px 390px at 20% 20%, rgba(99,230,197,.08), transparent 65%),
+        radial-gradient(720px 440px at 80% 78%, rgba(177,140,255,.08), transparent 66%),
+        #080d14;
+    }
+    .fabric::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: .34;
+      background-image:
+        linear-gradient(rgba(190,207,222,.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(190,207,222,.05) 1px, transparent 1px);
+      background-size: 38px 38px;
+      mask-image: radial-gradient(circle at center, black 20%, transparent 85%);
+    }
+    .fabric > * { position: relative; }
+    .fabric-top { display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: end; }
+    .fabric h3 { margin: 12px 0 0; font: 500 clamp(2rem, 5vw, 4.2rem)/1 var(--serif); letter-spacing: -.04em; }
+    .fabric-kernels { margin-top: 36px; display: flex; flex-wrap: wrap; gap: 10px; }
+    .kernel-chip {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 0 13px;
+      border: 1px solid rgba(227,189,114,.23);
+      border-radius: 10px;
+      color: var(--paper);
+      background: rgba(227,189,114,.045);
+      text-decoration: none;
+      font: 11px/1.3 var(--mono);
+    }
+    .kernel-chip:hover { border-color: rgba(227,189,114,.5); background: rgba(227,189,114,.08); }
+    .kernel-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 12px rgba(227,189,114,.5); }
+
+    .evidence-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; }
+    .manifest-card { min-height: 230px; padding: 22px; display: flex; flex-direction: column; text-decoration: none; }
+    .manifest-card h3 { margin: 16px 0 9px; font: 500 1.75rem/1.08 var(--serif); overflow-wrap: anywhere; }
+    .manifest-card p { color: var(--muted); font-size: 13px; }
+    .manifest-card .go { margin-top: auto; color: var(--violet); font: 700 10px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; }
+
+    .loop-layout { display: grid; grid-template-columns: .88fr 1.12fr; gap: 18px; }
+    .loop-panel { padding: clamp(24px, 4vw, 40px); }
+    .loop-panel h3 { margin: 12px 0 12px; font: 500 clamp(2rem, 4vw, 3.8rem)/1 var(--serif); letter-spacing: -.04em; }
+    .controls { display: grid; gap: 10px; margin-top: 28px; }
+    .toggle {
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 14px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      color: var(--paper);
+      background: rgba(255,255,255,.02);
+      cursor: pointer;
+    }
+    .toggle input { width: 18px; height: 18px; accent-color: var(--mint); }
+    .loop-stage {
+      min-height: 510px;
+      position: relative;
+      display: grid;
+      place-items: center;
+      padding: 30px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background:
+        radial-gradient(circle at center, rgba(91,188,255,.14), transparent 24%),
+        #080d14;
+    }
+    .loop-stage::before {
+      content: "";
+      position: absolute;
+      inset: 8%;
+      border: 1px solid rgba(91,188,255,.18);
+      border-radius: 50%;
+      box-shadow: 0 0 0 42px rgba(99,230,197,.018), 0 0 0 84px rgba(177,140,255,.012);
+      animation: spin 48s linear infinite;
+    }
+    .organ-map { position: relative; z-index: 2; width: min(100%, 460px); aspect-ratio: 1; }
+    .organ-line { position: absolute; left: 50%; top: 10%; width: 1px; height: 80%; background: linear-gradient(transparent, rgba(99,230,197,.4), rgba(91,188,255,.4), transparent); }
+    .organ-node {
+      position: absolute;
+      min-width: 126px;
+      min-height: 62px;
+      display: grid;
+      place-items: center;
+      padding: 10px 12px;
+      border: 1px solid rgba(99,230,197,.35);
+      border-radius: 14px;
+      color: var(--bone);
+      background: rgba(8,13,20,.94);
+      box-shadow: 0 15px 40px rgba(0,0,0,.28), 0 0 26px rgba(99,230,197,.05);
+      text-align: center;
+    }
+    .organ-node strong { display: block; font: 700 10px/1.2 var(--mono); letter-spacing: .1em; }
+    .organ-node span { color: var(--allow); font: 700 9px/1.3 var(--mono); margin-top: 4px; }
+    .organ-node.down { border-color: rgba(236,139,145,.55); box-shadow: 0 0 30px rgba(236,139,145,.12); }
+    .organ-node.down span { color: var(--deny); }
+    .organ-node:nth-child(2) { top: 2%; left: 50%; transform: translateX(-50%); }
+    .organ-node:nth-child(3) { top: 33%; right: 0; }
+    .organ-node:nth-child(4) { bottom: 4%; left: 50%; transform: translateX(-50%); }
+    .organ-node:nth-child(5) { top: 33%; left: 0; }
+    .organ-node:nth-child(6) { top: 42%; left: 50%; transform: translateX(-50%); }
+    .loop-result {
+      position: absolute;
+      left: 20px;
+      right: 20px;
+      bottom: 18px;
+      z-index: 3;
+      min-height: 66px;
+      padding: 13px 16px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(5,7,11,.86);
+      backdrop-filter: blur(12px);
+      color: var(--muted);
+      font: 11px/1.5 var(--mono);
+    }
+    .loop-result strong { color: var(--allow); }
+    .loop-result.blocked strong { color: var(--deny); }
+
+    .persona-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; }
+    .persona { padding: 26px; min-height: 270px; }
+    .persona h3 { margin: 18px 0 12px; font: 500 2rem/1 var(--serif); }
+    .persona p { color: var(--muted); }
+    .persona a { display: inline-flex; margin-top: 18px; color: var(--mint); text-decoration: none; font: 700 10px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; }
+
+    .explorer { overflow: hidden; }
+    .explorer-toolbar {
+      padding: 20px;
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) auto auto;
+      gap: 10px;
+      border-bottom: 1px solid var(--line);
+    }
+    .search, .select {
+      min-height: 48px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      color: var(--bone);
+      background: rgba(5,7,11,.7);
+    }
+    .search { width: 100%; padding: 0 15px; }
+    .select { padding: 0 36px 0 13px; }
+    .search::placeholder { color: var(--faint); }
+    .filter-row { padding: 14px 20px; display: flex; flex-wrap: wrap; gap: 8px; border-bottom: 1px solid var(--line); }
+    .filter {
+      min-height: 38px;
+      padding: 0 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      background: transparent;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .filter[aria-pressed="true"] { color: var(--void); border-color: var(--mint); background: var(--mint); font-weight: 800; }
+    .asset-list { list-style: none; margin: 0; padding: 0; }
+    .asset-row {
+      min-height: 84px;
+      display: grid;
+      grid-template-columns: minmax(220px, 1.25fr) .42fr .42fr .7fr 36px;
+      gap: 16px;
+      align-items: center;
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(190,207,222,.08);
+      text-decoration: none;
+    }
+    .asset-row:hover { background: rgba(99,230,197,.025); }
+    .asset-row:last-child { border-bottom: 0; }
+    .asset-name { min-width: 0; }
+    .asset-name strong { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; }
+    .asset-name span { display: block; margin-top: 4px; color: var(--faint); font: 10px/1.4 var(--mono); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .asset-cell { color: var(--muted); font: 11px/1.4 var(--mono); }
+    .asset-cell b { display: block; color: var(--paper); font-size: 13px; }
+    .asset-arrow { color: var(--mint); font-size: 18px; }
+    .explorer-foot { padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-top: 1px solid var(--line); color: var(--faint); font: 10px/1.4 var(--mono); }
+
+    .closing {
+      padding-block: clamp(90px, 13vw, 170px);
+      text-align: center;
+    }
+    .closing h2 { max-width: 960px; margin: 16px auto 24px; font: 500 clamp(3rem, 8vw, 7rem)/.92 var(--serif); letter-spacing: -.055em; }
+    .closing p { max-width: 700px; margin-inline: auto; color: var(--muted); font-size: 17px; }
+    .closing .hero-actions { justify-content: center; }
+
+    footer { border-top: 1px solid var(--line); }
+    .footer {
+      min-height: 170px;
+      padding-block: 34px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 28px;
+      align-items: center;
+    }
+    .footer-links { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+    .footer-links a { min-height: 40px; display: inline-flex; align-items: center; padding: 0 10px; color: var(--muted); text-decoration: none; font-size: 12px; }
+    .footer-links a:hover { color: var(--bone); }
+
+    .skeleton {
+      position: relative;
+      overflow: hidden;
+      color: transparent !important;
+      border-color: var(--line) !important;
+      background: rgba(255,255,255,.025) !important;
+    }
+    .skeleton::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.07), transparent);
+      transform: translateX(-100%);
+      animation: shimmer 1.8s infinite;
+    }
+    .empty { padding: 42px 20px; color: var(--muted); text-align: center; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes scan { 0%,100% { transform: translateY(-22%); opacity: .35; } 50% { transform: translateY(22%); opacity: .9; } }
+    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(99,230,197,.45); } 70% { box-shadow: 0 0 0 10px rgba(99,230,197,0); } 100% { box-shadow: 0 0 0 0 rgba(99,230,197,0); } }
+    @keyframes shimmer { to { transform: translateX(100%); } }
+
+    @media (max-width: 1020px) {
+      .hero { grid-template-columns: 1fr; min-height: auto; }
+      .hero-orbit { justify-self: center; width: min(82vw, 520px); }
+      .surface-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .spotlight-grid, .evidence-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .loop-layout { grid-template-columns: 1fr; }
+      .persona-grid { grid-template-columns: 1fr; }
+      .persona { min-height: auto; }
+      nav ul { display: none; }
+      .menu-button { display: inline-grid; place-items: center; margin-left: auto; }
+      .nav-cta { display: none; }
+      header.menu-open nav ul {
+        display: grid;
+        position: absolute;
+        top: 72px;
+        left: 16px;
+        right: 16px;
+        padding: 12px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: rgba(8,12,18,.98);
+        box-shadow: var(--shadow);
+      }
+      header.menu-open nav a.nav-link { width: 100%; }
+    }
+
+    @media (max-width: 740px) {
+      .shell { width: min(calc(100% - 24px), var(--max)); }
+      .hero { padding-top: 58px; }
+      .hero-copy h1 { font-size: clamp(3rem, 17vw, 5rem); }
+      .hero-orbit { width: 90vw; max-width: calc(100vw - 30px); }
+      .orbit-node { width: 72px; min-height: 46px; font-size: 8px; }
+      .metrics { grid-template-columns: repeat(2, 1fr); }
+      .metric:nth-child(2) { border-right: 0; }
+      .metric:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+      .section-head { grid-template-columns: 1fr; }
+      .surface-grid, .spotlight-grid, .evidence-grid { grid-template-columns: 1fr; }
+      .fabric-top { grid-template-columns: 1fr; }
+      .explorer-toolbar { grid-template-columns: 1fr; }
+      .asset-row { grid-template-columns: minmax(0,1fr) auto; gap: 10px; }
+      .asset-row .asset-cell:nth-of-type(2), .asset-row .asset-cell:nth-of-type(3), .asset-row .asset-cell:nth-of-type(4) { display: none; }
+      .footer { grid-template-columns: 1fr; }
+      .footer-links { justify-content: flex-start; }
+      .loop-stage { min-height: 430px; padding: 18px; }
+      .organ-node { min-width: 104px; min-height: 56px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+  </style>
 </head>
 <body>
-<main>
-  <div class="eyebrow">SZL Holdings · Command lab · GitHub canonical · Hub operational</div>
-  <h1>Holographic command body. Fail closed.</h1>
-  <p class="lede">One kernel. Ten estate surfaces. Energy channel LIVE. Package joule MEASURED from RAPL/NVML. Inference joule MEASURED only when a kernel is wrapped. GPU train stays BLOCKED until CUDA and an approved job exist. Never fabricated. Λ uniqueness is Conjecture 1 OPEN. Not a-11-oy.com. Not an ATO. Not an elevation.</p>
-  <div class="badges" id="badges"></div>
-  <div class="stage" id="stage"></div>
-  <div class="grid" id="metrics"></div>
-  <div class="row">
-    <label><input type="checkbox" id="zero_heart"> Zero Yuyay</label>
-    <label><input type="checkbox" id="tamper_chain"> Tamper YAWAR</label>
-    <label><input type="checkbox" id="fabricate_joule"> Fabricate joule</label>
-    <button id="run">Run organ cycle</button>
-    <button id="wrap" type="button">Wrap kernel 1s</button>
-    <button id="train" type="button">Train gate</button>
-  </div>
-  <p class="eyebrow" style="margin-top:28px">Estate recapture</p>
-  <div class="surfaces" id="surfaces"></div>
-  <pre id="out">loading…</pre>
-  <p class="foot">Source <a href="https://github.com/szl-holdings/szl-command-lab">szl-holdings/szl-command-lab</a> · product <a href="https://a-11-oy.com">a-11-oy.com</a> · proof <a href="https://a11oy.net">a11oy.net</a></p>
-</main>
-<script>
-const slots={BRAIN:['18%','50%'],HEART:['38%','50%'],CIRCULATORY:['58%','50%'],NERVOUS:['58%','22%'],SKELETON:['82%','50%']};
-async function cycle(){
-  const q=new URLSearchParams({
-    zero_heart: document.getElementById('zero_heart').checked? '1':'0',
-    tamper_chain: document.getElementById('tamper_chain').checked? '1':'0',
-    fabricate_joule: document.getElementById('fabricate_joule').checked? '1':'0',
-  });
-  const r=await fetch('/api/organs/integrity?'+q);
-  const j=await r.json();
-  const body=j.body||j;
-  const energy=j.energy||{};
-  document.getElementById('out').textContent=JSON.stringify({verdict:body.verdict, live:body.live_count, energy, reason:body.reason, head:body.chain_head},null,2);
-  const eh=energy.honesty||'UNAVAILABLE';
-  const ch=energy.channel||'LIVE';
-  document.getElementById('badges').innerHTML=[
-    ['organs', (body.live_count||0)+'/5'],
-    ['energy channel', ch],
-    ['joule', eh],
-    ['Λ', body.conjecture_1||'OPEN'],
-    ['proven_trust', String(body.proven_trust===true)],
-  ].map(([k,v])=>`<span class="badge">${k} <b>${v}</b></span>`).join('');
-  document.getElementById('metrics').innerHTML=(body.organs||[]).map(o=>`<div class="card"><div class="k">${o.name}</div><div class="v ${o.status==='DOWN'?'down':o.honesty==='UNAVAILABLE'?'hold':'ok'}">${o.status}</div></div>`).join('');
-  document.getElementById('stage').innerHTML=(body.organs||[]).map(o=>{
-    const [t,l]=slots[o.name]||['50%','50%'];
-    return `<div class="node ${o.status==='DOWN'?'down':''}" style="top:${t};left:${l}">${o.name}<br>${o.status}</div>`;
-  }).join('');
-}
-async function estate(){
-  const r=await fetch('/api/estate');
-  const j=await r.json();
-  document.getElementById('surfaces').innerHTML=(j.surfaces||[]).map(s=>{
-    const cls=s.honesty==='LIVE'?'ok':s.honesty==='REACHABLE'?'hold':'down';
-    return `<div class="card"><div class="k">${s.role}</div><div class="v ${cls}">${s.honesty}</div><div class="k">${s.id}</div></div>`;
-  }).join('');
-}
-async function wrap(){
-  document.getElementById('out').textContent='wrapping kernel…';
-  const r=await fetch('/api/energy/inference?duration_s=1');
-  const j=await r.json();
-  const energy=j.energy||{};
-  document.getElementById('out').textContent=JSON.stringify({wrap:j.body, energy},null,2);
-  const eh=energy.honesty||'UNAVAILABLE';
-  const inf=energy.inference_energy_j;
-  document.getElementById('badges').innerHTML=[
-    ['organs','wrap'],
-    ['joule', eh],
-    ['inference J', inf==null?'none':String(inf)],
-    ['source', energy.source||'none'],
-    ['proven_trust','false'],
-  ].map(([k,v])=>`<span class="badge">${k} <b>${v}</b></span>`).join('');
-}
-async function trainGate(){
-  document.getElementById('out').textContent='train gate…';
-  const r=await fetch('/api/train');
-  const j=await r.json();
-  document.getElementById('out').textContent=JSON.stringify(j,null,2);
-  document.getElementById('badges').innerHTML=[
-    ['train', j.decision||'BLOCKED'],
-    ['cuda', String(!!(j.gpu&&j.gpu.cuda_available))],
-    ['nvml', String(!!(j.gpu&&j.gpu.nvml_readable))],
-    ['approved', String(j.approved===true)],
-    ['proven_trust','false'],
-  ].map(([k,v])=>`<span class="badge">${k} <b>${v}</b></span>`).join('');
-}
-document.getElementById('run').onclick=cycle;
-document.getElementById('wrap').onclick=wrap;
-document.getElementById('train').onclick=trainGate;
-cycle();
-estate();
-</script>
-  <script src="./szl-holo-v2.js" defer data-szl-holo-space-asset="script-v2"></script>
+  <a class="skip" href="#main">Skip to content</a>
+  <header id="site-header">
+    <div class="shell nav">
+      <a class="brand" href="#top" aria-label="SZL Atlas home">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span><span class="brand-name">SZL Atlas</span><span class="brand-tag">Governed AI estate</span></span>
+      </a>
+      <nav aria-label="Primary navigation">
+        <ul id="nav-list">
+          <li><a class="nav-link" href="#systems">Systems</a></li>
+          <li><a class="nav-link" href="#models">Models</a></li>
+          <li><a class="nav-link" href="#kernels">Kernels</a></li>
+          <li><a class="nav-link" href="#evidence">Evidence</a></li>
+          <li><a class="nav-link" href="#explore">Explore all</a></li>
+        </ul>
+      </nav>
+      <a class="nav-cta" href="https://a-11-oy.com" target="_blank" rel="noreferrer">Enter A11oy ↗</a>
+      <button class="menu-button" id="menu-button" type="button" aria-expanded="false" aria-controls="nav-list" aria-label="Open navigation">☰</button>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="shell hero" id="top">
+      <div class="hero-copy">
+        <p class="eyebrow">Control before action · evidence after</p>
+        <h1>Governed intelligence.<span>Portable evidence.</span></h1>
+        <p class="lede">One public atlas for the systems, models, kernels, and evidence behind SZL. Every artifact gets a route to source. Every consequential claim gets a boundary. Every action is designed to leave a receipt.</p>
+        <div class="hero-actions">
+          <a class="button primary" href="https://a-11-oy.com" target="_blank" rel="noreferrer">Enter the product <span class="arrow">↗</span></a>
+          <a class="button" href="#explore">Explore the estate <span class="arrow">↓</span></a>
+          <a class="button ghost" href="https://a11oy.net" target="_blank" rel="noreferrer">Inspect evidence ↗</a>
+        </div>
+        <div class="truth-line"><span class="pulse" aria-hidden="true"></span><span id="capture-line">Recapturing the public Hub estate…</span></div>
+      </div>
+      <div class="hero-orbit" aria-label="SZL governed command fabric visualization">
+        <div class="orbit-ring"></div>
+        <div class="orbit-ring two"></div>
+        <div class="core"><div><strong>SZL</strong><span>reason ↔ reality</span></div></div>
+        <div class="orbit-node">Models<br />propose</div>
+        <div class="orbit-node">Policy<br />bounds</div>
+        <div class="orbit-node">Humans<br />bind</div>
+        <div class="orbit-node">Receipts<br />persist</div>
+        <div class="orbit-node">Evidence<br />verifies</div>
+        <div class="scan"></div>
+      </div>
+    </section>
+
+    <div class="metric-band" aria-label="Live public asset counts">
+      <div class="shell metrics">
+        <div class="metric"><div class="metric-label">Models</div><div class="metric-value" id="count-models">—</div><p class="metric-note">Published model artifacts</p></div>
+        <div class="metric"><div class="metric-label">Kernels</div><div class="metric-value" id="count-kernels">—</div><p class="metric-note">First-class compute primitives</p></div>
+        <div class="metric"><div class="metric-label">Datasets</div><div class="metric-value" id="count-datasets">—</div><p class="metric-note">Evidence and evaluation assets</p></div>
+        <div class="metric"><div class="metric-label">Spaces</div><div class="metric-value" id="count-spaces">—</div><p class="metric-note">Interactive public surfaces</p></div>
+      </div>
+    </div>
+
+    <section class="shell content" id="systems">
+      <div class="section-head">
+        <div><p class="eyebrow">Flagship command surfaces</p><h2>Products with a point of view.</h2></div>
+        <p>The model proposes. Independent policy decides. A person binds consequential action. Source, runtime, and evidence remain separate so reachability never masquerades as readiness.</p>
+      </div>
+      <div class="status-row"><span class="status-pill" id="estate-state">Recapturing runtime</span><span id="estate-time">Live probes are bounded and cached.</span></div>
+      <div class="surface-grid" id="surface-grid" aria-live="polite">
+        <div class="surface-card skeleton">Loading</div><div class="surface-card skeleton">Loading</div><div class="surface-card skeleton">Loading</div><div class="surface-card skeleton">Loading</div>
+      </div>
+    </section>
+
+    <section class="shell content" id="models">
+      <div class="section-head">
+        <div><p class="eyebrow">Model constellation</p><h2>Small models. Explicit jobs.</h2></div>
+        <p>A model card is not a performance claim. The Atlas foregrounds intended roles, public usage signals, lineage links, and the exact artifact page where evaluation and limitations belong.</p>
+      </div>
+      <div class="spotlight-grid" id="model-spotlights" aria-live="polite">
+        <div class="asset-card skeleton">Loading</div><div class="asset-card skeleton">Loading</div><div class="asset-card skeleton">Loading</div>
+      </div>
+    </section>
+
+    <section class="shell content" id="kernels">
+      <div class="fabric">
+        <div class="fabric-top">
+          <div><p class="eyebrow">Kernel fabric</p><h3>Governance at the operation layer.</h3></div>
+          <a class="button" href="https://huggingface.co/SZLHOLDINGS/kernels" target="_blank" rel="noreferrer">Open Kernel Hub ↗</a>
+        </div>
+        <p class="subtle" style="max-width:760px;margin-top:18px">Portable compute primitives sit below the product surface. The Atlas lists first-class Kernel Hub repositories when the provider exposes them and labels inferred compatibility cards separately.</p>
+        <div class="fabric-kernels" id="kernel-list" aria-live="polite"><span class="kernel-chip skeleton">Recapturing kernels</span></div>
+      </div>
+    </section>
+
+    <section class="shell content" id="evidence">
+      <div class="section-head">
+        <div><p class="eyebrow">Evidence library</p><h2>Proof before pitch.</h2></div>
+        <p>Corpora, benchmark fixtures, formal artifacts, model bills of materials, and admitted public data belong in inspectable repositories—not buried inside a marketing claim.</p>
+      </div>
+      <div class="evidence-grid" id="evidence-grid" aria-live="polite">
+        <div class="manifest-card skeleton">Loading</div><div class="manifest-card skeleton">Loading</div><div class="manifest-card skeleton">Loading</div>
+      </div>
+    </section>
+
+    <section class="shell content" id="loop">
+      <div class="section-head">
+        <div><p class="eyebrow">Interactive governed loop</p><h2>Break a claim. Watch the body stop.</h2></div>
+        <p>This bounded demonstration is deliberately simple: zero an advisory axis, tamper with a chain, or request a fabricated joule. The system refuses to convert missing evidence into authority.</p>
+      </div>
+      <div class="loop-layout">
+        <div class="loop-panel">
+          <p class="eyebrow">Run the anatomy</p>
+          <h3>Five organs. No self-authorization.</h3>
+          <p class="subtle">A healthy cycle remains advisory. Any failed organ blocks the loop. Lambda uniqueness remains Conjecture 1; the formula never grants permission.</p>
+          <div class="controls">
+            <label class="toggle"><input type="checkbox" id="zero-heart" />Zero one Lambda input</label>
+            <label class="toggle"><input type="checkbox" id="tamper-chain" />Tamper with the receipt chain</label>
+            <label class="toggle"><input type="checkbox" id="fabricate-joule" />Request a fabricated energy value</label>
+            <button class="button primary" id="run-loop" type="button">Run governed cycle</button>
+          </div>
+          <p class="faint mono" style="margin-top:18px;font-size:10px">Demo integrity is deterministic. Production authorization, safety, and compliance require their own evidence and operators.</p>
+        </div>
+        <div class="loop-stage">
+          <div class="organ-map" id="organ-map">
+            <div class="organ-line"></div>
+            <div class="organ-node"><div><strong>BRAIN</strong><span>WAITING</span></div></div>
+            <div class="organ-node"><div><strong>HEART</strong><span>WAITING</span></div></div>
+            <div class="organ-node"><div><strong>SKELETON</strong><span>WAITING</span></div></div>
+            <div class="organ-node"><div><strong>NERVOUS</strong><span>WAITING</span></div></div>
+            <div class="organ-node"><div><strong>CIRCULATORY</strong><span>WAITING</span></div></div>
+          </div>
+          <div class="loop-result" id="loop-result"><strong>READY</strong> · Run a cycle to inspect the bounded decision path.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="shell content" id="paths">
+      <div class="section-head">
+        <div><p class="eyebrow">Three paths in</p><h2>Understand. Build. Verify.</h2></div>
+        <p>A serious technical estate needs more than one homepage. Different readers should reach the product, source, and proof without decoding the organization chart.</p>
+      </div>
+      <div class="persona-grid">
+        <article class="persona"><p class="eyebrow">Decision makers</p><h3>Understand the outcome.</h3><p>Start with the product, the operating boundary, and the problem each system is built to resolve.</p><a href="https://a-11-oy.com" target="_blank" rel="noreferrer">Enter A11oy ↗</a></article>
+        <article class="persona"><p class="eyebrow">Builders</p><h3>Read the source.</h3><p>Inspect repositories, contracts, tests, kernels, quick starts, and exact artifact revisions before integration.</p><a href="https://github.com/szl-holdings" target="_blank" rel="noreferrer">Open GitHub ↗</a></article>
+        <article class="persona"><p class="eyebrow">Reviewers</p><h3>Challenge the evidence.</h3><p>Follow receipts, limitations, provenance, evaluation records, and honest unavailable states.</p><a href="https://a11oy.net" target="_blank" rel="noreferrer">Inspect evidence ↗</a></article>
+      </div>
+    </section>
+
+    <section class="shell content" id="explore">
+      <div class="section-head">
+        <div><p class="eyebrow">Complete public estate</p><h2>Every listed artifact. One search.</h2></div>
+        <p>The explorer is generated from the live, unauthenticated Hugging Face organization inventory. It does not expose private assets and does not invent metadata when the provider is unavailable.</p>
+      </div>
+      <div class="explorer">
+        <div class="explorer-toolbar">
+          <label><span class="sr-only">Search public assets</span><input class="search" id="asset-search" type="search" placeholder="Search models, kernels, datasets, Spaces, tags…" autocomplete="off" /></label>
+          <label><span class="sr-only">Sort public assets</span><select class="select" id="asset-sort"><option value="downloads">Most downloaded</option><option value="recent">Recently updated</option><option value="likes">Most liked</option><option value="name">Name A–Z</option></select></label>
+          <button class="button" id="refresh-catalog" type="button">Refresh</button>
+        </div>
+        <div class="filter-row" role="group" aria-label="Filter by artifact type">
+          <button class="filter" data-filter="all" aria-pressed="true" type="button">All</button>
+          <button class="filter" data-filter="model" aria-pressed="false" type="button">Models</button>
+          <button class="filter" data-filter="kernel" aria-pressed="false" type="button">Kernels</button>
+          <button class="filter" data-filter="dataset" aria-pressed="false" type="button">Datasets</button>
+          <button class="filter" data-filter="space" aria-pressed="false" type="button">Spaces</button>
+        </div>
+        <ul class="asset-list" id="asset-list"><li class="empty">Recapturing the public estate…</li></ul>
+        <div class="explorer-foot"><span id="asset-summary">0 assets shown</span><button class="button ghost" id="load-more" type="button">Show more</button></div>
+      </div>
+    </section>
+
+    <section class="shell closing">
+      <p class="eyebrow">The differentiation</p>
+      <h2>Autonomy, under authority.</h2>
+      <p>SZL is building an evidence-bearing command fabric: models can propose, systems can execute within bounds, and reviewers can reconstruct what happened. Visibility can be engineered. Reputation must still be earned. Commercial outcomes remain the result of product value, adoption, distribution, and execution.</p>
+      <div class="hero-actions">
+        <a class="button primary" href="https://a-11-oy.com" target="_blank" rel="noreferrer">See the product ↗</a>
+        <a class="button" href="https://huggingface.co/SZLHOLDINGS" target="_blank" rel="noreferrer">Browse Hugging Face ↗</a>
+        <a class="button ghost" href="https://github.com/szl-holdings" target="_blank" rel="noreferrer">Audit source ↗</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="shell footer">
+      <div><a class="brand" href="#top"><span class="brand-mark" aria-hidden="true"></span><span><span class="brand-name">SZL Atlas</span><span class="brand-tag">Control · evidence · outcomes</span></span></a><p class="faint" style="max-width:620px;margin:18px 0 0;font-size:12px">Public listing and HTTP reachability do not establish benchmark superiority, production authorization, regulatory approval, customer adoption, or investment performance. Apache-2.0.</p><p class="faint mono" id="build-line" style="margin:8px 0 0;font-size:9px">Source revision: recapturing</p></div>
+      <div class="footer-links"><a href="https://a-11-oy.com" target="_blank" rel="noreferrer">Product</a><a href="https://a11oy.net" target="_blank" rel="noreferrer">Evidence</a><a href="https://github.com/szl-holdings/szl-command-lab" target="_blank" rel="noreferrer">Source</a><a href="https://huggingface.co/SZLHOLDINGS" target="_blank" rel="noreferrer">Hub</a></div>
+    </div>
+  </footer>
+
+  <script>
+    "use strict";
+
+    const state = {
+      catalog: null,
+      estate: null,
+      filter: "all",
+      query: "",
+      sort: "downloads",
+      limit: 24,
+    };
+
+    const FLAGSHIPS = [
+      { slug: "a11oy", title: "A11oy", index: "01", role: "Governed decision and execution fabric" },
+      { slug: "killinchu", title: "Killinchu", index: "02", role: "Defense and maritime decision intelligence" },
+      { slug: "lyte", title: "Lyte", index: "03", role: "Business observability and operational command" },
+      { slug: "sentra", title: "Sentra", index: "04", role: "Cyber defense intelligence" },
+      { slug: "terra", title: "Terra", index: "05", role: "Real-estate intelligence" },
+      { slug: "finance", title: "PURIQ Finance", index: "06", role: "Financial intelligence and evidence" },
+      { slug: "counsel", title: "PRISM Counsel", index: "07", role: "Legal matter intelligence" },
+      { slug: "anatomy", title: "Living Anatomy", index: "08", role: "The visible organ map of the second brain" },
+    ];
+
+    const MODEL_SPOTLIGHTS = [
+      { match: ["szl-khipu-1.5b"], label: "Compact reasoning model", body: "The Khipu family is the compact model layer for governed reasoning experiments. Lineage and evaluation remain artifact-specific." },
+      { match: ["receiptagent"], label: "Receipt-native agent", body: "A compact model experiment focused on structured evidence, receipt generation, and bounded downstream use." },
+      { match: ["szl-nemo"], label: "Inference research", body: "The Nemo line is a governed inference research surface, not a claim of equivalence to any external model family." },
+      { match: ["a11oy-mini"], label: "Portable derivative", body: "A smaller A11oy-aligned artifact intended for constrained experimentation and transparent deployment boundaries." },
+      { match: ["chaski"], label: "Routing model", body: "A compact courier layer for routing, classification, and evidence-aware orchestration experiments." },
+      { match: ["tinykhipu", "tiny-khipu"], label: "Edge research", body: "A small-footprint Khipu experiment for edge and local execution constraints." },
+    ];
+
+    const DATASET_SPOTLIGHTS = [
+      { match: ["szl-lake"], body: "Admitted public evidence and data artifacts with explicit freshness and source limits." },
+      { match: ["verifiable-corpus"], body: "Corpus material organized around checkable claims, source lineage, and bounded use." },
+      { match: ["lean-proofs"], body: "Formal proof artifacts and machine-checkable mathematical boundaries." },
+      { match: ["canonical-formulas"], body: "Canonical formula records separated from empirical performance claims." },
+      { match: ["k-verify", "benchmark"], body: "Evaluation fixtures for verification behavior and reproducible comparisons." },
+      { match: ["model-bom", "model-bill"], body: "Model bill-of-materials records for dependencies, lineage, and review." },
+    ];
+
+    const $ = (selector, root = document) => root.querySelector(selector);
+    const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
+
+    function el(tag, attrs = {}, children = []) {
+      const node = document.createElement(tag);
+      Object.entries(attrs).forEach(([key, value]) => {
+        if (value === null || value === undefined) return;
+        if (key === "class") node.className = value;
+        else if (key === "text") node.textContent = String(value);
+        else if (key.startsWith("aria-")) node.setAttribute(key, String(value));
+        else node.setAttribute(key, String(value));
+      });
+      const items = Array.isArray(children) ? children : [children];
+      items.forEach((child) => {
+        if (child === null || child === undefined) return;
+        node.append(child instanceof Node ? child : document.createTextNode(String(child)));
+      });
+      return node;
+    }
+
+    function compactNumber(value) {
+      const n = Number(value || 0);
+      if (!Number.isFinite(n)) return "0";
+      return new Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 }).format(n);
+    }
+
+    function safeDate(value) {
+      if (!value) return "date unavailable";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return "date unavailable";
+      return new Intl.DateTimeFormat("en", { year: "numeric", month: "short", day: "numeric" }).format(date);
+    }
+
+    function assetBySlug(slug, type) {
+      const assets = state.catalog?.assets || [];
+      const lower = slug.toLowerCase();
+      return assets.find((asset) => asset.type === type && asset.slug.toLowerCase() === lower)
+        || assets.find((asset) => asset.type === type && asset.slug.toLowerCase().includes(lower));
+    }
+
+    function matchAsset(matches, type) {
+      const assets = state.catalog?.assets || [];
+      return assets.find((asset) => asset.type === type && matches.some((needle) => asset.slug.toLowerCase().includes(needle)));
+    }
+
+    function renderCounts() {
+      const counts = state.catalog?.counts || {};
+      ["models", "kernels", "datasets", "spaces"].forEach((name) => {
+        const target = $(`#count-${name}`);
+        target.textContent = Number.isFinite(Number(counts[name])) ? String(counts[name]) : "—";
+      });
+      const line = $("#capture-line");
+      if (!state.catalog) {
+        line.textContent = "Public Hub inventory unavailable; no count was inferred.";
+        return;
+      }
+      const status = state.catalog.state.replaceAll("_", " ");
+      line.textContent = `${status} · ${state.catalog.counts.assets || 0} public records · captured ${safeDate(state.catalog.captured_at)}`;
+    }
+
+    function renderSurfaces() {
+      const grid = $("#surface-grid");
+      grid.replaceChildren();
+      const statusMap = new Map((state.estate?.surfaces || []).map((surface) => [surface.id.toLowerCase(), surface]));
+      FLAGSHIPS.forEach((item) => {
+        const asset = assetBySlug(item.slug, "space");
+        const runtime = statusMap.get(item.slug.toLowerCase());
+        const honesty = runtime?.honesty || (asset ? "LISTED" : "UNAVAILABLE");
+        const href = asset?.href || runtime?.href || `https://huggingface.co/spaces/SZLHOLDINGS/${item.slug}`;
+        const card = el("a", { class: "surface-card", href, target: "_blank", rel: "noreferrer" }, [
+          el("div", { class: "surface-index", text: `${item.index} / ${honesty}` }),
+          el("h3", { text: item.title }),
+          el("p", { text: item.role }),
+          el("span", { class: "go", text: runtime?.detail || (asset ? "Open public Space ↗" : "Runtime not asserted ↗") }),
+        ]);
+        grid.append(card);
+      });
+      const estateState = $("#estate-state");
+      const live = state.estate?.live_surfaces ?? 0;
+      const reachable = state.estate?.reachable_surfaces ?? 0;
+      estateState.textContent = state.estate ? `${live} live · ${reachable} reachable` : "Runtime unavailable";
+      estateState.className = `status-pill ${state.estate ? "live" : "down"}`;
+      $("#estate-time").textContent = state.estate ? `Bounded probe captured ${safeDate(state.estate.captured_at)}. HTTP 200 remains reachability only.` : "No runtime state was fabricated.";
+    }
+
+    function renderModelSpotlights() {
+      const grid = $("#model-spotlights");
+      grid.replaceChildren();
+      const chosen = [];
+      MODEL_SPOTLIGHTS.forEach((spec) => {
+        const asset = matchAsset(spec.match, "model");
+        if (asset && !chosen.some((entry) => entry.id === asset.id)) chosen.push({ asset, spec });
+      });
+      if (chosen.length < 6) {
+        (state.catalog?.assets || []).filter((asset) => asset.type === "model").forEach((asset) => {
+          if (chosen.length < 6 && !chosen.some((entry) => entry.asset.id === asset.id)) {
+            chosen.push({ asset, spec: { label: asset.pipeline || "Published model", body: "Open the model card for intended use, lineage, evaluation, and limitations." } });
+          }
+        });
+      }
+      if (!chosen.length) {
+        grid.append(el("p", { class: "empty", text: "Model inventory is unavailable; the Atlas did not invent a spotlight." }));
+        return;
+      }
+      chosen.slice(0, 6).forEach(({ asset, spec }) => {
+        const meta = [
+          el("span", { class: "tiny", text: `${compactNumber(asset.downloads)} downloads` }),
+          el("span", { class: "tiny", text: `${compactNumber(asset.likes)} likes` }),
+          el("span", { class: "tiny", text: safeDate(asset.last_modified) }),
+        ];
+        grid.append(el("a", { class: "asset-card", href: asset.href, target: "_blank", rel: "noreferrer" }, [
+          el("div", { class: "asset-type", text: spec.label }),
+          el("h3", { text: asset.slug }),
+          el("p", { class: "body", text: spec.body }),
+          el("div", { class: "asset-meta" }, meta),
+        ]));
+      });
+    }
+
+    function renderKernels() {
+      const target = $("#kernel-list");
+      target.replaceChildren();
+      const kernels = (state.catalog?.assets || []).filter((asset) => asset.type === "kernel").slice(0, 24);
+      if (!kernels.length) {
+        target.append(el("span", { class: "kernel-chip", text: "Kernel listing unavailable · open the Kernel Hub" }));
+        return;
+      }
+      kernels.forEach((asset) => {
+        target.append(el("a", { class: "kernel-chip", href: asset.href, target: "_blank", rel: "noreferrer" }, [
+          el("span", { class: "kernel-dot", "aria-hidden": "true" }),
+          el("span", { text: asset.slug }),
+        ]));
+      });
+    }
+
+    function renderEvidence() {
+      const grid = $("#evidence-grid");
+      grid.replaceChildren();
+      const chosen = [];
+      DATASET_SPOTLIGHTS.forEach((spec) => {
+        const asset = matchAsset(spec.match, "dataset");
+        if (asset && !chosen.some((entry) => entry.asset.id === asset.id)) chosen.push({ asset, spec });
+      });
+      if (chosen.length < 6) {
+        (state.catalog?.assets || []).filter((asset) => asset.type === "dataset").forEach((asset) => {
+          if (chosen.length < 6 && !chosen.some((entry) => entry.asset.id === asset.id)) {
+            chosen.push({ asset, spec: { body: "Open the dataset card for source, structure, license, intended use, and limitations." } });
+          }
+        });
+      }
+      if (!chosen.length) {
+        grid.append(el("p", { class: "empty", text: "Dataset inventory is unavailable; no evidence repository was fabricated." }));
+        return;
+      }
+      chosen.slice(0, 6).forEach(({ asset, spec }) => {
+        grid.append(el("a", { class: "manifest-card", href: asset.href, target: "_blank", rel: "noreferrer" }, [
+          el("div", { class: "asset-type", text: "Public evidence artifact" }),
+          el("h3", { text: asset.slug }),
+          el("p", { text: spec.body }),
+          el("span", { class: "go", text: `${compactNumber(asset.downloads)} downloads · inspect ↗` }),
+        ]));
+      });
+    }
+
+    function filteredAssets() {
+      const assets = [...(state.catalog?.assets || [])];
+      const q = state.query.trim().toLowerCase();
+      const visible = assets.filter((asset) => {
+        if (state.filter !== "all" && asset.type !== state.filter) return false;
+        if (!q) return true;
+        const haystack = [asset.id, asset.type, asset.pipeline, asset.library, asset.sdk, ...(asset.tags || [])].filter(Boolean).join(" ").toLowerCase();
+        return haystack.includes(q);
+      });
+      visible.sort((a, b) => {
+        if (state.sort === "recent") return String(b.last_modified || "").localeCompare(String(a.last_modified || ""));
+        if (state.sort === "likes") return Number(b.likes || 0) - Number(a.likes || 0);
+        if (state.sort === "name") return a.slug.localeCompare(b.slug);
+        return Number(b.downloads || 0) - Number(a.downloads || 0);
+      });
+      return visible;
+    }
+
+    function renderExplorer() {
+      const list = $("#asset-list");
+      const assets = filteredAssets();
+      list.replaceChildren();
+      if (!assets.length) {
+        list.append(el("li", { class: "empty", text: state.catalog ? "No public assets match this search." : "Public catalog unavailable." }));
+      } else {
+        assets.slice(0, state.limit).forEach((asset) => {
+          const detail = [asset.pipeline, asset.library, asset.sdk, ...(asset.tags || []).slice(0, 3)].filter(Boolean).join(" · ") || "metadata on artifact page";
+          const row = el("a", { class: "asset-row", href: asset.href, target: "_blank", rel: "noreferrer" }, [
+            el("span", { class: "asset-name" }, [el("strong", { text: asset.slug }), el("span", { text: detail })]),
+            el("span", { class: "asset-cell" }, [el("b", { text: asset.type.toUpperCase() }), "type"]),
+            el("span", { class: "asset-cell" }, [el("b", { text: compactNumber(asset.downloads) }), "downloads"]),
+            el("span", { class: "asset-cell" }, [el("b", { text: safeDate(asset.last_modified) }), "updated"]),
+            el("span", { class: "asset-arrow", text: "↗", "aria-hidden": "true" }),
+          ]);
+          const item = el("li"); item.append(row); list.append(item);
+        });
+      }
+      $("#asset-summary").textContent = `${Math.min(state.limit, assets.length)} of ${assets.length} matching public assets`;
+      const more = $("#load-more");
+      more.hidden = state.limit >= assets.length;
+    }
+
+    function renderAll() {
+      renderCounts();
+      renderSurfaces();
+      renderModelSpotlights();
+      renderKernels();
+      renderEvidence();
+      renderExplorer();
+    }
+
+    async function fetchJson(url, options = {}) {
+      const response = await fetch(url, { cache: "no-store", ...options });
+      if (!response.ok) throw new Error(`${url} returned ${response.status}`);
+      return response.json();
+    }
+
+    async function loadCatalog(force = false) {
+      const refresh = $("#refresh-catalog");
+      refresh.disabled = true;
+      refresh.textContent = "Recapturing…";
+      try {
+        state.catalog = await fetchJson(`/api/catalog${force ? "?refresh=1" : ""}`);
+      } catch (error) {
+        console.error(error);
+        state.catalog = null;
+      } finally {
+        refresh.disabled = false;
+        refresh.textContent = "Refresh";
+        state.limit = 24;
+        renderAll();
+      }
+    }
+
+    async function loadEstate() {
+      try {
+        state.estate = await fetchJson("/api/estate");
+      } catch (error) {
+        console.error(error);
+        state.estate = null;
+      }
+      renderSurfaces();
+    }
+
+    async function loadBuild() {
+      try {
+        const build = await fetchJson("/api/build-info");
+        $("#build-line").textContent = `Source revision: ${build.source_revision ? build.source_revision.slice(0, 12) : "UNAVAILABLE"} · ${build.state}`;
+      } catch (error) {
+        $("#build-line").textContent = "Source revision: UNAVAILABLE";
+      }
+    }
+
+    function renderOrgans(body, energy) {
+      const nodes = $$(".organ-node", $("#organ-map"));
+      const byName = new Map((body.organs || []).map((organ) => [organ.name, organ]));
+      const order = ["BRAIN", "HEART", "SKELETON", "NERVOUS", "CIRCULATORY"];
+      nodes.forEach((node, index) => {
+        const organ = byName.get(order[index]);
+        const status = organ?.status || "UNAVAILABLE";
+        $("span", node).textContent = status;
+        node.classList.toggle("down", status === "DOWN" || status === "UNAVAILABLE");
+      });
+      const result = $("#loop-result");
+      const blocked = Boolean(body.blocked);
+      result.classList.toggle("blocked", blocked);
+      result.replaceChildren(
+        el("strong", { text: blocked ? "BLOCKED" : "ADVISORY BODY" }),
+        document.createTextNode(` · ${body.live_count || 0}/5 organs LIVE · energy ${energy.honesty || "UNAVAILABLE"} · Conjecture 1 ${body.conjecture_1 || "OPEN"} · proven_trust false`),
+      );
+    }
+
+    async function runLoop() {
+      const button = $("#run-loop");
+      button.disabled = true;
+      button.textContent = "Running…";
+      const query = new URLSearchParams({
+        zero_heart: $("#zero-heart").checked ? "1" : "0",
+        tamper_chain: $("#tamper-chain").checked ? "1" : "0",
+        fabricate_joule: $("#fabricate-joule").checked ? "1" : "0",
+      });
+      try {
+        const payload = await fetchJson(`/api/organs/integrity?${query}`);
+        renderOrgans(payload.body || {}, payload.energy || {});
+      } catch (error) {
+        const result = $("#loop-result");
+        result.classList.add("blocked");
+        result.replaceChildren(el("strong", { text: "UNAVAILABLE" }), document.createTextNode(" · The demo endpoint did not answer. No successful cycle is claimed."));
+      } finally {
+        button.disabled = false;
+        button.textContent = "Run governed cycle";
+      }
+    }
+
+    $("#asset-search").addEventListener("input", (event) => { state.query = event.target.value; state.limit = 24; renderExplorer(); });
+    $("#asset-sort").addEventListener("change", (event) => { state.sort = event.target.value; renderExplorer(); });
+    $$(".filter").forEach((button) => button.addEventListener("click", () => {
+      state.filter = button.dataset.filter;
+      state.limit = 24;
+      $$(".filter").forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
+      renderExplorer();
+    }));
+    $("#load-more").addEventListener("click", () => { state.limit += 24; renderExplorer(); });
+    $("#refresh-catalog").addEventListener("click", () => loadCatalog(true));
+    $("#run-loop").addEventListener("click", runLoop);
+    $("#menu-button").addEventListener("click", () => {
+      const header = $("#site-header");
+      const open = header.classList.toggle("menu-open");
+      $("#menu-button").setAttribute("aria-expanded", String(open));
+      $("#menu-button").textContent = open ? "×" : "☰";
+    });
+    $$("#nav-list a").forEach((link) => link.addEventListener("click", () => {
+      $("#site-header").classList.remove("menu-open");
+      $("#menu-button").setAttribute("aria-expanded", "false");
+      $("#menu-button").textContent = "☰";
+    }));
+
+    Promise.allSettled([loadCatalog(false), loadEstate(), loadBuild(), runLoop()]);
+  </script>
 </body>
 </html>
