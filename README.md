@@ -1,99 +1,146 @@
 ---
-title: SZL Command lab
-emoji: 🧠
-colorFrom: yellow
-colorTo: gray
+title: SZL Atlas — Governed AI Estate
+emoji: ◈
+colorFrom: gray
+colorTo: indigo
 sdk: docker
 app_port: 7860
-pinned: false
+pinned: true
 license: apache-2.0
-short_description: Holographic command body. Energy probe live. Not flagship.
+short_description: Explore SZL systems, models, kernels, and evidence.
 tags:
   - governed-ai
-  - command
-  - receipts
-  - lambda-gate
+  - ai-governance
+  - provenance
+  - inference
+  - kernels
+  - evidence
+  - agentic-ai
   - szl-holdings
 ---
 
-<!-- SZL-ESTATE-CARD:v2:START -->
-<p align="center"><a href="https://a-11-oy.com/"><img src="https://huggingface.co/spaces/SZLHOLDINGS/README/resolve/main/assets/estate-banner-v2.svg" alt="SZL Holdings — governed, receipted, verifiable" width="100%"></a></p>
 <p align="center">
-  <a href="https://github.com/szl-holdings/.github/tree/main/doctrine"><img src="https://img.shields.io/badge/doctrine-v11%20LOCKED-0B1F3A?style=flat-square" alt="doctrine v11"></a>
-  <a href="https://huggingface.co/spaces/SZLHOLDINGS/szl-khipu"><img src="https://img.shields.io/badge/kernel-szl--khipu-3AF4C8?style=flat-square" alt="szl-khipu kernel"></a>
-  <a href="https://github.com/szl-holdings/szl-command-lab"><img src="https://img.shields.io/badge/source-szl--holdings%2Fszl--command--lab-3A414C?style=flat-square" alt="GitHub source"></a>
+  <a href="https://huggingface.co/spaces/SZLHOLDINGS/szl-command-lab">
+    <img src="https://huggingface.co/spaces/SZLHOLDINGS/README/resolve/main/assets/estate-command-system.svg"
+         alt="SZL governed AI command fabric"
+         width="100%" />
+  </a>
 </p>
-<p align="center"><sub>Part of the <a href="https://huggingface.co/SZLHOLDINGS">SZL Holdings</a> governed estate — claims are designed to carry checkable receipts. Verification proves integrity & origin, never accuracy or performance.</sub></p>
-<!-- SZL-ESTATE-CARD:v2:END -->
 
-# SZL Command lab
-<!-- szl:header v1 -->
-<!-- badges: add this repo's CI / release / status badges here -->
-[![org: szl-holdings](https://img.shields.io/badge/org-szl--holdings-black)](https://github.com/szl-holdings)
-[![doctrine](https://img.shields.io/badge/doctrine-control%20before%20action%20%C2%B7%20evidence%20after-blue)](https://a-11-oy.com)
+<div align="center">
 
-**Control before action. Evidence after.**
+# SZL Atlas
 
-Part of the [szl-holdings](https://github.com/szl-holdings) estate ·
-Product: [a-11-oy.com](https://a-11-oy.com) ·
-Proof: [a11oy.net](https://a11oy.net)
-<!-- /szl:header -->
+### Governed intelligence. Portable evidence.
 
-Holographic command body for the SZL estate. Five organs. SHA-256 receipts.
-Energy **channel LIVE**. Package joule **MEASURED** from RAPL/NVML when readable. Inference joule **MEASURED** only when a kernel is wrapped.
-Λ uniqueness is **Conjecture 1 — OPEN**. `proven_trust` is always false.
+The public explorer for SZL systems, models, kernels, datasets, and their
+verification boundaries.
 
-GitHub is canonical. Hub is the publish mirror. This is **not** a-11-oy.com,
-**not** a11oy the flagship, **not** an ATO.
+[**Open the live Atlas**](https://huggingface.co/spaces/SZLHOLDINGS/szl-command-lab) ·
+[**Enter A11oy**](https://a-11-oy.com) ·
+[**Inspect evidence**](https://a11oy.net) ·
+[**Audit the source**](https://github.com/szl-holdings/szl-command-lab)
 
-## Hub runtime
+</div>
 
-Flatten payload is `space/server.py` (Immune copies that file to Space root).
-Stdlib HTTP on 7860. No npm.
+## What the Atlas does
 
-| Path | Honesty |
-|---|---|
-| `GET /` | holographic body + estate recapture |
-| `GET /healthz` | energy channel LIVE, joule UNAVAILABLE without RAPL/NVML |
-| `GET /api/energy` | RAPL/NVML package probe. Last wrap stored when present. Never a fabricated joule. |
-| `GET /api/energy/inference` | Wrap a 1s SHA-256 storm. Inference joule is the board delta. |
-| `GET /api/train` | GPU train gate. BLOCKED until CUDA + approved job. Never a fabricated train. |
-| `GET /api/organs/integrity` | 5-organ kernel. `proven_trust` always false. |
-| `GET /api/estate` | live recapture of 10 Hub surfaces |
-| `HEAD /` | 200 |
+The Atlas turns the public `SZLHOLDINGS` estate into one searchable command
+surface. It recaptures the live, unauthenticated Hugging Face inventory and
+presents:
 
-Λ uniqueness stays **Conjecture 1 OPEN**. This Space is not flagship.
+- all publicly listed models, first-class kernels, datasets, and Spaces;
+- curated paths into A11oy, Killinchu, Lyte, Sentra, Terra, PURIQ Finance,
+  PRISM Counsel, Living Anatomy, and the Khipu runtime;
+- model and evidence spotlights driven by provider metadata rather than
+  hard-coded performance claims;
+- a bounded five-organ demonstration that fail-closes when an input, receipt
+  chain, or evidence claim is compromised;
+- source revision, runtime reachability, downloads, likes, update dates, tags,
+  and direct links to each artifact card.
 
-## What it is
+## Public routes
 
-- Command, organs, formulas, Hub inventory, killinchu bound, ledger, verify.
-- Browser-run integrity kernel. Python kernel in `python/kernel.py`.
-- Fail-closed HARD_DENY. Formulas never grant authority.
+| Route | Purpose | Evidence boundary |
+| --- | --- | --- |
+| `GET /` | Responsive public Atlas | Presentation is navigation, not proof of readiness |
+| `GET /healthz` | Runtime and organ health | Reachability does not establish capability or authorization |
+| `GET /api/catalog` | Live public Hub catalog | Private assets are excluded; unavailable provider data is not inferred |
+| `GET /api/estate` | Bounded probes of selected public Spaces | HTTP 200 proves reachability only |
+| `GET /api/organs/integrity` | Five-organ governed-loop demonstration | Healthy output remains advisory and never self-authorizes |
+| `GET /api/energy` | RAPL/NVML runtime probe | Joules are reported only when a readable counter exists |
+| `GET /api/build-info` | Source-binding metadata | Missing runtime revision is labeled `REVISION_UNAVAILABLE` |
 
-## What it is NOT
+## Governing boundary
 
-- Not Qwen. Not a theorem. Not a fabricated joule.
-- Locked-proven formulas stay **exactly 8**. Lab numerics CHECKED ≠ Lean PROVEN.
-- This preview origin is not a fourth product surface.
+The model proposes. Independent policy decides. A human binds consequential
+action. The Atlas does not convert a formula, model response, download count,
+HTTP response, or signature into permission.
 
-## Honesty
+- Lambda uniqueness remains **Conjecture 1 — OPEN**.
+- `proven_trust` remains `false` in the demonstration.
+- A signature can establish scoped integrity and origin; it does not establish
+  accuracy, safety, performance, compliance, or authorization.
+- Public physical actuation in Killinchu remains **SIMULATED** unless an
+  operator-owned system provides a separately governed effect path.
+- No production authorization, regulatory approval, customer adoption,
+  benchmark superiority, revenue, funding, or investment outcome is claimed.
 
-| Claim | Status |
-|---|---|
-| CPU / browser kernels | LIVE |
-| Energy channel | LIVE |
-| Energy joule | UNAVAILABLE (no RAPL, no NVML) |
-| CUDA | UNAVAILABLE |
-| Λ uniqueness | Conjecture 1 OPEN |
-| proven_trust | false |
-| Elevation / ATO | refused |
-| Flagship | a-11-oy.com — this lab is not it |
+## Architecture
 
-Apache-2.0 · Doctrine v11 LOCKED.
+```text
+Hugging Face public APIs ─┐
+selected runtime probes ─┼─> catalog + estate state ─> responsive Atlas
+five-organ kernel ───────┤
+RAPL / NVML probe ───────┘
 
-## Source
+signal → proposal → policy → bounded action → receipt → verification
+```
 
-- GitHub: [szl-holdings/szl-command-lab](https://github.com/szl-holdings/szl-command-lab)
-- Kernel: [szl-holdings/szl-khipu](https://github.com/szl-holdings/szl-khipu)
-- Flagship product: [a-11-oy.com](https://a-11-oy.com)
-- Proof: [a11oy.net](https://a11oy.net)
+The Docker Space intentionally uses a compact standard-library Python server.
+`Dockerfile` publishes the exact `server.py` and `space/index.html` closure.
+Provider mutation is owned by the protected central publisher in
+`szl-holdings/.github`; this repository retains the source and delegation
+contract.
+
+## Run locally
+
+```bash
+python server.py
+# open http://127.0.0.1:7860
+```
+
+Optional environment variables:
+
+```bash
+HOST=0.0.0.0
+PORT=7860
+SZL_GIT_SHA=<exact-40-character-source-revision>
+```
+
+## Verification
+
+```bash
+python -m py_compile server.py
+python - <<'PY'
+import server
+assert server.selftest()["ok"] is True
+assert server.build_info()["surface"] == "SZL Atlas"
+print("atlas self-test: PASS")
+PY
+```
+
+The canonical source is
+[`szl-holdings/szl-command-lab`](https://github.com/szl-holdings/szl-command-lab).
+The Hugging Face Space is a published runtime mirror and must be checked against
+its exact source-binding evidence before a consequential deployment decision.
+
+---
+
+<div align="center">
+
+**Understand · build · verify**
+
+Apache-2.0 · Control before action · Evidence after
+
+</div>
