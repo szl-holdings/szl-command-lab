@@ -1,6 +1,6 @@
 ---
 title: SZL Atlas — Governed AI Estate
-emoji: ◈
+emoji: 🧭
 colorFrom: gray
 colorTo: indigo
 sdk: docker
