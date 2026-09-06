@@ -1,0 +1,13 @@
+{
+  "schema": "szl.source-deployment/v1",
+  "source": {
+    "repository": "szl-holdings/szl-command-lab",
+    "revision": null
+  },
+  "target": {
+    "repo_id": "SZLHOLDINGS/szl-command-lab",
+    "repo_type": "space"
+  },
+  "state": "REVISION_UNAVAILABLE",
+  "claim_boundary": "Checked-in placeholder only. Runtime authority requires the canonical publisher to replace revision with the exact protected-main SHA."
+}
