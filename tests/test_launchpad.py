@@ -10,6 +10,19 @@ LAUNCHPAD = ROOT / "space" / "launchpad.html"
 DOCKERFILE = ROOT / "Dockerfile"
 DEPLOY_WORKFLOW = ROOT / ".github" / "workflows" / "hf-sync.yml"
 REUSABLE_DEPLOY_SHA = "3537cba978d018c7c924ab1f90e18c0f879eb886"
+HF_PUBLISHER_SECRET_EXPRESSION = (
+    "HF_TOKEN: ${{ secrets.HF_ORG_TOKEN || secrets.HF_ORG_TOKEN1 || "
+    "secrets.HF_WRITE_TOKEN || secrets.HF_TOKEN || secrets.HUGGINGFACE_TOKEN || "
+    "secrets.HUGGING_FACE_HUB_TOKEN }}"
+)
+HF_PUBLISHER_ALIAS_ORDER = (
+    "secrets.HF_ORG_TOKEN",
+    "secrets.HF_ORG_TOKEN1",
+    "secrets.HF_WRITE_TOKEN",
+    "secrets.HF_TOKEN",
+    "secrets.HUGGINGFACE_TOKEN",
+    "secrets.HUGGING_FACE_HUB_TOKEN",
+)
 
 
 def test_launchpad_payload_is_navigation_only_and_source_controlled() -> None:
@@ -116,7 +129,7 @@ def test_hugging_face_deploy_uses_the_central_exact_source_publisher() -> None:
         "wait-running: 1200",
         "prune: true",
         'smoke-paths: \'["/","/launchpad","/api/build-info","/api/launchpad","/healthz"]\'',
-        "HF_TOKEN: ${{ secrets.HF_ORG_TOKEN || secrets.HF_TOKEN }}",
+        HF_PUBLISHER_SECRET_EXPRESSION,
     ):
         assert marker in text
 
@@ -124,3 +137,16 @@ def test_hugging_face_deploy_uses_the_central_exact_source_publisher() -> None:
     assert "huggingface-cli" not in text
     assert "hf upload" not in text
     assert ".upload_file(" not in text
+
+
+def test_hugging_face_publisher_aliases_are_complete_ordered_and_not_logged() -> None:
+    text = DEPLOY_WORKFLOW.read_text(encoding="utf-8")
+
+    offsets = [text.index(alias) for alias in HF_PUBLISHER_ALIAS_ORDER]
+    assert offsets == sorted(offsets)
+    assert len(set(offsets)) == len(HF_PUBLISHER_ALIAS_ORDER)
+    assert text.count("HF_TOKEN: ${{") == 1
+    assert "echo ${{ secrets." not in text
+    assert "print(${{ secrets." not in text
+    assert "GITHUB_ENV" not in text
+    assert "GITHUB_OUTPUT" not in text
