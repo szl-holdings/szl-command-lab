@@ -15,6 +15,8 @@ RUN python -m pip install --no-cache-dir "https://github.com/szl-holdings/szl-su
 
 COPY server.py ./server.py
 COPY space/index.html ./index.html
+COPY space/launchpad.html ./launchpad.html
+COPY deployment.json ./deployment.json
 
 EXPOSE 7860
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=5 \

@@ -652,32 +652,113 @@ def _flag(query: dict[str, list[str]], name: str) -> bool:
     return value in {"1", "true", "on", "yes"}
 
 
+def _deployment_receipt() -> dict[str, Any] | None:
+    path = HERE / "deployment.json"
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError, UnicodeDecodeError):
+        return None
+    if not isinstance(payload, dict) or payload.get("schema") != "szl.source-deployment/v1":
+        return None
+    source = payload.get("source")
+    target = payload.get("target")
+    if not isinstance(source, dict) or not isinstance(target, dict):
+        return None
+    revision = source.get("revision")
+    if source.get("repository") != "szl-holdings/szl-command-lab":
+        return None
+    if not isinstance(revision, str) or not SHA_RE.fullmatch(revision):
+        return None
+    if target.get("repo_id") != "SZLHOLDINGS/szl-command-lab":
+        return None
+    if target.get("repo_type") != "space":
+        return None
+    return payload
+
+
 def build_info() -> dict[str, Any]:
-    revision = os.environ.get("SZL_GIT_SHA") or os.environ.get("GITHUB_SHA") or ""
+    environment_revision = os.environ.get("SZL_GIT_SHA") or os.environ.get("GITHUB_SHA") or ""
+    if not SHA_RE.fullmatch(environment_revision):
+        environment_revision = ""
+    receipt = _deployment_receipt()
+    receipt_revision = ""
+    if receipt is not None:
+        source = receipt.get("source")
+        if isinstance(source, dict) and isinstance(source.get("revision"), str):
+            receipt_revision = source["revision"]
+
+    observed = {value for value in (environment_revision, receipt_revision) if value}
+    if len(observed) > 1:
+        revision = None
+        state = "SOURCE_CONFLICT"
+        binding = "conflicting-runtime-evidence"
+    elif observed:
+        revision = next(iter(observed))
+        state = "SOURCE_BOUND"
+        if environment_revision and receipt_revision:
+            binding = "deployment.json+runtime-environment"
+        elif receipt_revision:
+            binding = "deployment.json"
+        else:
+            binding = "runtime-environment"
+    else:
+        revision = None
+        state = "REVISION_UNAVAILABLE"
+        binding = None
+
     return {
         "schema": "szl.atlas.build/v1",
         "service": "szl-command-lab",
         "surface": "SZL Atlas",
         "source_repository": "szl-holdings/szl-command-lab",
-        "source_revision": revision if SHA_RE.fullmatch(revision) else None,
-        "state": "SOURCE_BOUND" if SHA_RE.fullmatch(revision) else "REVISION_UNAVAILABLE",
+        "source_revision": revision,
+        "state": state,
+        "binding": binding,
         "generated_at": utc_now(),
     }
 
 
-def _load_index() -> bytes:
-    path = HERE / "index.html"
+def deployment_status_document() -> dict[str, Any]:
+    receipt = _deployment_receipt()
+    if receipt is not None:
+        return receipt
+    info = build_info()
+    return {
+        "schema": "szl.source-deployment/v1",
+        "source": {
+            "repository": "szl-holdings/szl-command-lab",
+            "revision": info["source_revision"],
+        },
+        "target": {
+            "repo_id": "SZLHOLDINGS/szl-command-lab",
+            "repo_type": "space",
+            "origin": "https://szlholdings-szl-command-lab.hf.space",
+        },
+        "state": info["state"],
+        "claim_boundary": (
+            "No valid exact-revision deployment receipt is present. "
+            "Reachability is not source authority."
+        ),
+    }
+
+
+def _load_html(filename: str) -> bytes:
+    if filename not in {"index.html", "launchpad.html"}:
+        raise ValueError(f"unsupported HTML asset: {filename}")
+    path = HERE / filename
     try:
         data = path.read_bytes()
         if not data or len(data) > 2_000_000:
-            raise ValueError("index.html missing or outside size boundary")
+            raise ValueError(f"{filename} missing or outside size boundary")
         return data
     except (OSError, ValueError):
+        title = "SZL Launchpad" if filename == "launchpad.html" else "SZL Atlas"
         return (
             "<!doctype html><html lang='en'><meta charset='utf-8'>"
             "<meta name='viewport' content='width=device-width,initial-scale=1'>"
-            "<title>SZL Atlas</title><body><main><h1>SZL Atlas</h1>"
-            "<p>The public interface is temporarily unavailable. API health remains at /healthz.</p>"
+            f"<title>{title}</title><body><main><h1>{title}</h1>"
+            "<p>The public interface is temporarily unavailable. "
+            "API health remains at /healthz.</p>"
             "</main></body></html>"
         ).encode("utf-8")
 
@@ -686,13 +767,14 @@ JSON_PATHS = {
     "/healthz",
     "/readyz",
     "/api/build-info",
+    "/deployment.json",
     "/api/catalog",
     "/api/estate",
     "/api/energy",
     "/api/organs/integrity",
     "/v1/organs/integrity",
 }
-HTML_PATHS = {"/", "/index.html"}
+HTML_PATHS = {"/", "/index.html", "/launchpad", "/launchpad.html"}
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -749,6 +831,10 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/api/build-info":
             self._send_json(200, build_info())
             return
+        if path == "/deployment.json":
+            receipt = _deployment_receipt()
+            self._send_json(200 if receipt is not None else 503, deployment_status_document())
+            return
         if path == "/api/catalog":
             force = _flag(query, "refresh")
             payload = recapture_catalog(force=force)
@@ -787,7 +873,8 @@ class Handler(BaseHTTPRequestHandler):
             self._send_json(200, {"ok": True, "body": body, "energy": energy})
             return
         if path in HTML_PATHS:
-            raw = _load_index()
+            filename = "launchpad.html" if path in {"/launchpad", "/launchpad.html"} else "index.html"
+            raw = _load_html(filename)
             self.send_response(200)
             self.send_header("Content-Type", "text/html; charset=utf-8")
             self.send_header("Content-Length", str(len(raw)))
