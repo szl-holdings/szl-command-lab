@@ -1,0 +1,78 @@
+# SPDX-License-Identifier: Apache-2.0
+name: Publish exact SZL Atlas source
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .gitattributes
+      - Dockerfile
+      - Dockerfile.dockerignore
+      - README.md
+      - deployment.json
+      - server.py
+      - space/index.html
+      - space/launchpad.html
+      - scripts/publish_hf_space.py
+      - .github/workflows/publish-hf-space.yml
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-szl-command-lab
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish and verify exact protected main
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      HF_TOKEN: ${{ secrets.HF_TOKEN || secrets.SZL_HF_TOKEN || secrets.HF_WRITE_TOKEN }}
+    steps:
+      - name: Harden runner
+        uses: step-security/harden-runner@05e31511f85b41b11d1cf0ef85d0992719546e2c # v2.21.0
+        with:
+          egress-policy: audit
+
+      - name: Check out current protected main
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12.10"
+
+      - name: Initialize fail-closed publication receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p reports
+          printf '%s\n' '{"schema":"szl.hf-publication-result/v1","state":"STARTED"}' > reports/szl-command-lab-publication.json
+
+      - name: Install exact Hugging Face client
+        run: python -m pip install --disable-pip-version-check "huggingface_hub==1.23.0"
+
+      - name: Publish and prove the exact main closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -I -B scripts/publish_hf_space.py \
+            --apply \
+            --timeout 1200 \
+            --report reports/szl-command-lab-publication.json
+
+      - name: Upload immutable non-secret publication evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: szl-command-lab-publication-${{ github.run_id }}-${{ github.run_attempt }}
+          path: reports/szl-command-lab-publication.json
+          if-no-files-found: error
+          retention-days: 180
