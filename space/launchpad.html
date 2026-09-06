@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en" data-szl-surface="atlas-launchpad-v1">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#05070b">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="A source-bound navigation layer for the governed SZL Atlas estate.">
+  <title>SZL Atlas Launchpad — Source-Bound Navigation</title>
+  <style>
+    :root {
+      --void: #05070b;
+      --panel: #0c121a;
+      --panel-2: #111a24;
+      --line: rgba(190, 207, 222, .18);
+      --line-bright: rgba(190, 207, 222, .36);
+      --text: #f5f2e9;
+      --paper: #d7d3c9;
+      --muted: #9aa8b6;
+      --faint: #677585;
+      --mint: #63e6c5;
+      --blue: #5bbcff;
+      --gold: #e3bd72;
+      --rose: #ec8b91;
+      --radius: 18px;
+      --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      --sans: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color-scheme: dark;
+      font-family: var(--sans);
+    }
+
+    * { box-sizing: border-box; }
+    html { min-width: 320px; background: var(--void); scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(820px 520px at 88% -10%, rgba(91, 188, 255, .12), transparent 72%),
+        radial-gradient(720px 480px at 4% 8%, rgba(99, 230, 197, .08), transparent 74%),
+        var(--void);
+      font: 15px/1.55 var(--sans);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    :focus-visible { outline: 3px solid var(--mint); outline-offset: 3px; }
+    .mono { font-family: var(--mono); }
+    .skip {
+      position: fixed;
+      left: 1rem;
+      top: -5rem;
+      z-index: 100;
+      padding: .75rem 1rem;
+      border-radius: 10px;
+      color: #03100d;
+      background: var(--mint);
+      font-weight: 800;
+    }
+    .skip:focus { top: 1rem; }
+
+    header {
+      border-bottom: 1px solid var(--line);
+      background: rgba(5, 7, 11, .86);
+      backdrop-filter: blur(18px);
+    }
+    .bar {
+      width: min(calc(100% - 32px), 1220px);
+      min-height: 74px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .brand { display: flex; align-items: center; gap: .75rem; text-decoration: none; }
+    .mark {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line-bright);
+      border-radius: 11px;
+      color: var(--mint);
+      background: linear-gradient(145deg, rgba(99, 230, 197, .1), rgba(91, 188, 255, .06));
+      font: 800 12px/1 var(--mono);
+    }
+    .brand strong { display: block; font-size: 1rem; }
+    .brand small { display: block; color: var(--faint); font: 10px/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+    .status {
+      min-height: 38px;
+      display: inline-flex;
+      align-items: center;
+      gap: .55rem;
+      padding: .45rem .72rem;
+      border: 1px solid var(--line-bright);
+      border-radius: 999px;
+      color: var(--gold);
+      background: rgba(227, 189, 114, .06);
+      font: 700 10px/1.2 var(--mono);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+    .status[data-state="REGISTERED_NAVIGATION"] { color: var(--mint); }
+    .status[data-state="UNAVAILABLE"] { color: var(--rose); }
+
+    main { width: min(calc(100% - 32px), 1220px); margin: 0 auto; padding: clamp(2.25rem, 7vw, 5.5rem) 0 4rem; }
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(300px, .8fr);
+      align-items: end;
+      gap: clamp(2rem, 7vw, 6rem);
+      padding-bottom: clamp(2rem, 6vw, 4.5rem);
+      border-bottom: 1px solid var(--line);
+    }
+    .eyebrow { margin: 0 0 1rem; color: var(--mint); font: 800 10px/1.3 var(--mono); letter-spacing: .17em; text-transform: uppercase; }
+    h1 { max-width: 760px; margin: 0; font-size: clamp(2.7rem, 8vw, 7.4rem); line-height: .9; letter-spacing: -.06em; font-weight: 600; }
+    h1 span { color: transparent; background: linear-gradient(100deg, var(--text), var(--mint) 46%, var(--blue)); -webkit-background-clip: text; background-clip: text; }
+    .lede { max-width: 68ch; margin: 1.5rem 0 0; color: var(--paper); font-size: clamp(1rem, 1.7vw, 1.25rem); }
+    .binding {
+      padding: 1rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(12, 18, 26, .82);
+      box-shadow: 0 28px 80px rgba(0, 0, 0, .24);
+    }
+    .binding-row { display: grid; grid-template-columns: 7rem minmax(0, 1fr); gap: .75rem; padding: .65rem 0; border-bottom: 1px solid var(--line); }
+    .binding-row:last-child { border-bottom: 0; }
+    .binding dt { color: var(--faint); font: 700 10px/1.4 var(--mono); text-transform: uppercase; letter-spacing: .08em; }
+    .binding dd { margin: 0; color: var(--paper); font: 11px/1.5 var(--mono); overflow-wrap: anywhere; }
+
+    section { padding-top: clamp(2.25rem, 6vw, 4rem); }
+    .section-head { display: flex; justify-content: space-between; align-items: end; gap: 1rem; margin-bottom: 1rem; }
+    h2 { margin: 0; font-size: clamp(1.25rem, 3vw, 1.75rem); letter-spacing: -.025em; }
+    .section-head p { max-width: 62ch; margin: 0; color: var(--muted); font-size: .88rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 245px), 1fr)); gap: .75rem; }
+    .card {
+      min-height: 132px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 1rem;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      color: var(--text);
+      background: var(--panel);
+      text-decoration: none;
+      overflow-wrap: anywhere;
+      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+    }
+    a.card:hover { transform: translateY(-2px); border-color: rgba(99, 230, 197, .58); background: var(--panel-2); }
+    .card.external { border-left: 3px solid var(--blue); }
+    .tag { color: var(--gold); font: 800 9px/1.3 var(--mono); letter-spacing: .1em; text-transform: uppercase; }
+    .card strong { display: block; margin-top: .3rem; font-size: .98rem; }
+    .card small { display: block; margin-top: .45rem; color: var(--muted); font-size: .74rem; line-height: 1.45; }
+    .route { margin-top: .75rem; color: var(--faint); font: 10px/1.45 var(--mono); }
+    .empty {
+      grid-column: 1 / -1;
+      min-height: 120px;
+      display: grid;
+      place-items: center;
+      padding: 1rem;
+      border: 1px dashed var(--line-bright);
+      border-radius: 14px;
+      color: var(--muted);
+      text-align: center;
+    }
+    .boundary {
+      margin-top: clamp(2.25rem, 6vw, 4rem);
+      padding: 1.1rem 1.2rem;
+      border: 1px solid rgba(227, 189, 114, .42);
+      border-radius: var(--radius);
+      background: rgba(227, 189, 114, .055);
+    }
+    .boundary strong { color: var(--gold); }
+    .boundary p { margin: .35rem 0 0; color: var(--muted); }
+
+    footer { border-top: 1px solid var(--line); padding: 1.25rem 1rem; color: var(--faint); text-align: center; font: 10px/1.5 var(--mono); }
+
+    @media (max-width: 800px) {
+      .hero { grid-template-columns: 1fr; align-items: start; }
+      .binding { max-width: 680px; }
+      .section-head { display: block; }
+      .section-head p { margin-top: .45rem; }
+    }
+    @media (max-width: 520px) {
+      .bar { align-items: flex-start; padding: .9rem 0; flex-direction: column; }
+      .status { width: 100%; justify-content: center; }
+      .binding-row { grid-template-columns: 1fr; gap: .2rem; }
+      .card { min-height: 116px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+    @media (forced-colors: active) {
+      .mark, .status, .binding, .card, .boundary { border: 1px solid CanvasText; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#content">Skip to Launchpad</a>
+  <header>
+    <div class="bar">
+      <a class="brand" href="/" aria-label="Return to SZL Atlas">
+        <span class="mark" aria-hidden="true">SZL</span>
+        <span><strong>Atlas Launchpad</strong><small>one governed door</small></span>
+      </a>
+      <div class="status" id="registry-status" data-state="CONNECTING" role="status" aria-live="polite">
+        <span class="status-dot" aria-hidden="true"></span>
+        <span id="registry-status-text">Connecting to local registry</span>
+      </div>
+    </div>
+  </header>
+
+  <main id="content" tabindex="-1">
+    <section class="hero" aria-labelledby="launchpad-title">
+      <div>
+        <p class="eyebrow">SZL Atlas · GitHub canonical · evidence first</p>
+        <h1 id="launchpad-title">Every route.<br><span>One boundary.</span></h1>
+        <p class="lede">A compact navigation layer for the registered SZL public estate. The Launchpad reads its registry from this runtime; it never promotes a link, HTTP response, formula, or signature into production authorization.</p>
+      </div>
+      <dl class="binding" aria-label="Source-binding state">
+        <div class="binding-row"><dt>State</dt><dd id="binding-state">CONNECTING</dd></div>
+        <div class="binding-row"><dt>Source</dt><dd id="binding-source">szl-holdings/szl-command-lab</dd></div>
+        <div class="binding-row"><dt>Revision</dt><dd id="binding-revision">UNOBSERVED</dd></div>
+        <div class="binding-row"><dt>Registry</dt><dd id="binding-count">UNOBSERVED</dd></div>
+      </dl>
+    </section>
+
+    <section aria-labelledby="atlas-routes-title">
+      <div class="section-head">
+        <h2 id="atlas-routes-title">Atlas routes</h2>
+        <p>Local, same-origin views and evidence endpoints. JSON endpoints are inspection surfaces, not permissions.</p>
+      </div>
+      <div class="grid">
+        <a class="card" href="/"><span><span class="tag">explore</span><strong>SZL Atlas</strong><small>Search public models, kernels, datasets, Spaces, source links, and explicit evidence boundaries.</small></span><span class="route">GET /</span></a>
+        <a class="card" href="/api/catalog"><span><span class="tag">inventory</span><strong>Public catalog</strong><small>Provider-observed public Hub inventory. Missing families remain partial or unavailable.</small></span><span class="route">GET /api/catalog</span></a>
+        <a class="card" href="/api/estate"><span><span class="tag">witness</span><strong>Estate observation</strong><small>Bounded public-route probes with reachability separated from capability.</small></span><span class="route">GET /api/estate</span></a>
+        <a class="card" href="/api/build-info"><span><span class="tag">source</span><strong>Build identity</strong><small>Exact runtime source revision when the deployment binding is present.</small></span><span class="route">GET /api/build-info</span></a>
+        <a class="card" href="/api/organs/integrity"><span><span class="tag">governance</span><strong>Organ integrity</strong><small>A bounded fail-closed demonstration. Healthy output remains advisory.</small></span><span class="route">GET /api/organs/integrity</span></a>
+        <a class="card" href="/api/energy"><span><span class="tag">measurement</span><strong>Energy probe</strong><small>RAPL or NVML evidence when readable; otherwise no joule value is inferred.</small></span><span class="route">GET /api/energy</span></a>
+      </div>
+    </section>
+
+    <section aria-labelledby="registered-title">
+      <div class="section-head">
+        <h2 id="registered-title">Registered public surfaces</h2>
+        <p>The list is supplied by <span class="mono">GET /api/launchpad</span>. Registration is navigation metadata; each destination owns its current runtime and capability proof.</p>
+      </div>
+      <div class="grid" id="registered-surfaces" aria-live="polite" aria-busy="true">
+        <div class="empty">Waiting for the local, source-controlled registry.</div>
+      </div>
+    </section>
+
+    <aside class="boundary" aria-label="Verification boundary">
+      <strong>Verification boundary</strong>
+      <p>Navigation does not certify availability, freshness, security posture, customer use, regulatory status, or production readiness. Consequential action still requires independent policy and human authority. &Lambda; remains Conjecture 1 — OPEN.</p>
+    </aside>
+  </main>
+
+  <footer>source-bound Atlas surface · fixed-origin local registry · no external effectors · navigation is not runtime proof</footer>
+
+  <script>
+    "use strict";
+
+    const status = document.getElementById("registry-status");
+    const statusText = document.getElementById("registry-status-text");
+    const registry = document.getElementById("registered-surfaces");
+    const bindingState = document.getElementById("binding-state");
+    const bindingSource = document.getElementById("binding-source");
+    const bindingRevision = document.getElementById("binding-revision");
+    const bindingCount = document.getElementById("binding-count");
+
+    function setStatus(state, text) {
+      status.dataset.state = state;
+      statusText.textContent = text;
+      bindingState.textContent = state;
+    }
+
+    function surfaceCard(item) {
+      const link = document.createElement("a");
+      link.className = "card external";
+      link.href = item.href;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.setAttribute("aria-label", `${item.id} — registered public surface, opens in a new tab`);
+
+      const body = document.createElement("span");
+      const tag = document.createElement("span");
+      tag.className = "tag";
+      tag.textContent = item.role;
+      const title = document.createElement("strong");
+      title.textContent = item.id;
+      const copy = document.createElement("small");
+      copy.textContent = "Registered route. Availability and capability are verified separately.";
+      body.append(tag, title, copy);
+
+      const route = document.createElement("span");
+      route.className = "route";
+      route.textContent = item.href.replace(/^https:\/\//, "");
+      link.append(body, route);
+      return link;
+    }
+
+    async function loadRegistry() {
+      const controller = new AbortController();
+      const timeout = window.setTimeout(() => controller.abort(), 8000);
+      try {
+        const response = await fetch("/api/launchpad", {
+          method: "GET",
+          cache: "no-store",
+          credentials: "same-origin",
+          headers: { "Accept": "application/json" },
+          signal: controller.signal
+        });
+        if (!response.ok) throw new Error("registry unavailable");
+        const payload = await response.json();
+        if (payload.schema !== "szl.atlas.launchpad/v1" || !Array.isArray(payload.surfaces)) {
+          throw new Error("registry contract mismatch");
+        }
+
+        registry.replaceChildren();
+        for (const item of payload.surfaces) {
+          if (!item || typeof item.id !== "string" || typeof item.role !== "string" || typeof item.href !== "string") {
+            throw new Error("registry item contract mismatch");
+          }
+          const parsed = new URL(item.href);
+          if (parsed.protocol !== "https:") throw new Error("non-HTTPS registry target");
+          registry.append(surfaceCard(item));
+        }
+        if (payload.surfaces.length === 0) {
+          const empty = document.createElement("div");
+          empty.className = "empty";
+          empty.textContent = "The source-controlled registry is empty; no routes are inferred.";
+          registry.append(empty);
+        }
+
+        bindingSource.textContent = payload.source_repository || "UNAVAILABLE";
+        bindingRevision.textContent = payload.source_revision || "REVISION_UNAVAILABLE";
+        bindingCount.textContent = `${payload.surfaces.length} registered surfaces`;
+        registry.setAttribute("aria-busy", "false");
+        setStatus(payload.state, "Registry observed");
+      } catch (_error) {
+        registry.replaceChildren();
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = "Registry unavailable. No destination state is inferred.";
+        registry.append(empty);
+        registry.setAttribute("aria-busy", "false");
+        bindingRevision.textContent = "UNAVAILABLE";
+        bindingCount.textContent = "UNAVAILABLE";
+        setStatus("UNAVAILABLE", "Registry unavailable");
+      } finally {
+        window.clearTimeout(timeout);
+      }
+    }
+
+    loadRegistry();
+  </script>
+</body>
+</html>
