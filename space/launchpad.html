@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en" data-szl-surface="launchpad-v1">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#05070b">
+  <meta name="description" content="Source-bound launchpad for the SZL Holdings public artifact estate.">
+  <title>SZL Launchpad — Source-bound public estate</title>
+  <style>
+    :root{
+      --void:#05070b;--ground:#0a0e14;--panel:#0f151e;--panel-hi:#151e2a;
+      --line:#2a3646;--ink:#f5f7fa;--muted:#a9b5c4;--quiet:#778496;
+      --proof:#82e7d8;--warm:#e6cb86;--danger:#ef9a9a;--radius:18px;
+      --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+      --mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth;background:var(--void)}
+    body{
+      margin:0;min-height:100vh;color:var(--ink);font:15px/1.6 var(--sans);
+      background:
+        radial-gradient(900px 520px at 88% -8%,rgba(130,231,216,.11),transparent 68%),
+        radial-gradient(760px 460px at 0 28%,rgba(230,203,134,.06),transparent 72%),
+        var(--void)
+    }
+    a{color:inherit}
+    button,input,select{font:inherit}
+    .skip{position:absolute;left:-10000px;top:12px;z-index:100}
+    .skip:focus{left:12px;padding:10px 14px;border-radius:9px;background:var(--ink);color:var(--void)}
+    :focus-visible{outline:3px solid var(--proof);outline-offset:3px}
+    .shell{width:min(1180px,calc(100% - 32px));margin:0 auto}
+    header{border-bottom:1px solid rgba(169,181,196,.18);background:rgba(5,7,11,.9)}
+    .nav{min-height:68px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+    .brand{display:inline-flex;min-height:44px;align-items:center;gap:10px;text-decoration:none;font-weight:800;letter-spacing:.08em}
+    .brand-mark{width:10px;height:10px;border-radius:50%;background:var(--proof);box-shadow:0 0 18px rgba(130,231,216,.56)}
+    nav{display:flex;flex-wrap:wrap;gap:4px}
+    nav a{display:inline-flex;min-height:44px;align-items:center;padding:8px 12px;border-radius:10px;color:var(--muted);text-decoration:none}
+    nav a:hover{background:rgba(130,231,216,.07);color:var(--ink)}
+    main{padding:34px 0 70px}
+    .hero{
+      position:relative;overflow:hidden;min-height:440px;display:grid;align-items:center;
+      padding:clamp(34px,7vw,76px);border:1px solid rgba(130,231,216,.22);
+      border-radius:28px;background:linear-gradient(145deg,rgba(15,21,30,.96),rgba(7,10,15,.98));
+      box-shadow:0 28px 80px rgba(0,0,0,.35)
+    }
+    .hero:after{
+      content:"";position:absolute;right:-120px;top:-130px;width:430px;height:430px;border-radius:50%;
+      border:1px solid rgba(130,231,216,.16);box-shadow:0 0 0 46px rgba(130,231,216,.025),0 0 0 92px rgba(230,203,134,.018);
+      pointer-events:none
+    }
+    .hero-copy{position:relative;z-index:1;max-width:760px}
+    .eyebrow{font:700 11px/1.4 var(--mono);letter-spacing:.15em;text-transform:uppercase;color:var(--proof)}
+    h1{max-width:760px;margin:18px 0;font-size:clamp(42px,7vw,78px);line-height:.98;letter-spacing:-.055em;text-wrap:balance}
+    .lede{max-width:680px;margin:0;color:#d1d8e1;font-size:clamp(17px,2vw,21px);text-wrap:pretty}
+    .status-line{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px}
+    .status{
+      display:inline-flex;min-height:34px;align-items:center;gap:8px;padding:7px 11px;border:1px solid var(--line);
+      border-radius:999px;background:rgba(5,9,14,.65);color:var(--muted);font:12px/1.3 var(--mono)
+    }
+    .status[data-state="SOURCE_BOUND"]{border-color:rgba(130,231,216,.42);color:var(--proof)}
+    .status[data-state="SOURCE_CONFLICT"],.status[data-state="ERROR"]{border-color:rgba(239,154,154,.5);color:var(--danger)}
+    .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+    .button{
+      display:inline-flex;min-height:48px;align-items:center;justify-content:center;padding:0 18px;border:1px solid var(--line);
+      border-radius:999px;text-decoration:none;font-weight:750
+    }
+    .button.primary{border-color:var(--proof);background:var(--proof);color:#071017}
+    .button.secondary{background:rgba(15,21,30,.78);color:var(--ink)}
+    section{padding:52px 0;border-top:1px solid rgba(169,181,196,.14)}
+    .section-head{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:28px;align-items:start;margin-bottom:24px}
+    h2{margin:7px 0 0;font-size:clamp(29px,4vw,45px);line-height:1.08;letter-spacing:-.04em;text-wrap:balance}
+    .section-copy{margin:3px 0 0;color:var(--muted);font-size:17px}
+    .core-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+    .core-card,.asset-card{
+      min-width:0;border:1px solid var(--line);border-radius:var(--radius);
+      background:linear-gradient(150deg,rgba(21,30,42,.92),rgba(10,14,20,.98))
+    }
+    .core-card{display:flex;min-height:170px;flex-direction:column;padding:20px;text-decoration:none}
+    .core-card:hover,.asset-card:hover{border-color:rgba(130,231,216,.48);transform:translateY(-2px)}
+    .core-card,.asset-card{transition:transform .18s ease,border-color .18s ease}
+    .index{font:700 10px/1.4 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--proof)}
+    .core-card h3,.asset-card h3{margin:10px 0 6px;font-size:22px;letter-spacing:-.025em}
+    .core-card p,.asset-card p{margin:0;color:var(--muted)}
+    .go{margin-top:auto;padding-top:18px;color:var(--warm);font:12px/1.4 var(--mono)}
+    .toolbar{display:grid;grid-template-columns:minmax(0,1fr) minmax(180px,240px);gap:10px;margin:0 0 16px}
+    .field{
+      width:100%;min-height:48px;border:1px solid var(--line);border-radius:12px;padding:0 14px;
+      background:var(--ground);color:var(--ink)
+    }
+    .summary{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}
+    .metric{padding:8px 10px;border:1px solid var(--line);border-radius:10px;color:var(--muted);font:12px/1.3 var(--mono)}
+    .assets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+    .asset-card{display:flex;min-height:190px;flex-direction:column;padding:19px;text-decoration:none}
+    .asset-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+    .asset-type{flex:0 0 auto;padding:5px 7px;border:1px solid rgba(130,231,216,.3);border-radius:999px;color:var(--proof);font:10px/1.2 var(--mono);text-transform:uppercase}
+    .asset-id{color:var(--quiet);font:11px/1.45 var(--mono);overflow-wrap:anywhere}
+    .asset-meta{display:flex;flex-wrap:wrap;gap:7px;margin-top:auto;padding-top:16px;color:var(--quiet);font:11px/1.35 var(--mono)}
+    .empty{grid-column:1/-1;padding:26px;border:1px dashed var(--line);border-radius:var(--radius);color:var(--muted)}
+    .boundary{padding:22px;border:1px solid rgba(230,203,134,.26);border-radius:var(--radius);background:rgba(230,203,134,.035)}
+    .boundary strong{color:var(--warm)}
+    footer{padding:28px 0 48px;border-top:1px solid rgba(169,181,196,.14);color:var(--quiet);font:12px/1.6 var(--mono)}
+    @media(max-width:920px){.core-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.assets{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:680px){
+      .shell{width:min(100% - 22px,1180px)}.nav{padding:8px 0}.nav nav{width:100%}.nav nav a{flex:1 1 auto;justify-content:center}
+      main{padding-top:18px}.hero{min-height:390px;padding:32px 22px;border-radius:21px}.hero:after{right:-260px}
+      .section-head{grid-template-columns:1fr;gap:12px}.core-grid,.assets{grid-template-columns:1fr}.toolbar{grid-template-columns:1fr}
+      section{padding:42px 0}.core-card{min-height:148px}
+    }
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.core-card,.asset-card{transition:none}.core-card:hover,.asset-card:hover{transform:none}}
+    @media(forced-colors:active){.hero,.core-card,.asset-card,.field,.status,.metric,.boundary{border:1px solid CanvasText;background:Canvas;color:CanvasText}.brand-mark{background:Highlight;box-shadow:none}}
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header>
+    <div class="shell nav">
+      <a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span>SZL ATLAS</a>
+      <nav aria-label="Primary">
+        <a href="/">Atlas</a>
+        <a href="https://a-11-oy.com">Product</a>
+        <a href="https://a11oy.net">Proof</a>
+        <a href="https://github.com/szl-holdings/szl-command-lab">Source</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="shell">
+    <section class="hero" aria-labelledby="launchpad-title">
+      <div class="hero-copy">
+        <div class="eyebrow">Public estate router · same-origin evidence</div>
+        <h1 id="launchpad-title">Every published artifact. One honest door.</h1>
+        <p class="lede">The Launchpad reads the live SZLHOLDINGS catalog from this source-owned Atlas. It routes to models, datasets, Spaces, and kernels without turning a listing into a readiness claim.</p>
+        <div class="status-line" aria-live="polite">
+          <span class="status" id="source-state" data-state="LOADING">Source · loading</span>
+          <span class="status" id="catalog-state" data-state="LOADING">Catalog · loading</span>
+          <span class="status" id="captured-at">Captured · pending</span>
+        </div>
+        <div class="actions">
+          <a class="button primary" href="#artifacts">Explore live catalog</a>
+          <a class="button secondary" href="/api/build-info">Inspect source binding</a>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="core-title">
+      <div class="section-head">
+        <div><div class="eyebrow">Four canonical paths</div><h2 id="core-title">Understand. Operate. Verify. Build.</h2></div>
+        <p class="section-copy">The product, proof registry, public artifact atlas, and source repository stay separate so each surface can make only the claims it can prove.</p>
+      </div>
+      <div class="core-grid">
+        <a class="core-card" href="https://a-11-oy.com"><span class="index">01 / Operate</span><h3>A11oy</h3><p>Governed product surface for bounded decisions and execution.</p><span class="go">Enter product →</span></a>
+        <a class="core-card" href="https://a11oy.net"><span class="index">02 / Verify</span><h3>Proof registry</h3><p>Receipts, evidence, and diligence—not the product origin.</p><span class="go">Inspect proof →</span></a>
+        <a class="core-card" href="/"><span class="index">03 / Explore</span><h3>SZL Atlas</h3><p>Live inventory, runtime health, and explicit evidence boundaries.</p><span class="go">Open Atlas →</span></a>
+        <a class="core-card" href="https://github.com/szl-holdings"><span class="index">04 / Build</span><h3>GitHub source</h3><p>Canonical code, tests, contracts, and protected change history.</p><span class="go">Read source →</span></a>
+      </div>
+    </section>
+
+    <section id="artifacts" aria-labelledby="artifacts-title">
+      <div class="section-head">
+        <div><div class="eyebrow">Live Hub inventory</div><h2 id="artifacts-title">Search the published estate.</h2></div>
+        <p class="section-copy">Results come from <code>/api/catalog</code>. Missing provider families remain partial or unavailable; they are never synthesized.</p>
+      </div>
+      <div class="toolbar">
+        <label><span class="eyebrow">Search</span><input class="field" id="search" type="search" placeholder="Search by name, tag, pipeline, or library" autocomplete="off"></label>
+        <label><span class="eyebrow">Type</span><select class="field" id="type"><option value="all">All published types</option><option value="model">Models</option><option value="dataset">Datasets</option><option value="space">Spaces</option><option value="kernel">Kernels</option></select></label>
+      </div>
+      <div class="summary" id="summary" aria-live="polite"></div>
+      <div class="assets" id="assets" aria-live="polite"><div class="empty">Loading live catalog…</div></div>
+    </section>
+
+    <section aria-labelledby="boundary-title">
+      <div class="boundary">
+        <div class="eyebrow">Evidence boundary</div>
+        <h2 id="boundary-title">A registry row is not a production certificate.</h2>
+        <p><strong>Listing and reachability prove only what they directly observe.</strong> They do not prove operational readiness, model quality, safety, authorization, regulatory approval, customer adoption, or investment performance. Each artifact owns its lineage, evaluation, limitations, and release evidence.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer><div class="shell">SZL Holdings · source-bound public artifact routing · Λ uniqueness remains Conjecture 1 · no production authorization is implied.</div></footer>
+
+  <script>
+    const state={assets:[],query:"",type:"all"};
+    const $=selector=>document.querySelector(selector);
+    const safeText=value=>typeof value==="string"?value:"";
+    const allowedHref=value=>{
+      if(typeof value!=="string")return null;
+      try{
+        const url=new URL(value);
+        return url.protocol==="https:"&&["huggingface.co","github.com","a-11-oy.com","a11oy.net"].includes(url.hostname)?url.href:null;
+      }catch{return null}
+    };
+    function metric(label,value){
+      const node=document.createElement("span");
+      node.className="metric";
+      node.textContent=`${label} · ${value}`;
+      return node;
+    }
+    function renderSummary(catalog,shown){
+      const root=$("#summary");root.replaceChildren();
+      const counts=catalog&&catalog.counts?catalog.counts:{};
+      root.append(
+        metric("shown",String(shown)),
+        metric("models",String(counts.models??0)),
+        metric("datasets",String(counts.datasets??0)),
+        metric("spaces",String(counts.spaces??0)),
+        metric("kernels",String(counts.kernels??0))
+      );
+    }
+    function card(asset){
+      const href=allowedHref(asset.href);
+      const node=document.createElement(href?"a":"article");
+      node.className="asset-card";
+      if(href){node.href=href;node.target="_blank";node.rel="noopener noreferrer"}
+      const top=document.createElement("div");top.className="asset-top";
+      const wrap=document.createElement("div");
+      const index=document.createElement("span");index.className="index";index.textContent="Published artifact";
+      const title=document.createElement("h3");title.textContent=safeText(asset.slug)||"Unnamed";
+      const id=document.createElement("div");id.className="asset-id";id.textContent=safeText(asset.id);
+      wrap.append(index,title,id);
+      const type=document.createElement("span");type.className="asset-type";type.textContent=safeText(asset.type)||"asset";
+      top.append(wrap,type);
+      const description=document.createElement("p");
+      const facts=[asset.pipeline,asset.library].filter(Boolean).map(safeText);
+      description.textContent=facts.length?facts.join(" · "):"No pipeline or library claim published.";
+      const meta=document.createElement("div");meta.className="asset-meta";
+      const tags=Array.isArray(asset.tags)?asset.tags.slice(0,3).map(safeText).filter(Boolean):[];
+      [asset.downloads!=null?`downloads ${asset.downloads}`:null,asset.likes!=null?`likes ${asset.likes}`:null,...tags].filter(Boolean).forEach(value=>{
+        const span=document.createElement("span");span.textContent=value;meta.append(span);
+      });
+      node.append(top,description,meta);
+      return node;
+    }
+    function render(){
+      const query=state.query.trim().toLowerCase();
+      const visible=state.assets.filter(asset=>{
+        if(state.type!=="all"&&asset.type!==state.type)return false;
+        if(!query)return true;
+        const haystack=[asset.id,asset.slug,asset.type,asset.pipeline,asset.library,...(Array.isArray(asset.tags)?asset.tags:[])].map(safeText).join(" ").toLowerCase();
+        return haystack.includes(query);
+      });
+      const root=$("#assets");root.replaceChildren();
+      if(!visible.length){
+        const empty=document.createElement("div");empty.className="empty";empty.textContent=state.assets.length?"No published artifacts match this filter.":"No public catalog rows are currently available.";root.append(empty);
+      }else visible.forEach(asset=>root.append(card(asset)));
+      renderSummary(window.__catalog||{},visible.length);
+    }
+    async function loadBuild(){
+      const badge=$("#source-state");
+      try{
+        const response=await fetch("/api/build-info",{cache:"no-store"});
+        const build=await response.json();
+        const revision=build.source_revision?build.source_revision.slice(0,12):"UNAVAILABLE";
+        badge.dataset.state=build.state||"ERROR";
+        badge.textContent=`Source · ${build.state||"ERROR"} · ${revision}`;
+      }catch{
+        badge.dataset.state="ERROR";badge.textContent="Source · unavailable";
+      }
+    }
+    async function loadCatalog(){
+      const badge=$("#catalog-state");
+      try{
+        const response=await fetch("/api/catalog",{cache:"no-store"});
+        const catalog=await response.json();
+        window.__catalog=catalog;
+        state.assets=Array.isArray(catalog.assets)?catalog.assets:[];
+        badge.dataset.state=catalog.state||"ERROR";
+        badge.textContent=`Catalog · ${catalog.state||"ERROR"}`;
+        $("#captured-at").textContent=`Captured · ${catalog.captured_at||"UNAVAILABLE"}`;
+        render();
+      }catch{
+        badge.dataset.state="ERROR";badge.textContent="Catalog · unavailable";
+        $("#assets").innerHTML='<div class="empty">The live catalog could not be read. No fallback inventory was invented.</div>';
+      }
+    }
+    $("#search").addEventListener("input",event=>{state.query=event.target.value;render()});
+    $("#type").addEventListener("change",event=>{state.type=event.target.value;render()});
+    Promise.all([loadBuild(),loadCatalog()]);
+  </script>
+</body>
+</html>
