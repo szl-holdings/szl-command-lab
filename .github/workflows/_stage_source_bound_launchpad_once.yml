@@ -1,0 +1,97 @@
+# SPDX-License-Identifier: Apache-2.0
+name: Stage source-bound SZL Launchpad once
+
+on:
+  push:
+    branches:
+      - feat/source-bound-launchpad-20260906
+    paths:
+      - .github/workflows/_stage_source_bound_launchpad_once.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: stage-source-bound-launchpad-once
+  cancel-in-progress: false
+
+jobs:
+  stage:
+    if: github.repository == 'szl-holdings/szl-command-lab' && github.ref == 'refs/heads/feat/source-bound-launchpad-20260906'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Harden runner
+        uses: step-security/harden-runner@05e31511f85b41b11d1cf0ef85d0992719546e2c # v2.21.0
+        with:
+          egress-policy: audit
+
+      - name: Check out exact staging source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: true
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12.10"
+
+      - name: Patch source-owned runtime routes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from __future__ import annotations
+
+          from pathlib import Path
+
+          def replace_once(path: str, old: str, new: str) -> None:
+              target = Path(path)
+              text = target.read_text(encoding="utf-8")
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f"{path}: expected one anchor, observed {count}")
+              target.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+          replace_once("Dockerfile", 'COPY server.py ./server.py\nCOPY space/index.html ./index.html', 'COPY server.py ./server.py\nCOPY space/index.html ./index.html\nCOPY space/launchpad.html ./launchpad.html\nCOPY deployment.json ./deployment.json')
+          replace_once("server.py", 'def build_info() -> dict[str, Any]:\n    revision = os.environ.get("SZL_GIT_SHA") or os.environ.get("GITHUB_SHA") or ""\n    return {\n        "schema": "szl.atlas.build/v1",\n        "service": "szl-command-lab",\n        "surface": "SZL Atlas",\n        "source_repository": "szl-holdings/szl-command-lab",\n        "source_revision": revision if SHA_RE.fullmatch(revision) else None,\n        "state": "SOURCE_BOUND" if SHA_RE.fullmatch(revision) else "REVISION_UNAVAILABLE",\n        "generated_at": utc_now(),\n    }', 'def _deployment_receipt() -> dict[str, Any] | None:\n    path = HERE / "deployment.json"\n    try:\n        payload = json.loads(path.read_text(encoding="utf-8"))\n    except (OSError, json.JSONDecodeError, UnicodeDecodeError):\n        return None\n    if not isinstance(payload, dict) or payload.get("schema") != "szl.source-deployment/v1":\n        return None\n    source = payload.get("source")\n    target = payload.get("target")\n    if not isinstance(source, dict) or not isinstance(target, dict):\n        return None\n    revision = source.get("revision")\n    if source.get("repository") != "szl-holdings/szl-command-lab":\n        return None\n    if not isinstance(revision, str) or not SHA_RE.fullmatch(revision):\n        return None\n    if target.get("repo_id") != "SZLHOLDINGS/szl-command-lab":\n        return None\n    if target.get("repo_type") != "space":\n        return None\n    return payload\n\n\ndef build_info() -> dict[str, Any]:\n    environment_revision = os.environ.get("SZL_GIT_SHA") or os.environ.get("GITHUB_SHA") or ""\n    if not SHA_RE.fullmatch(environment_revision):\n        environment_revision = ""\n    receipt = _deployment_receipt()\n    receipt_revision = ""\n    if receipt is not None:\n        source = receipt.get("source")\n        if isinstance(source, dict) and isinstance(source.get("revision"), str):\n            receipt_revision = source["revision"]\n\n    observed = {value for value in (environment_revision, receipt_revision) if value}\n    if len(observed) > 1:\n        revision = None\n        state = "SOURCE_CONFLICT"\n        binding = "conflicting-runtime-evidence"\n    elif observed:\n        revision = next(iter(observed))\n        state = "SOURCE_BOUND"\n        if environment_revision and receipt_revision:\n            binding = "deployment.json+runtime-environment"\n        elif receipt_revision:\n            binding = "deployment.json"\n        else:\n            binding = "runtime-environment"\n    else:\n        revision = None\n        state = "REVISION_UNAVAILABLE"\n        binding = None\n\n    return {\n        "schema": "szl.atlas.build/v1",\n        "service": "szl-command-lab",\n        "surface": "SZL Atlas",\n        "source_repository": "szl-holdings/szl-command-lab",\n        "source_revision": revision,\n        "state": state,\n        "binding": binding,\n        "generated_at": utc_now(),\n    }\n\n\ndef deployment_status_document() -> dict[str, Any]:\n    receipt = _deployment_receipt()\n    if receipt is not None:\n        return receipt\n    info = build_info()\n    return {\n        "schema": "szl.source-deployment/v1",\n        "source": {\n            "repository": "szl-holdings/szl-command-lab",\n            "revision": info["source_revision"],\n        },\n        "target": {\n            "repo_id": "SZLHOLDINGS/szl-command-lab",\n            "repo_type": "space",\n            "origin": "https://szlholdings-szl-command-lab.hf.space",\n        },\n        "state": info["state"],\n        "claim_boundary": (\n            "No valid exact-revision deployment receipt is present. "\n            "Reachability is not source authority."\n        ),\n    }')
+          replace_once("server.py", 'def _load_index() -> bytes:\n    path = HERE / "index.html"\n    try:\n        data = path.read_bytes()\n        if not data or len(data) > 2_000_000:\n            raise ValueError("index.html missing or outside size boundary")\n        return data\n    except (OSError, ValueError):\n        return (\n            "<!doctype html><html lang=\'en\'><meta charset=\'utf-8\'>"\n            "<meta name=\'viewport\' content=\'width=device-width,initial-scale=1\'>"\n            "<title>SZL Atlas</title><body><main><h1>SZL Atlas</h1>"\n            "<p>The public interface is temporarily unavailable. API health remains at /healthz.</p>"\n            "</main></body></html>"\n        ).encode("utf-8")', 'def _load_html(filename: str) -> bytes:\n    if filename not in {"index.html", "launchpad.html"}:\n        raise ValueError(f"unsupported HTML asset: {filename}")\n    path = HERE / filename\n    try:\n        data = path.read_bytes()\n        if not data or len(data) > 2_000_000:\n            raise ValueError(f"{filename} missing or outside size boundary")\n        return data\n    except (OSError, ValueError):\n        title = "SZL Launchpad" if filename == "launchpad.html" else "SZL Atlas"\n        return (\n            "<!doctype html><html lang=\'en\'><meta charset=\'utf-8\'>"\n            "<meta name=\'viewport\' content=\'width=device-width,initial-scale=1\'>"\n            f"<title>{title}</title><body><main><h1>{title}</h1>"\n            "<p>The public interface is temporarily unavailable. "\n            "API health remains at /healthz.</p>"\n            "</main></body></html>"\n        ).encode("utf-8")')
+          replace_once("server.py", 'JSON_PATHS = {\n    "/healthz",\n    "/readyz",\n    "/api/build-info",\n    "/api/catalog",\n    "/api/estate",\n    "/api/energy",\n    "/api/organs/integrity",\n    "/v1/organs/integrity",\n}\nHTML_PATHS = {"/", "/index.html"}', 'JSON_PATHS = {\n    "/healthz",\n    "/readyz",\n    "/api/build-info",\n    "/deployment.json",\n    "/api/catalog",\n    "/api/estate",\n    "/api/energy",\n    "/api/organs/integrity",\n    "/v1/organs/integrity",\n}\nHTML_PATHS = {"/", "/index.html", "/launchpad", "/launchpad.html"}')
+          replace_once("server.py", '        if path == "/api/build-info":\n            self._send_json(200, build_info())\n            return\n        if path == "/api/catalog":', '        if path == "/api/build-info":\n            self._send_json(200, build_info())\n            return\n        if path == "/deployment.json":\n            receipt = _deployment_receipt()\n            self._send_json(200 if receipt is not None else 503, deployment_status_document())\n            return\n        if path == "/api/catalog":')
+          replace_once("server.py", '        if path in HTML_PATHS:\n            raw = _load_index()\n            self.send_response(200)\n            self.send_header("Content-Type", "text/html; charset=utf-8")\n            self.send_header("Content-Length", str(len(raw)))\n            self.send_header("Cache-Control", "no-store")\n            self._common_headers()\n            self.end_headers()\n            self.wfile.write(raw)\n            return', '        if path in HTML_PATHS:\n            filename = "launchpad.html" if path in {"/launchpad", "/launchpad.html"} else "index.html"\n            raw = _load_html(filename)\n            self.send_response(200)\n            self.send_header("Content-Type", "text/html; charset=utf-8")\n            self.send_header("Content-Length", str(len(raw)))\n            self.send_header("Cache-Control", "no-store")\n            self._common_headers()\n            self.end_headers()\n            self.wfile.write(raw)\n            return')
+          PY
+          chmod +x scripts/publish_hf_space.py
+
+      - name: Verify source, routes, publisher, and accessibility contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check pytest ruff
+          python -m py_compile server.py scripts/publish_hf_space.py tests/test_source_bound_launchpad.py
+          ruff check server.py scripts/publish_hf_space.py tests/test_source_bound_launchpad.py --select E9,F
+          pytest -q tests
+          preview="$(mktemp -d)"
+          python scripts/publish_hf_space.py \
+            --source-sha "$(printf 'a%.0s' {1..40})" \
+            --materialize "$preview" \
+            --report /tmp/szl-command-lab-materialization.json
+          test "$(find "$preview" -type f | wc -l)" -eq 8
+          git diff --check
+
+      - name: Commit permanent route changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          branch=feat/source-bound-launchpad-20260906
+          remote_head="$(git ls-remote origin "refs/heads/$branch" | cut -f1)"
+          test "$remote_head" = "$GITHUB_SHA"
+          git add -- Dockerfile server.py
+          git diff --cached --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -s -m 'feat(atlas): serve source-bound Launchpad and receipt' \
+            -m 'Add the Launchpad and deployment receipt to the Docker closure, expose same-origin routes, and fail closed on missing or conflicting source revisions.'
+          test "$(git ls-remote origin "refs/heads/$branch" | cut -f1)" = "$GITHUB_SHA"
+          git push origin "HEAD:refs/heads/$branch"
