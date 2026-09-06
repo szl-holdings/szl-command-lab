@@ -1,0 +1,40 @@
+name: Sync canonical SZL Atlas to Hugging Face Space
+
+"on":
+  push:
+    branches: [main]
+    paths:
+      - Dockerfile
+      - server.py
+      - gateway.py
+      - space/**
+      - README.md
+      - .github/workflows/hf-sync.yml
+  workflow_dispatch: {}
+
+concurrency:
+  group: szl-command-lab-hf-release
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+jobs:
+  deploy:
+    name: Deploy, source-bind, and attest exact Atlas
+    uses: szl-holdings/.github/.github/workflows/reusable-hf-deploy.yml@3537cba978d018c7c924ab1f90e18c0f879eb886
+    with:
+      hf-repo: SZLHOLDINGS/szl-command-lab
+      ref: ${{ github.sha }}
+      require-default-branch-tip: true
+      dockerfile-path: Dockerfile
+      include-readme: true
+      prune: true
+      wait-running: 1200
+      source-revision-variable: SZL_GIT_SHA
+      source-revision-probe-path: /api/build-info
+      smoke-paths: '["/","/launchpad","/api/build-info","/api/launchpad","/healthz"]'
+    secrets:
+      HF_TOKEN: ${{ secrets.HF_ORG_TOKEN || secrets.HF_TOKEN }}

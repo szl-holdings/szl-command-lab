@@ -33,8 +33,8 @@ tags:
 
 ### Governed intelligence. Portable evidence.
 
-The public explorer for SZL systems, models, kernels, datasets, and their
-verification boundaries.
+The public explorer and source-bound Launchpad for SZL systems, models, kernels,
+datasets, and their verification boundaries.
 
 [**Open the live Atlas**](https://huggingface.co/spaces/SZLHOLDINGS/szl-command-lab) ·
 [**Enter A11oy**](https://a-11-oy.com) ·
@@ -52,6 +52,8 @@ presents:
 - all publicly listed models, first-class kernels, datasets, and Spaces;
 - curated paths into A11oy, Killinchu, Lyte, Sentra, Terra, PURIQ Finance,
   PRISM Counsel, Living Anatomy, and the Khipu runtime;
+- a source-controlled Launchpad whose registered links remain navigation
+  metadata—not liveness, capability, authorization, or readiness claims;
 - model and evidence spotlights driven by provider metadata rather than
   hard-coded performance claims;
 - a bounded five-organ demonstration that fail-closes when an input, receipt
@@ -64,9 +66,11 @@ presents:
 | Route | Purpose | Evidence boundary |
 | --- | --- | --- |
 | `GET /` | Responsive public Atlas | Presentation is navigation, not proof of readiness |
+| `GET /launchpad` | Source-bound Atlas navigation registry | A registered destination is not a liveness or capability certificate |
 | `GET /healthz` | Runtime and organ health | Reachability does not establish capability or authorization |
 | `GET /api/catalog` | Live public Hub catalog | Private assets are excluded; unavailable provider data is not inferred |
 | `GET /api/estate` | Bounded probes of selected public Spaces | HTTP 200 proves reachability only |
+| `GET /api/launchpad` | Source-controlled registered route metadata | Registration is not availability, freshness, or production readiness |
 | `GET /api/organs/integrity` | Five-organ governed-loop demonstration | Healthy output remains advisory and never self-authorizes |
 | `GET /api/energy` | RAPL/NVML runtime probe | Joules are reported only when a readable counter exists |
 | `GET /api/build-info` | Source-binding metadata | Missing runtime revision is labeled `REVISION_UNAVAILABLE` |
@@ -75,7 +79,7 @@ presents:
 
 The model proposes. Independent policy decides. A human binds consequential
 action. The Atlas does not convert a formula, model response, download count,
-HTTP response, or signature into permission.
+HTTP response, link registration, or signature into permission.
 
 - Lambda uniqueness remains **Conjecture 1 — OPEN**.
 - `proven_trust` remains `false` in the demonstration.
@@ -92,22 +96,32 @@ HTTP response, or signature into permission.
 Hugging Face public APIs ─┐
 selected runtime probes ─┼─> catalog + estate state ─> responsive Atlas
 five-organ kernel ───────┤
-RAPL / NVML probe ───────┘
+RAPL / NVML probe ───────┤
+source route registry ───┘                         └─> source-bound Launchpad
 
 signal → proposal → policy → bounded action → receipt → verification
 ```
 
 The Docker Space intentionally uses a compact standard-library Python server.
-`Dockerfile` publishes the exact `server.py` and `space/index.html` closure.
-Provider mutation is owned by the protected central publisher in
-`szl-holdings/.github`; this repository retains the source and delegation
-contract.
+`gateway.py` composes the permanent `/launchpad` and `/api/launchpad` routes
+onto the existing `server.Handler`; all other Atlas routes continue through the
+original handler. `Dockerfile` publishes the exact `server.py`, `gateway.py`,
+`space/index.html`, and `space/launchpad.html` closure.
+
+Provider mutation is owned by the protected central reusable publisher in
+`szl-holdings/.github`. The thin caller in `.github/workflows/hf-sync.yml` pins
+that publisher to an immutable commit, deploys only the Dockerfile-derived file
+set, requires the exact default-branch tip, binds `SZL_GIT_SHA`, and verifies
+same-origin smoke routes before success. This repository retains the canonical
+source and delegation contract; the Hugging Face Space is the generated runtime
+mirror.
 
 ## Run locally
 
 ```bash
-python server.py
+python gateway.py
 # open http://127.0.0.1:7860
+# open http://127.0.0.1:7860/launchpad
 ```
 
 Optional environment variables:
@@ -121,13 +135,20 @@ SZL_GIT_SHA=<exact-40-character-source-revision>
 ## Verification
 
 ```bash
-python -m py_compile server.py
+python -m py_compile server.py gateway.py
 python - <<'PY'
+import gateway
 import server
+
 assert server.selftest()["ok"] is True
 assert server.build_info()["surface"] == "SZL Atlas"
-print("atlas self-test: PASS")
+launchpad = gateway.launchpad_payload()
+assert launchpad["schema"] == "szl.atlas.launchpad/v1"
+assert launchpad["state"] == "REGISTERED_NAVIGATION"
+assert launchpad["public_effectors"] == []
+print("atlas + launchpad self-test: PASS")
 PY
+pytest -q tests
 ```
 
 The canonical source is
