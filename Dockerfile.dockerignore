@@ -1,0 +1,8 @@
+*
+!.gitattributes
+!Dockerfile
+!README.md
+!server.py
+!deployment.json
+!space/index.html
+!space/launchpad.html
