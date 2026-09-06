@@ -37,4 +37,8 @@ jobs:
       source-revision-probe-path: /api/build-info
       smoke-paths: '["/","/launchpad","/api/build-info","/api/launchpad","/healthz"]'
     secrets:
-      HF_TOKEN: ${{ secrets.HF_ORG_TOKEN || secrets.HF_TOKEN }}
+      # Preserve the estate-wide, actively validated publisher precedence. An
+      # undefined alias evaluates to an empty string; no credential value is
+      # printed, persisted, inherited wholesale, or passed anywhere except the
+      # reusable deployer's single declared HF_TOKEN input.
+      HF_TOKEN: ${{ secrets.HF_ORG_TOKEN || secrets.HF_ORG_TOKEN1 || secrets.HF_WRITE_TOKEN || secrets.HF_TOKEN || secrets.HUGGINGFACE_TOKEN || secrets.HUGGING_FACE_HUB_TOKEN }}
