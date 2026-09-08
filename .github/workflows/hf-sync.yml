@@ -35,7 +35,7 @@ jobs:
       wait-running: 1200
       source-revision-variable: SZL_GIT_SHA
       source-revision-probe-path: /api/build-info
-      smoke-paths: '["/","/launchpad","/api/build-info","/api/launchpad","/healthz"]'
+      smoke-paths: '["/","/launchpad","/api/build-info","/api/launchpad","/healthz","/readyz","/api/yarqa"]'
     secrets:
       # Preserve the estate-wide, actively validated publisher precedence. An
       # undefined alias evaluates to an empty string; no credential value is

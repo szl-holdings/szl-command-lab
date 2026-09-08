@@ -27,6 +27,20 @@ SOURCE_LAUNCHPAD_PATH = HERE / "space" / "launchpad.html"
 MAX_LAUNCHPAD_BYTES = 512 * 1024
 LAUNCHPAD_HTML_PATHS = frozenset({"/launchpad", "/launchpad.html"})
 LAUNCHPAD_API_PATH = "/api/launchpad"
+MAX_PUBLIC_ASSET_BYTES = 512 * 1024
+PUBLIC_ASSET_SPECS: dict[str, tuple[tuple[Path, ...], str, tuple[str, ...]]] = {
+    "/szl-holo-v2.css": (
+        (HERE / "szl-holo-v2.css", HERE / "space" / "szl-holo-v2.css"),
+        "text/css; charset=utf-8",
+        ("SZL Public Experience v3", "--szl-touch-target"),
+    ),
+    "/szl-holo-v2.js": (
+        (HERE / "szl-holo-v2.js", HERE / "space" / "szl-holo-v2.js"),
+        "text/javascript; charset=utf-8",
+        ("__SZL_PUBLIC_EXPERIENCE_V3__", "szlPublicExperienceV3"),
+    ),
+}
+PUBLIC_ASSET_PATHS = frozenset(PUBLIC_ASSET_SPECS)
 
 
 def _unavailable_launchpad(reason: str) -> bytes:
@@ -78,6 +92,42 @@ def _load_launchpad() -> tuple[int, bytes, str]:
             failures.append(f"{path.name}:unavailable")
     reason = ",".join(failures) or "no-candidate"
     return 503, _unavailable_launchpad(reason), "UNAVAILABLE"
+
+
+def _load_public_asset(request_path: str) -> tuple[int, bytes, str]:
+    """Load one allowlisted, bounded asset and fail closed on source drift."""
+    spec = PUBLIC_ASSET_SPECS.get(request_path)
+    if spec is None:
+        return 404, b"not found\n", "text/plain; charset=utf-8"
+
+    candidates, content_type, required_markers = spec
+    failures: list[str] = []
+    for path in candidates:
+        try:
+            if path.is_symlink():
+                failures.append(f"{path.name}:symlink")
+                continue
+            metadata = path.stat(follow_symlinks=False)
+            if not stat.S_ISREG(metadata.st_mode):
+                failures.append(f"{path.name}:not-regular")
+                continue
+            if metadata.st_size <= 0 or metadata.st_size > MAX_PUBLIC_ASSET_BYTES:
+                failures.append(f"{path.name}:size-boundary")
+                continue
+            raw = path.read_bytes()
+            if len(raw) != metadata.st_size or len(raw) > MAX_PUBLIC_ASSET_BYTES:
+                failures.append(f"{path.name}:unstable-read")
+                continue
+            text = raw.decode("utf-8")
+            if any(marker not in text for marker in required_markers):
+                failures.append(f"{path.name}:contract-mismatch")
+                continue
+            return 200, raw, content_type
+        except (OSError, UnicodeDecodeError):
+            failures.append(f"{path.name}:unavailable")
+
+    reason = ",".join(failures) or "no-candidate"
+    return 503, f"asset unavailable: {reason}\n".encode("utf-8"), "text/plain; charset=utf-8"
 
 
 def launchpad_payload() -> dict[str, Any]:
@@ -141,8 +191,25 @@ class Handler(server.Handler):
 
     server_version = "SZLAtlasGateway/1.0"
 
+    def _send_public_asset(self, path: str, *, include_body: bool) -> None:
+        status, raw, content_type = _load_public_asset(path)
+        self.send_response(status)
+        self.send_header("Content-Type", content_type)
+        self.send_header("Content-Length", str(len(raw)))
+        self.send_header(
+            "Cache-Control",
+            "public, max-age=300, must-revalidate" if status == 200 else "no-store",
+        )
+        self._common_headers()
+        self.end_headers()
+        if include_body:
+            self.wfile.write(raw)
+
     def do_HEAD(self) -> None:  # noqa: N802
         path = urlparse(self.path).path.rstrip("/") or "/"
+        if path in PUBLIC_ASSET_PATHS:
+            self._send_public_asset(path, include_body=False)
+            return
         if path in LAUNCHPAD_HTML_PATHS:
             status, raw, _state = _load_launchpad()
             self.send_response(status)
@@ -168,6 +235,9 @@ class Handler(server.Handler):
 
     def do_GET(self) -> None:  # noqa: N802
         path = urlparse(self.path).path.rstrip("/") or "/"
+        if path in PUBLIC_ASSET_PATHS:
+            self._send_public_asset(path, include_body=True)
+            return
         if path in LAUNCHPAD_HTML_PATHS:
             status, raw, _state = _load_launchpad()
             self.send_response(status)

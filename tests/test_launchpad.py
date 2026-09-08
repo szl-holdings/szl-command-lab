@@ -6,6 +6,7 @@ import gateway
 import server
 
 ROOT = Path(__file__).parents[1]
+INDEX = ROOT / "space" / "index.html"
 LAUNCHPAD = ROOT / "space" / "launchpad.html"
 DOCKERFILE = ROOT / "Dockerfile"
 DEPLOY_WORKFLOW = ROOT / ".github" / "workflows" / "hf-sync.yml"
@@ -100,6 +101,26 @@ def test_gateway_preserves_existing_atlas_handler_and_routes() -> None:
     assert "main" in gateway.__dict__
 
 
+def test_holographic_assets_are_source_bound_and_runtime_served() -> None:
+    index = INDEX.read_text(encoding="utf-8")
+    assert 'href="/szl-holo-v2.css"' in index
+    assert 'src="/szl-holo-v2.js"' in index
+    assert gateway.PUBLIC_ASSET_PATHS == frozenset(
+        {"/szl-holo-v2.css", "/szl-holo-v2.js"}
+    )
+
+    for path, expected_type in (
+        ("/szl-holo-v2.css", "text/css; charset=utf-8"),
+        ("/szl-holo-v2.js", "text/javascript; charset=utf-8"),
+    ):
+        status, raw, content_type = gateway._load_public_asset(path)
+        assert status == 200
+        assert 0 < len(raw) <= gateway.MAX_PUBLIC_ASSET_BYTES
+        assert content_type == expected_type
+
+    assert gateway._load_public_asset("/not-allowlisted.txt")[0] == 404
+
+
 def test_docker_runtime_ships_and_starts_the_permanent_gateway() -> None:
     text = DOCKERFILE.read_text(encoding="utf-8")
 
@@ -108,6 +129,8 @@ def test_docker_runtime_ships_and_starts_the_permanent_gateway() -> None:
         "COPY gateway.py ./gateway.py",
         "COPY space/index.html ./index.html",
         "COPY space/launchpad.html ./launchpad.html",
+        "COPY space/szl-holo-v2.css ./szl-holo-v2.css",
+        "COPY space/szl-holo-v2.js ./szl-holo-v2.js",
         'CMD ["python", "-u", "gateway.py"]',
     ):
         assert marker in text
@@ -128,7 +151,7 @@ def test_hugging_face_deploy_uses_the_central_exact_source_publisher() -> None:
         "source-revision-probe-path: /api/build-info",
         "wait-running: 1200",
         "prune: true",
-        'smoke-paths: \'["/","/launchpad","/api/build-info","/api/launchpad","/healthz"]\'',
+        'smoke-paths: \'["/","/launchpad","/api/build-info","/api/launchpad","/healthz","/readyz","/api/yarqa"]\'',
         HF_PUBLISHER_SECRET_EXPRESSION,
     ):
         assert marker in text

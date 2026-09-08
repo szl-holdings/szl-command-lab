@@ -38,6 +38,9 @@ MAX_PROVIDER_BYTES = 8_000_000
 CATALOG_TTL_SECONDS = 120
 ESTATE_TTL_SECONDS = 30
 SHA_RE = re.compile(r"^[0-9a-f]{40}$")
+YARQA_SOURCE_REPOSITORY = "szl-holdings/yarqa"
+YARQA_SOURCE_REVISION = "a5e74026ee0c24f45a0b0405ee849720ca520302"
+YARQA_RUNTIME_VERSION = "0.5.0"
 
 
 def utc_now() -> str:
@@ -46,6 +49,105 @@ def utc_now() -> str:
 
 def sha256_hex(value: str) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()
+
+
+def _load_yarqa_runtime() -> tuple[Any, Any, Any, Any, str]:
+    import numpy as np  # type: ignore
+    import yarqa  # type: ignore
+    from yarqa import Mesh, compartmentalize_with_receipt, verify  # type: ignore
+
+    return np, Mesh, compartmentalize_with_receipt, verify, str(yarqa.__version__)
+
+
+def run_yarqa_demo() -> dict[str, Any]:
+    """Execute one bounded synthetic YARQA run and replay its integrity receipt."""
+    observed_revision = os.environ.get("SZL_YARQA_SHA", "")
+    source_binding = "BOUND" if observed_revision == YARQA_SOURCE_REVISION else "UNBOUND_LOCAL"
+    if observed_revision and observed_revision != YARQA_SOURCE_REVISION:
+        return {
+            "schema": "szl.atlas.yarqa/v1",
+            "ok": False,
+            "state": "FAILED_CLOSED",
+            "failure_code": "YARQA_SOURCE_MISMATCH",
+            "source": {
+                "repository": YARQA_SOURCE_REPOSITORY,
+                "revision": YARQA_SOURCE_REVISION,
+                "binding": "MISMATCH",
+            },
+            "boundary": "No result is admitted when the installed source binding differs.",
+        }
+
+    try:
+        np, Mesh, compartmentalize_with_receipt, verify, runtime_version = _load_yarqa_runtime()
+        if runtime_version != YARQA_RUNTIME_VERSION:
+            raise RuntimeError("unexpected YARQA runtime version")
+        centers = np.asarray(
+            [[0.0, 0.0], [1.0, 0.0], [2.0, 0.0], [3.0, 0.0], [4.0, 0.0], [5.0, 0.0]],
+            dtype=float,
+        )
+        velocities = np.asarray(
+            [[1.0, 0.0], [1.0, 0.0], [1.0, 0.0], [0.8, 0.2], [0.8, 0.2], [0.8, 0.2]],
+            dtype=float,
+        )
+        neighbors = [
+            np.asarray([1], dtype=int),
+            np.asarray([0, 2], dtype=int),
+            np.asarray([1, 3], dtype=int),
+            np.asarray([2, 4], dtype=int),
+            np.asarray([3, 5], dtype=int),
+            np.asarray([4], dtype=int),
+        ]
+        mesh = Mesh(centers=centers, velocities=velocities, neighbors=neighbors)
+        labels, receipt = compartmentalize_with_receipt(mesh, align_threshold=0.0)
+        verification = verify(mesh, receipt)
+        admitted = bool(verification.get("ok")) and len(labels) == len(centers)
+        if not admitted:
+            raise RuntimeError("receipt replay did not admit the result")
+        return {
+            "schema": "szl.atlas.yarqa/v1",
+            "ok": True,
+            "state": "READY",
+            "failure_code": None,
+            "source": {
+                "repository": YARQA_SOURCE_REPOSITORY,
+                "revision": YARQA_SOURCE_REVISION,
+                "version": runtime_version,
+                "binding": source_binding,
+            },
+            "input": {
+                "kind": "SYNTHETIC_CANONICAL",
+                "cells": int(len(centers)),
+                "align_threshold": 0.0,
+            },
+            "result": {
+                "labels": [int(value) for value in labels.tolist()],
+                "n_compartments": int(receipt.n_compartments),
+            },
+            "receipt": {
+                "digest": receipt.receipt_digest(),
+                "claim_tier": receipt.claim_tier,
+                "verification": verification,
+                "signed": False,
+            },
+            "boundary": (
+                "The replay verifies integrity and reproducibility for this synthetic input; "
+                "it does not prove CFD correctness or authorize an external action."
+            ),
+        }
+    except Exception:
+        return {
+            "schema": "szl.atlas.yarqa/v1",
+            "ok": False,
+            "state": "UNAVAILABLE",
+            "failure_code": "YARQA_RUNTIME_UNAVAILABLE",
+            "source": {
+                "repository": YARQA_SOURCE_REPOSITORY,
+                "revision": YARQA_SOURCE_REVISION,
+                "version": YARQA_RUNTIME_VERSION,
+                "binding": source_binding,
+            },
+            "boundary": "No labels or receipt are fabricated when the pinned runtime cannot execute.",
+        }
 
 
 # Prefer the source-bound substrate modules installed by the Dockerfile. The
@@ -661,6 +763,18 @@ def build_info() -> dict[str, Any]:
         "source_repository": "szl-holdings/szl-command-lab",
         "source_revision": revision if SHA_RE.fullmatch(revision) else None,
         "state": "SOURCE_BOUND" if SHA_RE.fullmatch(revision) else "REVISION_UNAVAILABLE",
+        "components": {
+            "yarqa": {
+                "repository": YARQA_SOURCE_REPOSITORY,
+                "revision": YARQA_SOURCE_REVISION,
+                "version": YARQA_RUNTIME_VERSION,
+                "binding": (
+                    "BOUND"
+                    if os.environ.get("SZL_YARQA_SHA") == YARQA_SOURCE_REVISION
+                    else "UNBOUND_OR_MISMATCHED"
+                ),
+            }
+        },
         "generated_at": utc_now(),
     }
 
@@ -689,6 +803,7 @@ JSON_PATHS = {
     "/api/catalog",
     "/api/estate",
     "/api/energy",
+    "/api/yarqa",
     "/api/organs/integrity",
     "/v1/organs/integrity",
 }
@@ -715,7 +830,10 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_HEAD(self) -> None:  # noqa: N802
         path = urlparse(self.path).path.rstrip("/") or "/"
-        status = 200 if path in HTML_PATHS or path in JSON_PATHS else 404
+        if path in {"/readyz", "/api/yarqa"}:
+            status = 200 if run_yarqa_demo().get("ok") is True else 503
+        else:
+            status = 200 if path in HTML_PATHS or path in JSON_PATHS else 404
         self.send_response(status)
         self.send_header(
             "Content-Type",
@@ -733,14 +851,25 @@ class Handler(BaseHTTPRequestHandler):
 
         if path in {"/healthz", "/readyz"}:
             body = evaluate_anatomy(seed=11)
+            yarqa = run_yarqa_demo()
+            ready = yarqa.get("ok") is True
+            status = 200 if path == "/healthz" or ready else 503
             self._send_json(
-                200,
+                status,
                 {
-                    "ok": True,
+                    "ok": True if path == "/healthz" else ready,
+                    "ready": ready,
                     "service": "szl-command-lab",
                     "surface": "SZL Atlas",
                     "organs": body.get("live_count"),
                     "energy": probe(),
+                    "yarqa": {
+                        "state": yarqa.get("state"),
+                        "source_revision": YARQA_SOURCE_REVISION,
+                        "receipt_replay": bool(
+                            (yarqa.get("receipt") or {}).get("verification", {}).get("ok")
+                        ),
+                    },
                     "proven_trust": False,
                     "channel": "LIVE",
                 },
@@ -760,6 +889,10 @@ class Handler(BaseHTTPRequestHandler):
             return
         if path == "/api/energy":
             self._send_json(200, probe())
+            return
+        if path == "/api/yarqa":
+            payload = run_yarqa_demo()
+            self._send_json(200 if payload.get("ok") is True else 503, payload)
             return
         if path in {"/api/organs/integrity", "/v1/organs/integrity"}:
 
