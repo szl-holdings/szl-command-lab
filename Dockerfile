@@ -25,6 +25,8 @@ COPY server.py ./server.py
 COPY gateway.py ./gateway.py
 COPY space/index.html ./index.html
 COPY space/launchpad.html ./launchpad.html
+COPY space/szl-holo-v2.css ./szl-holo-v2.css
+COPY space/szl-holo-v2.js ./szl-holo-v2.js
 
 EXPOSE 7860
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=5 \

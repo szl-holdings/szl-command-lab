@@ -107,8 +107,9 @@ The Docker Space intentionally uses a compact standard-library Python server.
 `gateway.py` composes the permanent `/launchpad` and `/api/launchpad` routes
 onto the existing `server.Handler`; all other Atlas routes continue through the
 original handler. `Dockerfile` publishes the exact `server.py`, `gateway.py`,
-`space/index.html`, and `space/launchpad.html` closure and installs YARQA from
-the exact source revision reported by `/api/build-info`.
+`space/index.html`, `space/launchpad.html`, and source-bound holographic CSS and
+JavaScript closure and installs YARQA from the exact source revision reported by
+`/api/build-info`.
 
 Provider mutation is owned by the protected central reusable publisher in
 `szl-holdings/.github`. The thin caller in `.github/workflows/hf-sync.yml` pins
