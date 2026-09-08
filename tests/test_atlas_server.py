@@ -83,6 +83,40 @@ def test_build_info_labels_missing_revision() -> None:
     assert info["surface"] == "SZL Atlas"
     assert info["source_repository"] == "szl-holdings/szl-command-lab"
     assert info["state"] in {"SOURCE_BOUND", "REVISION_UNAVAILABLE"}
+    assert info["components"]["yarqa"] == {
+        "repository": "szl-holdings/yarqa",
+        "revision": "a5e74026ee0c24f45a0b0405ee849720ca520302",
+        "version": "0.5.0",
+        "binding": "UNBOUND_OR_MISMATCHED",
+    }
+
+
+def test_yarqa_runtime_fails_closed_when_dependency_is_unavailable(monkeypatch) -> None:
+    def unavailable():
+        raise ImportError("test-only unavailable runtime")
+
+    monkeypatch.delenv("SZL_YARQA_SHA", raising=False)
+    monkeypatch.setattr(server, "_load_yarqa_runtime", unavailable)
+    payload = server.run_yarqa_demo()
+    assert payload["ok"] is False
+    assert payload["state"] == "UNAVAILABLE"
+    assert payload["failure_code"] == "YARQA_RUNTIME_UNAVAILABLE"
+    assert "labels" not in payload
+    assert "receipt" not in payload
+
+
+def test_yarqa_source_and_deployment_contract_are_exact() -> None:
+    root = Path(__file__).parents[1]
+    dockerfile = (root / "Dockerfile").read_text(encoding="utf-8")
+    workflow = (root / ".github" / "workflows" / "hf-sync.yml").read_text(encoding="utf-8")
+    revision = server.YARQA_SOURCE_REVISION
+    assert revision in dockerfile
+    assert "YARQA_ARCHIVE_SHA256=8aa133830078eb519d0806ce197ec45d62f19fe363ac5d1d968a65705c315483" in dockerfile
+    assert "NUMPY_VERSION=2.5.2" in dockerfile
+    assert "SZLHOLDINGS/szl-command-lab" in workflow
+    assert "/api/yarqa" in workflow
+    assert "require-default-branch-tip: true" in workflow
+    assert "source-revision-probe-path: /api/build-info" in workflow
 
 
 def test_index_contains_accessible_atlas_contract() -> None:

@@ -51,7 +51,7 @@ presents:
 
 - all publicly listed models, first-class kernels, datasets, and Spaces;
 - curated paths into A11oy, Killinchu, Lyte, Sentra, Terra, PURIQ Finance,
-  PRISM Counsel, Living Anatomy, and the Khipu runtime;
+  PRISM Counsel, Living Anatomy, the Khipu runtime, and YARQA;
 - a source-controlled Launchpad whose registered links remain navigation
   metadata—not liveness, capability, authorization, or readiness claims;
 - model and evidence spotlights driven by provider metadata rather than
@@ -73,6 +73,7 @@ presents:
 | `GET /api/launchpad` | Source-controlled registered route metadata | Registration is not availability, freshness, or production readiness |
 | `GET /api/organs/integrity` | Five-organ governed-loop demonstration | Healthy output remains advisory and never self-authorizes |
 | `GET /api/energy` | RAPL/NVML runtime probe | Joules are reported only when a readable counter exists |
+| `GET /api/yarqa` | Bounded YARQA compartmentalization and receipt replay | Synthetic input verifies integrity/reproducibility, not CFD correctness |
 | `GET /api/build-info` | Source-binding metadata | Missing runtime revision is labeled `REVISION_UNAVAILABLE` |
 
 ## Governing boundary
@@ -106,15 +107,17 @@ The Docker Space intentionally uses a compact standard-library Python server.
 `gateway.py` composes the permanent `/launchpad` and `/api/launchpad` routes
 onto the existing `server.Handler`; all other Atlas routes continue through the
 original handler. `Dockerfile` publishes the exact `server.py`, `gateway.py`,
-`space/index.html`, and `space/launchpad.html` closure.
+`space/index.html`, and `space/launchpad.html` closure and installs YARQA from
+the exact source revision reported by `/api/build-info`.
 
 Provider mutation is owned by the protected central reusable publisher in
 `szl-holdings/.github`. The thin caller in `.github/workflows/hf-sync.yml` pins
 that publisher to an immutable commit, deploys only the Dockerfile-derived file
 set, requires the exact default-branch tip, binds `SZL_GIT_SHA`, and verifies
-same-origin smoke routes before success. This repository retains the canonical
-source and delegation contract; the Hugging Face Space is the generated runtime
-mirror.
+same-origin smoke routes before success. Only protected Command Lab `main` can
+update the retained `SZLHOLDINGS/szl-command-lab` Space. This repository retains
+the canonical source and delegation contract; the Hugging Face Space is the
+generated runtime mirror.
 
 ## Run locally
 
