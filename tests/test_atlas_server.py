@@ -78,17 +78,60 @@ def test_catalog_partial_state_never_fabricates_missing_family(monkeypatch) -> N
     assert set(payload["errors"]) == {"datasets", "spaces", "kernels"}
 
 
-def test_build_info_labels_missing_revision() -> None:
+def test_build_info_labels_missing_revision(monkeypatch) -> None:
+    monkeypatch.delenv("SZL_GIT_SHA", raising=False)
+    monkeypatch.delenv("GITHUB_SHA", raising=False)
     info = server.build_info()
     assert info["surface"] == "SZL Atlas"
     assert info["source_repository"] == "szl-holdings/szl-command-lab"
-    assert info["state"] in {"SOURCE_BOUND", "REVISION_UNAVAILABLE"}
+    assert info["source_revision"] is None
+    assert info["state"] == "REVISION_UNAVAILABLE"
+    assert info["receipt_minted"] is False
+    assert "build" not in info
     assert info["components"]["yarqa"] == {
         "repository": "szl-holdings/yarqa",
         "revision": "a5e74026ee0c24f45a0b0405ee849720ca520302",
         "version": "0.5.0",
         "binding": "UNBOUND_OR_MISMATCHED",
     }
+
+
+def test_build_info_exposes_canonical_observed_build(monkeypatch) -> None:
+    revision = "b5dd00adb30889830661c621f437fdedf29a8ae2"
+    monkeypatch.setenv("SZL_GIT_SHA", revision)
+    monkeypatch.setenv("GITHUB_SHA", "f" * 40)
+
+    info = server.build_info()
+
+    assert info["source_revision"] == revision
+    assert info["state"] == "SOURCE_BOUND"
+    assert info["build"] == {"state": "OBSERVED", "revision": revision}
+    assert info["receipt_minted"] is False
+
+
+def test_build_info_uses_github_revision_only_when_primary_is_absent(monkeypatch) -> None:
+    revision = "a" * 40
+    monkeypatch.delenv("SZL_GIT_SHA", raising=False)
+    monkeypatch.setenv("GITHUB_SHA", revision)
+
+    info = server.build_info()
+
+    assert info["build"] == {"state": "OBSERVED", "revision": revision}
+    assert info["source_revision"] == revision
+
+
+def test_build_info_fails_closed_on_malformed_primary_revision(monkeypatch) -> None:
+    monkeypatch.setenv("GITHUB_SHA", "a" * 40)
+    for malformed in ("", "abc", "A" * 40, "g" * 40, " " + "b" * 40, "b" * 40 + "\n"):
+        monkeypatch.setenv("SZL_GIT_SHA", malformed)
+        info = server.build_info()
+        if malformed == "":
+            assert info["build"] == {"state": "OBSERVED", "revision": "a" * 40}
+            continue
+        assert info["source_revision"] is None
+        assert info["state"] == "REVISION_UNAVAILABLE"
+        assert info["receipt_minted"] is False
+        assert "build" not in info
 
 
 def test_yarqa_runtime_fails_closed_when_dependency_is_unavailable(monkeypatch) -> None:

@@ -756,13 +756,15 @@ def _flag(query: dict[str, list[str]], name: str) -> bool:
 
 def build_info() -> dict[str, Any]:
     revision = os.environ.get("SZL_GIT_SHA") or os.environ.get("GITHUB_SHA") or ""
-    return {
+    source_revision = revision if SHA_RE.fullmatch(revision) else None
+    payload: dict[str, Any] = {
         "schema": "szl.atlas.build/v1",
         "service": "szl-command-lab",
         "surface": "SZL Atlas",
         "source_repository": "szl-holdings/szl-command-lab",
-        "source_revision": revision if SHA_RE.fullmatch(revision) else None,
-        "state": "SOURCE_BOUND" if SHA_RE.fullmatch(revision) else "REVISION_UNAVAILABLE",
+        "source_revision": source_revision,
+        "state": "SOURCE_BOUND" if source_revision else "REVISION_UNAVAILABLE",
+        "receipt_minted": False,
         "components": {
             "yarqa": {
                 "repository": YARQA_SOURCE_REPOSITORY,
@@ -777,6 +779,12 @@ def build_info() -> dict[str, Any]:
         },
         "generated_at": utc_now(),
     }
+    if source_revision:
+        payload["build"] = {
+            "state": "OBSERVED",
+            "revision": source_revision,
+        }
+    return payload
 
 
 def _load_index() -> bytes:
