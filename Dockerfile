@@ -1,7 +1,7 @@
 # Operational SZL Atlas Space — stdlib Python transport, no Node runtime.
 # GCR pin: HF builders fail public.ecr.aws with exit 128. Anatomy already runs this FROM.
 # Dockerfile-derived Hub payload: server.py + gateway.py + Atlas/Launchpad HTML + README.
-FROM mirror.gcr.io/library/python:3.12-slim
+FROM mirror.gcr.io/library/python:3.14-slim
 
 WORKDIR /app
 ENV HOST=0.0.0.0
