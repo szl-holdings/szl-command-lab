@@ -12,8 +12,9 @@ name: Sync canonical SZL Atlas to Hugging Face Space
       - .github/workflows/hf-sync.yml
   workflow_dispatch: {}
 
+# Canonical per-asset Hub write lock (plan D3): never keyed by event or ref.
 concurrency:
-  group: szl-command-lab-hf-release
+  group: hf-write/space/SZLHOLDINGS/szl-command-lab
   cancel-in-progress: false
 
 permissions:

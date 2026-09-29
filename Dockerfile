@@ -1,7 +1,10 @@
 # Operational SZL Atlas Space — stdlib Python transport, no Node runtime.
 # GCR pin: HF builders fail public.ecr.aws with exit 128. Anatomy already runs this FROM.
 # Dockerfile-derived Hub payload: server.py + gateway.py + Atlas/Launchpad HTML + README.
-FROM mirror.gcr.io/library/python:3.14-slim
+# Digest-pinned OCI index for python:3.14-slim (3.14.7-slim-trixie, linux/amd64 included),
+# identical on mirror.gcr.io and registry-1.docker.io when resolved 2026-09-29.
+# Dependabot (docker ecosystem, directory "/") keeps the tag and digest moving together.
+FROM mirror.gcr.io/library/python:3.14-slim@sha256:51dafde81dbdb6ebde285137a295cf18a47ca95234fe388a343719cb97305b3d
 
 WORKDIR /app
 ENV HOST=0.0.0.0
