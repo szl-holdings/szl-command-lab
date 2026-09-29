@@ -61,15 +61,6 @@ type KernelWalk = {
   locked_formulas?: Array<{ id: string; ok: boolean; proof_status: string }>;
 };
 
-const FLAGSHIPS = [
-  { id: "SZLHOLDINGS/a11oy", role: "Product command", href: "https://huggingface.co/spaces/SZLHOLDINGS/a11oy" },
-  { id: "SZLHOLDINGS/killinchu", role: "Bounded vertical", href: "https://huggingface.co/spaces/SZLHOLDINGS/killinchu" },
-  { id: "SZLHOLDINGS/szl-command-lab", role: "This lab (GitHub canonical)", href: "https://huggingface.co/spaces/SZLHOLDINGS/szl-command-lab" },
-  { id: "SZLHOLDINGS/szl-khipu", role: "Python kernels", href: "https://huggingface.co/spaces/SZLHOLDINGS/szl-khipu" },
-  { id: "SZLHOLDINGS/anatomy", role: "Living body", href: "https://huggingface.co/spaces/SZLHOLDINGS/anatomy" },
-  { id: "SZLHOLDINGS/immune", role: "Defense matrix", href: "https://huggingface.co/spaces/SZLHOLDINGS/immune" },
-] as const;
-
 const PUBLISHERS = [
   { name: "immune#62/#63 Mirror khipu Hub", state: "success" as const, note: "Run 33255789788 SUCCESS. Published command-lab, sovereign-os, real-estate, cosmos, counsel, ayllu, experiments. Live command-lab: organs 5/5, energy channel LIVE, joule UNAVAILABLE." },
   { name: "immune deploy-hf-space", state: "success" as const, note: "Write-scoped HF_TOKEN proved. DEMO operator, not an ATO." },
@@ -146,15 +137,13 @@ export function Hub() {
 
       <section className="mt-8">
         <p className="font-mono text-xs uppercase tracking-[0.16em] text-mute">Operational Spaces · this recapture</p>
+        {estate ? null : (
+          <p className="mt-3 font-mono text-[11px] text-faint">
+            Awaiting the Atlas estate recapture. No Space state is asserted until it answers.
+          </p>
+        )}
         <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-          {(estate?.surfaces ?? FLAGSHIPS.map((space) => ({
-            id: space.id.replace("SZLHOLDINGS/", ""),
-            role: space.role,
-            href: space.href,
-            honesty: "UNAVAILABLE" as const,
-            detail: "pending recapture",
-            http: null,
-          }))).map((space) => (
+          {(estate?.surfaces ?? []).map((space) => (
             <a
               key={space.id}
               href={space.href}

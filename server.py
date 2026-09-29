@@ -414,12 +414,6 @@ SURFACES: tuple[tuple[str, str, str, str | None], ...] = (
         "https://szlholdings-terra.hf.space/healthz",
     ),
     (
-        "anatomy",
-        "Living system anatomy",
-        "https://huggingface.co/spaces/SZLHOLDINGS/anatomy",
-        "https://szlholdings-anatomy.hf.space/healthz",
-    ),
-    (
         "szl-khipu",
         "Governed kernel runtime",
         "https://huggingface.co/spaces/SZLHOLDINGS/szl-khipu",

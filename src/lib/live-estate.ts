@@ -39,18 +39,13 @@ export type LiveEstate = {
   surfaces: LiveSurface[];
 };
 
-const SURFACES: Array<{ id: string; role: string; href: string; url: string }> = [
-  { id: "command-lab", role: "Operator kernel", href: COMMAND_LAB_SPACE, url: `${COMMAND_LAB_RUNTIME}/healthz` },
-  { id: "a11oy", role: "Product command", href: "https://huggingface.co/spaces/SZLHOLDINGS/a11oy", url: "https://szlholdings-a11oy.hf.space/healthz" },
-  { id: "killinchu", role: "Bounded vertical", href: "https://huggingface.co/spaces/SZLHOLDINGS/killinchu", url: "https://szlholdings-killinchu.hf.space/healthz" },
-  { id: "khipu", role: "Python kernels", href: "https://huggingface.co/spaces/SZLHOLDINGS/szl-khipu", url: "https://szlholdings-szl-khipu.hf.space/" },
-  { id: "anatomy", role: "Living body", href: "https://huggingface.co/spaces/SZLHOLDINGS/anatomy", url: "https://szlholdings-anatomy.hf.space/healthz" },
-  { id: "immune", role: "Defense matrix", href: "https://huggingface.co/spaces/SZLHOLDINGS/immune", url: "https://szlholdings-immune.hf.space/healthz" },
-  { id: "sovereign-os", role: "Operator OS", href: "https://huggingface.co/spaces/SZLHOLDINGS/szl-sovereign-os", url: "https://szlholdings-szl-sovereign-os.hf.space/healthz" },
-  { id: "real-estate", role: "Public records", href: "https://huggingface.co/spaces/SZLHOLDINGS/szl-real-estate", url: "https://szlholdings-szl-real-estate.hf.space/healthz" },
-  { id: "cosmos", role: "Estate map", href: "https://huggingface.co/spaces/SZLHOLDINGS/cosmos", url: "https://szlholdings-cosmos.hf.space/" },
-  { id: "counsel", role: "Counsel hologram", href: "https://huggingface.co/spaces/SZLHOLDINGS/counsel", url: "https://szlholdings-counsel.hf.space/" },
-];
+// The curated surface list has one source: the deployed Atlas runtime
+// (`server.py` SURFACES, served at /api/estate). This app never keeps a second
+// typed copy of Space ids, so a retired Space leaves both surfaces at once.
+const ESTATE_URL = `${COMMAND_LAB_RUNTIME}/api/estate`;
+const ESTATE_SCHEMA = "szl.atlas.estate/v1";
+const SPACE_HREF_PREFIX = "https://huggingface.co/spaces/SZLHOLDINGS/";
+const HONESTY: ReadonlySet<SurfaceHonesty> = new Set(["LIVE", "REACHABLE", "UNAVAILABLE"]);
 
 const EMPTY_ENERGY: LiveEnergy = {
   channel: "UNAVAILABLE",
@@ -88,19 +83,28 @@ async function pull(url: string, timeoutMs = 4500): Promise<{ http: number | nul
   }
 }
 
-function classify(http: number | null, json: unknown, text: string): { honesty: SurfaceHonesty; detail: string } {
-  if (http !== 200) return { honesty: "UNAVAILABLE", detail: http ? `HTTP ${http}` : "no answer" };
-  if (json && typeof json === "object") {
-    const row = json as Record<string, unknown>;
-    if (typeof row.live_count === "number") return { honesty: "LIVE", detail: `${row.live_count}/5 organs` };
-    if (row.ok === true || row.status === "ok") return { honesty: "LIVE", detail: "healthz 200" };
-    if (row.occupancy === "UNAVAILABLE") return { honesty: "LIVE", detail: "occupancy UNAVAILABLE" };
-    return { honesty: "LIVE", detail: "json 200" };
+function surfacesFrom(http: number | null, json: unknown): LiveSurface[] {
+  if (http !== 200 || !json || typeof json !== "object") return [];
+  const body = json as Record<string, unknown>;
+  if (body.schema !== ESTATE_SCHEMA || !Array.isArray(body.surfaces)) return [];
+  const surfaces: LiveSurface[] = [];
+  for (const raw of body.surfaces) {
+    if (!raw || typeof raw !== "object") continue;
+    const row = raw as Record<string, unknown>;
+    const { id, role, href, honesty, detail, http: status } = row;
+    if (typeof id !== "string" || typeof role !== "string" || typeof href !== "string") continue;
+    if (!href.startsWith(SPACE_HREF_PREFIX) || typeof honesty !== "string") continue;
+    if (!HONESTY.has(honesty as SurfaceHonesty)) continue;
+    surfaces.push({
+      id,
+      role,
+      href,
+      honesty: honesty as SurfaceHonesty,
+      detail: typeof detail === "string" ? detail : "",
+      http: typeof status === "number" ? status : null,
+    });
   }
-  if (text.toLowerCase().includes("<!doctype") || text.toLowerCase().includes("<html")) {
-    return { honesty: "REACHABLE", detail: "html 200 · not a kernel healthz" };
-  }
-  return { honesty: "REACHABLE", detail: "http 200" };
+  return surfaces;
 }
 
 function kernelFrom(organsRaw: unknown, energyRaw: unknown, healthRaw: unknown): LiveEstate["kernel"] {
@@ -148,29 +152,19 @@ async function recapture(): Promise<LiveEstate> {
   const now = Date.now();
   if (cache && now - cache.at < TTL_MS) return cache.value;
 
-  const [health, energy, organs, ...surfaceHits] = await Promise.all([
+  const [health, energy, organs, estate] = await Promise.all([
     pull(`${COMMAND_LAB_RUNTIME}/healthz`),
     pull(`${COMMAND_LAB_RUNTIME}/api/energy`),
     pull(`${COMMAND_LAB_RUNTIME}/api/organs/integrity`),
-    ...SURFACES.map((surface) => pull(surface.url)),
+    // The runtime probes its surfaces in parallel with 4 s bounds; allow for that.
+    pull(ESTATE_URL, 12_000),
   ]);
 
   const value: LiveEstate = {
     captured_at: new Date().toISOString(),
     source: COMMAND_LAB_SPACE,
     kernel: kernelFrom(organs.json, energy.json, health.json),
-    surfaces: SURFACES.map((surface, i) => {
-      const hit = surfaceHits[i];
-      const cls = classify(hit.http, hit.json, hit.text);
-      return {
-        id: surface.id,
-        role: surface.role,
-        href: surface.href,
-        honesty: cls.honesty,
-        detail: cls.detail,
-        http: hit.http,
-      };
-    }),
+    surfaces: surfacesFrom(estate.http, estate.json),
   };
   cache = { at: now, value };
   return value;

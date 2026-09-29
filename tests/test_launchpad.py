@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 import gateway
@@ -142,7 +143,8 @@ def test_hugging_face_deploy_uses_the_central_exact_source_publisher() -> None:
 
     for marker in (
         "branches: [main]",
-        "group: szl-command-lab-hf-release",
+        "group: hf-write/space/SZLHOLDINGS/szl-command-lab",
+        "cancel-in-progress: false",
         f"reusable-hf-deploy.yml@{REUSABLE_DEPLOY_SHA}",
         "hf-repo: SZLHOLDINGS/szl-command-lab",
         "ref: ${{ github.sha }}",
@@ -173,3 +175,36 @@ def test_hugging_face_publisher_aliases_are_complete_ordered_and_not_logged() ->
     assert "print(${{ secrets." not in text
     assert "GITHUB_ENV" not in text
     assert "GITHUB_OUTPUT" not in text
+
+
+def test_runtime_base_image_is_digest_pinned() -> None:
+    from_lines = [
+        line.strip()
+        for line in DOCKERFILE.read_text(encoding="utf-8").splitlines()
+        if line.strip().upper().startswith("FROM ")
+    ]
+
+    assert len(from_lines) == 1
+    assert re.fullmatch(
+        r"FROM mirror\.gcr\.io/library/python:3\.14-slim@sha256:[0-9a-f]{64}",
+        from_lines[0],
+    )
+
+
+def test_one_surface_list_governs_every_published_space_link() -> None:
+    prefix = "https://huggingface.co/spaces/SZLHOLDINGS/"
+    ids = [ident for ident, _role, _href, _url in server.SURFACES]
+
+    assert len(ids) == len(set(ids))
+    for ident, _role, href, url in server.SURFACES:
+        assert href == f"{prefix}{ident}"
+        assert url is None or url.startswith(f"https://szlholdings-{ident}.hf.space/")
+
+    # The Atlas flagship cards may only name Spaces that the runtime probes, so
+    # retiring a Space from SURFACES retires it from the published page too.
+    index = INDEX.read_text(encoding="utf-8")
+    block = index[index.index("const FLAGSHIPS = [") :]
+    block = block[: block.index("];")]
+    slugs = re.findall(r'slug: "([^"]+)"', block)
+    assert slugs
+    assert set(slugs) <= set(ids)
