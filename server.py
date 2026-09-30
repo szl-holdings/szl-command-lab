@@ -15,6 +15,7 @@ import json
 import math
 import os
 import re
+import stat
 import sys
 import threading
 import time
@@ -35,6 +36,7 @@ HF_ORG = "SZLHOLDINGS"
 HF_API_ORIGIN = "https://huggingface.co"
 USER_AGENT = "szl-atlas/1.0 (+https://github.com/szl-holdings/szl-command-lab)"
 MAX_PROVIDER_BYTES = 8_000_000
+MAX_INDEX_BYTES = 2_000_000
 CATALOG_TTL_SECONDS = 120
 ESTATE_TTL_SECONDS = 30
 SHA_RE = re.compile(r"^[0-9a-f]{40}$")
@@ -781,21 +783,34 @@ def build_info() -> dict[str, Any]:
     return payload
 
 
-def _load_index() -> bytes:
-    path = HERE / "index.html"
-    try:
-        data = path.read_bytes()
-        if not data or len(data) > 2_000_000:
-            raise ValueError("index.html missing or outside size boundary")
-        return data
-    except (OSError, ValueError):
-        return (
-            "<!doctype html><html lang='en'><meta charset='utf-8'>"
-            "<meta name='viewport' content='width=device-width,initial-scale=1'>"
-            "<title>SZL Atlas</title><body><main><h1>SZL Atlas</h1>"
-            "<p>The public interface is temporarily unavailable. API health remains at /healthz.</p>"
-            "</main></body></html>"
-        ).encode("utf-8")
+def _load_index() -> tuple[int, bytes]:
+    """Read the bounded Atlas entrypoint from runtime or source layout."""
+    for path in (HERE / "index.html", HERE / "space" / "index.html"):
+        try:
+            if path.is_symlink():
+                continue
+            metadata = path.stat(follow_symlinks=False)
+            if not stat.S_ISREG(metadata.st_mode):
+                continue
+            if metadata.st_size <= 0 or metadata.st_size > MAX_INDEX_BYTES:
+                continue
+            with path.open("rb") as handle:
+                raw = handle.read(MAX_INDEX_BYTES + 1)
+            if len(raw) != metadata.st_size or len(raw) > MAX_INDEX_BYTES:
+                continue
+            text = raw.decode("utf-8")
+            if 'data-szl-surface="atlas-v1"' not in text:
+                continue
+            return 200, raw
+        except (OSError, UnicodeDecodeError):
+            continue
+    return 503, (
+        "<!doctype html><html lang='en'><meta charset='utf-8'>"
+        "<meta name='viewport' content='width=device-width,initial-scale=1'>"
+        "<title>SZL Atlas</title><body><main><h1>SZL Atlas</h1>"
+        "<p>The public interface is temporarily unavailable. Check /healthz separately.</p>"
+        "</main></body></html>"
+    ).encode("utf-8")
 
 
 JSON_PATHS = {
@@ -832,16 +847,20 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_HEAD(self) -> None:  # noqa: N802
         path = urlparse(self.path).path.rstrip("/") or "/"
-        if path in {"/readyz", "/api/yarqa"}:
+        content_length = "0"
+        if path in HTML_PATHS:
+            status, raw = _load_index()
+            content_length = str(len(raw))
+        elif path in {"/readyz", "/api/yarqa"}:
             status = 200 if run_yarqa_demo().get("ok") is True else 503
         else:
-            status = 200 if path in HTML_PATHS or path in JSON_PATHS else 404
+            status = 200 if path in JSON_PATHS else 404
         self.send_response(status)
         self.send_header(
             "Content-Type",
             "text/html; charset=utf-8" if path in HTML_PATHS else "application/json; charset=utf-8",
         )
-        self.send_header("Content-Length", "0")
+        self.send_header("Content-Length", content_length)
         self.send_header("Cache-Control", "no-store")
         self._common_headers()
         self.end_headers()
@@ -922,8 +941,8 @@ class Handler(BaseHTTPRequestHandler):
             self._send_json(200, {"ok": True, "body": body, "energy": energy})
             return
         if path in HTML_PATHS:
-            raw = _load_index()
-            self.send_response(200)
+            status, raw = _load_index()
+            self.send_response(status)
             self.send_header("Content-Type", "text/html; charset=utf-8")
             self.send_header("Content-Length", str(len(raw)))
             self.send_header("Cache-Control", "no-store")
