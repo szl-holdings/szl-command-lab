@@ -138,7 +138,10 @@ SZL_GIT_SHA=<exact-40-character-source-revision>
 
 ## Verification
 
+Install the test tool used by the repository CI before running the suite:
+
 ```bash
+python -m pip install pytest
 python -m py_compile server.py gateway.py
 python - <<'PY'
 import gateway
@@ -152,7 +155,7 @@ assert launchpad["state"] == "REGISTERED_NAVIGATION"
 assert launchpad["public_effectors"] == []
 print("atlas + launchpad self-test: PASS")
 PY
-pytest -q tests
+python -m pytest -q tests
 ```
 
 The canonical source is
