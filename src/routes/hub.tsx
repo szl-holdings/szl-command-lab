@@ -136,7 +136,7 @@ export function Hub() {
       {error && <p className="mt-4 text-sm text-deny">{error}</p>}
 
       <section className="mt-8">
-        <p className="font-mono text-xs uppercase tracking-[0.16em] text-mute">Operational Spaces · this recapture</p>
+        <p className="font-mono text-xs uppercase tracking-[0.16em] text-mute">Observed Space surfaces · this recapture</p>
         {estate ? null : (
           <p className="mt-3 font-mono text-[11px] text-faint">
             Awaiting the Atlas estate recapture. No Space state is asserted until it answers.
@@ -154,7 +154,7 @@ export function Hub() {
               <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-mute">{space.role}</p>
               <p className="mt-1 font-display text-xl text-bone">{space.id.replace("SZLHOLDINGS/", "")}</p>
               <div className="mt-3">
-                <Badge tone={space.honesty === "LIVE" ? "allow" : space.honesty === "REACHABLE" ? "hold" : "deny"}>
+                <Badge tone={space.honesty === "MEASURED" || space.honesty === "SIMULATED" ? "hold" : "deny"}>
                   {space.honesty}
                 </Badge>
               </div>

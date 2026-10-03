@@ -1056,7 +1056,9 @@
       FLAGSHIPS.forEach((item) => {
         const asset = assetBySlug(item.slug, "space");
         const runtime = statusMap.get(item.slug.toLowerCase());
-        const honesty = runtime?.honesty || (asset ? "LISTED" : "UNAVAILABLE");
+        const honesty = runtime
+          ? (["MEASURED", "SIMULATED", "BLOCKED", "UNAVAILABLE"].includes(runtime.honesty) ? runtime.honesty : "UNKNOWN")
+          : (asset ? "DECLARED" : "UNAVAILABLE");
         const href = asset?.href || runtime?.href || `https://huggingface.co/spaces/SZLHOLDINGS/${item.slug}`;
         const card = el("a", { class: "surface-card", href, target: "_blank", rel: "noreferrer" }, [
           el("div", { class: "surface-index", text: `${item.index} / ${honesty}` }),
@@ -1067,10 +1069,10 @@
         grid.append(card);
       });
       const estateState = $("#estate-state");
-      const live = state.estate?.live_surfaces ?? 0;
       const reachable = state.estate?.reachable_surfaces ?? 0;
-      estateState.textContent = state.estate ? `${live} live · ${reachable} reachable` : "Runtime unavailable";
-      estateState.className = `status-pill ${state.estate ? "live" : "down"}`;
+      const simulated = state.estate?.simulated_surfaces ?? 0;
+      estateState.textContent = state.estate ? `${reachable} HTTP 200 · ${simulated} simulated` : "Runtime unavailable";
+      estateState.className = `status-pill ${reachable > 0 || simulated > 0 ? "partial" : "down"}`;
       $("#estate-time").textContent = state.estate ? `Bounded probe captured ${safeDate(state.estate.captured_at)}. HTTP 200 remains reachability only.` : "No runtime state was fabricated.";
     }
 

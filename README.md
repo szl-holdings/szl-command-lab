@@ -76,6 +76,30 @@ presents:
 | `GET /api/yarqa` | Bounded YARQA compartmentalization and receipt replay | Synthetic input verifies integrity/reproducibility, not CFD correctness |
 | `GET /api/build-info` | Source-binding metadata | Missing runtime revision is labeled `REVISION_UNAVAILABLE` |
 
+### Estate probe evidence
+
+`/api/estate` retains the `szl.atlas.estate/v1` envelope, with explicitly
+scoped surface observations:
+
+- Remote HTTP 200: `honesty: MEASURED`, `evidence_scope: http_reachability`,
+  and `reachable: true`. This measures only the HTTP observation, never the
+  response's claimed health, capability, authorization, or energy. JSON error
+  bodies, malformed JSON, arrays, and HTML receive the same limited treatment.
+- Other HTTP statuses or transport failures: `honesty: UNAVAILABLE`,
+  `reachable: false`, with the observed status (or `null` for no response).
+- The local five-organ demonstration: `evidence_scope: synthetic_kernel`,
+  `honesty: SIMULATED` only for an integer count of five and an explicit
+  `blocked: false`; an explicit block stays `BLOCKED`, and incomplete evidence
+  stays `UNAVAILABLE`. `http` and `reachable` are `null`: no HTTP probe ran.
+
+`reachable_surfaces` counts only remote HTTP 200 observations;
+`simulated_surfaces` counts successful local demonstrations. The legacy
+`live_surfaces` field is retained as zero because no probe establishes live
+capability. Consumers must use these scopes and must not translate legacy
+`LIVE`/`REACHABLE` labels into stronger claims. The Atlas presents these counts
+without a green readiness indicator. Existing cache bounds remain unchanged;
+the GET does not mint a signed receipt.
+
 ## Governing boundary
 
 The model proposes. Independent policy decides. A human binds consequential
@@ -156,7 +180,12 @@ assert launchpad["public_effectors"] == []
 print("atlas + launchpad self-test: PASS")
 PY
 python -m pytest -q tests
+node --test scripts/atlas-estate-ui.test.mjs scripts/atlas-estate-consumer.test.mjs
 ```
+
+The dependency-free estate consumer tests use Node 24, matching the public
+experience CI gate; they execute the shipped static renderer and typed parser
+with synthetic fixtures, not a browser or a remote production deployment.
 
 The canonical source is
 [`szl-holdings/szl-command-lab`](https://github.com/szl-holdings/szl-command-lab).
