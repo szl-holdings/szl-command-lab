@@ -41,8 +41,8 @@ export function useLiveEstate() {
 export function LiveStrip({ className }: { className?: string }) {
   const { estate, error } = useLiveEstate();
   const kernel = estate?.kernel;
-  const liveSurfaces = estate?.surfaces.filter((s) => s.honesty === "LIVE").length ?? 0;
-  const reachable = estate?.surfaces.filter((s) => s.honesty === "REACHABLE").length ?? 0;
+  const simulated = estate?.surfaces.filter((s) => s.honesty === "SIMULATED").length ?? 0;
+  const reachable = estate?.surfaces.filter((s) => s.reachable === true).length ?? 0;
 
   return (
     <section className={cn("rounded-xl border border-line bg-ink-2 px-4 py-4 sm:px-5", className)}>
@@ -65,7 +65,7 @@ export function LiveStrip({ className }: { className?: string }) {
       </p>
       <p className="mt-2 max-w-3xl text-sm leading-relaxed text-mute">
         {kernel
-          ? `${kernel.reason} Joule ${kernel.energy.honesty}. proven_trust stays false. ${liveSurfaces} surfaces LIVE, ${reachable} reachable.`
+          ? `${kernel.reason} Joule ${kernel.energy.honesty}. proven_trust stays false. ${reachable} surfaces reachable, ${simulated} synthetic checks simulated. Neither establishes capability or authorization.`
           : "This preview is the DEMO operator. The published Space is the operational kernel."}
       </p>
       <div className="mt-4 flex flex-wrap gap-2">
