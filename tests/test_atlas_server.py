@@ -40,6 +40,7 @@ def test_catalog_is_exact_public_inventory(monkeypatch) -> None:
     }
 
     monkeypatch.setattr(server, "_provider_rows", lambda kind: fixtures[kind])
+    monkeypatch.setattr(server, "_reserved_profile", lambda: (None, {"state": "NOT_PUBLICLY_OBSERVABLE"}))
     monkeypatch.setattr(server, "_catalog_cache", None)
     monkeypatch.setattr(server, "_catalog_at", 0.0)
 
@@ -174,6 +175,7 @@ def test_index_contains_accessible_atlas_contract() -> None:
 
 def test_catalog_payload_is_json_serializable(monkeypatch) -> None:
     monkeypatch.setattr(server, "_provider_rows", lambda _kind: [])
+    monkeypatch.setattr(server, "_reserved_profile", lambda: (None, {"state": "NOT_PUBLICLY_OBSERVABLE"}))
     monkeypatch.setattr(server, "_catalog_cache", None)
     monkeypatch.setattr(server, "_catalog_at", 0.0)
     payload = server.recapture_catalog(force=True)

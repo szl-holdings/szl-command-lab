@@ -34,6 +34,8 @@ sys.path.insert(0, str(HERE / "python"))
 
 HF_ORG = "SZLHOLDINGS"
 HF_API_ORIGIN = "https://huggingface.co"
+RESERVED_PROFILE_ID = f"{HF_ORG}/README"
+RESERVED_PROFILE_URL = f"{HF_API_ORIGIN}/api/spaces/{RESERVED_PROFILE_ID}"
 USER_AGENT = "szl-atlas/1.0 (+https://github.com/szl-holdings/szl-command-lab)"
 MAX_PROVIDER_BYTES = 8_000_000
 MAX_INDEX_BYTES = 2_000_000
@@ -431,7 +433,9 @@ _estate_at = 0.0
 _estate_lock = threading.Lock()
 
 
-def _request_bytes(url: str, *, timeout: float = 8.0, max_bytes: int = MAX_PROVIDER_BYTES) -> bytes:
+def _request_bytes(
+    url: str, *, timeout: float = 8.0, max_bytes: int = MAX_PROVIDER_BYTES, exact_url: bool = False
+) -> bytes:
     request = Request(
         url,
         headers={
@@ -441,10 +445,34 @@ def _request_bytes(url: str, *, timeout: float = 8.0, max_bytes: int = MAX_PROVI
         },
     )
     with urlopen(request, timeout=timeout) as response:
+        if exact_url and (
+            response.status != 200 or response.geturl() != url or response.headers.get("Link")
+        ):
+            raise ValueError("unexpected reserved profile endpoint response")
         data = response.read(max_bytes + 1)
         if len(data) > max_bytes:
             raise ValueError(f"provider response exceeded {max_bytes} bytes")
         return data
+
+
+def _reserved_profile() -> tuple[dict[str, Any] | None, dict[str, Any]]:
+    """Observe the public organization profile omitted by the author-list API."""
+    evidence: dict[str, Any] = {"endpoint": RESERVED_PROFILE_URL}
+    try:
+        raw = _request_bytes(RESERVED_PROFILE_URL, max_bytes=MAX_INDEX_BYTES, exact_url=True)
+    except HTTPError as exc:
+        if exc.code != 404 or exc.geturl() != RESERVED_PROFILE_URL:
+            raise
+        return None, {**evidence, "state": "NOT_PUBLICLY_OBSERVABLE", "http_status": 404}
+    row = json.loads(raw)
+    if not isinstance(row, dict) or row.get("id") != RESERVED_PROFILE_ID:
+        raise ValueError("invalid reserved profile identity")
+    evidence.update(http_status=200, response_sha256=hashlib.sha256(raw).hexdigest())
+    if row.get("private") is True:
+        return None, {**evidence, "state": "EXPLICITLY_NON_PUBLIC"}
+    if row.get("private") is not False:
+        raise ValueError("reserved profile visibility is unknown")
+    return row, {**evidence, "state": "PUBLIC_METADATA"}
 
 
 def _provider_rows(kind: str) -> list[dict[str, Any]]:
@@ -540,6 +568,8 @@ def _normalize_asset(row: dict[str, Any], kind: str) -> dict[str, Any]:
         "id": repo_id,
         "slug": slug,
         "type": kind[:-1] if kind.endswith("s") else kind,
+        "role": "organization_profile" if kind == "spaces" and repo_id == RESERVED_PROFILE_ID else "artifact",
+        "role_label": "Organization profile" if kind == "spaces" and repo_id == RESERVED_PROFILE_ID else None,
         "href": (
             f"https://huggingface.co/spaces/{repo_id}"
             if kind == "spaces"
@@ -590,6 +620,24 @@ def recapture_catalog(*, force: bool = False) -> dict[str, Any]:
                     rows_by_family[family] = []
                     errors[family] = str(exc)
 
+        profile_evidence: dict[str, Any] = {"id": RESERVED_PROFILE_ID, "state": "UNAVAILABLE"}
+        if "spaces" not in errors:
+            spaces = rows_by_family["spaces"]
+            listed_profile = next((row for row in spaces if row.get("id") == RESERVED_PROFILE_ID and row.get("private") is False), None)
+            # Unknown visibility must not become a public record through normalization.
+            rows_by_family["spaces"] = [row for row in spaces if _repo_id(row, "spaces") != RESERVED_PROFILE_ID]
+            if listed_profile is not None:
+                rows_by_family["spaces"].append(listed_profile)
+                profile_evidence["state"] = "AUTHOR_LIST"
+            else:
+                try:
+                    profile, evidence = _reserved_profile()
+                    profile_evidence.update(evidence)
+                    if profile is not None:
+                        rows_by_family["spaces"].append(profile)
+                except Exception as exc:
+                    errors["reserved_profile"] = f"reserved profile unavailable: {type(exc).__name__}"
+
         assets: list[dict[str, Any]] = []
         for family in families:
             assets.extend(_normalize_asset(row, family) for row in rows_by_family[family])
@@ -614,6 +662,7 @@ def recapture_catalog(*, force: bool = False) -> dict[str, Any]:
         # Public catalog must never expose private artifacts even if a provider
         # changes its unauthenticated response contract.
         assets = [asset for asset in assets if not asset["private"] and not asset["slug"].startswith("unknown-")]
+        assets = list({(asset["type"], asset["id"]): asset for asset in assets}.values())
         assets.sort(key=_asset_score, reverse=True)
 
         counts = {
@@ -636,6 +685,7 @@ def recapture_catalog(*, force: bool = False) -> dict[str, Any]:
             "state": state,
             "counts": counts,
             "errors": errors,
+            "reserved_profile": profile_evidence,
             "assets": assets,
             "links": {
                 "organization": f"https://huggingface.co/{HF_ORG}",
@@ -646,6 +696,8 @@ def recapture_catalog(*, force: bool = False) -> dict[str, Any]:
                 "collections": f"https://huggingface.co/{HF_ORG}/collections",
             },
             "boundary": (
+                "Counts are repository records by namespace; model and kernel IDs may overlap. "
+                "The reserved README Space is the organization profile. "
                 "Listing and reachability are not benchmark superiority, production authorization, "
                 "regulatory approval, customer adoption, or investment performance."
             ),

@@ -1270,7 +1270,7 @@
       const visible = assets.filter((asset) => {
         if (state.filter !== "all" && asset.type !== state.filter) return false;
         if (!q) return true;
-        const haystack = [asset.id, asset.type, asset.pipeline, asset.library, asset.sdk, ...(asset.tags || [])].filter(Boolean).join(" ").toLowerCase();
+        const haystack = [asset.id, asset.type, asset.role_label, asset.pipeline, asset.library, asset.sdk, ...(asset.tags || [])].filter(Boolean).join(" ").toLowerCase();
         return haystack.includes(q);
       });
       visible.sort((a, b) => {
@@ -1290,7 +1290,7 @@
         list.append(el("li", { class: "empty", text: state.catalog ? "No public assets match this search." : "Public catalog unavailable." }));
       } else {
         assets.slice(0, state.limit).forEach((asset) => {
-          const detail = [asset.pipeline, asset.library, asset.sdk, ...(asset.tags || []).slice(0, 3)].filter(Boolean).join(" · ") || "metadata on artifact page";
+          const detail = [asset.role_label, asset.pipeline, asset.library, asset.sdk, ...(asset.tags || []).slice(0, 3)].filter(Boolean).join(" · ") || "metadata on artifact page";
           const row = el("a", { class: "asset-row", href: asset.href, target: "_blank", rel: "noreferrer" }, [
             el("span", { class: "asset-name" }, [el("strong", { text: asset.slug }), el("span", { text: detail })]),
             el("span", { class: "asset-cell" }, [el("b", { text: asset.type.toUpperCase() }), "type"]),

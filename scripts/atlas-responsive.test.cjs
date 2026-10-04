@@ -11,12 +11,13 @@ assert.match(origin, /^http:\/\/(127\.0\.0\.1|localhost):\d+$/, 'test a local pr
 const evidenceDir = process.env.ATLAS_EVIDENCE_DIR;
 const fixture = {
   captured_at: '2026-10-04T00:00:00Z', state: 'PARTIAL',
-  counts: { models: 1, kernels: 1, datasets: 1, spaces: 1, assets: 4 },
+  counts: { models: 1, kernels: 1, datasets: 1, spaces: 2, assets: 5 },
   assets: [
     { type: 'model', id: 'SZLHOLDINGS/SZL-Khipu-1.5B', slug: 'SZL-Khipu-1.5B', pipeline: 'text-generation', downloads: 4 },
     { type: 'kernel', id: 'SZLHOLDINGS/governed-inference-meter', slug: 'governed-inference-meter', downloads: 3 },
     { type: 'dataset', id: 'SZLHOLDINGS/a11oy-verifiable-corpus', slug: 'a11oy-verifiable-corpus', downloads: 2 },
     { type: 'space', id: 'SZLHOLDINGS/a11oy', slug: 'a11oy', downloads: 1 },
+    { type: 'space', id: 'SZLHOLDINGS/README', slug: 'README', role: 'organization_profile', role_label: 'Organization profile', downloads: 0 },
   ].map(row => ({ ...row, href: 'https://huggingface.co/' + row.id, tags: ['synthetic-browser-fixture'], last_modified: '2026-10-04T00:00:00Z' })),
 };
 
@@ -101,6 +102,9 @@ test('Atlas reflows in narrow frames, desktop widths, and 200–400% zoom', asyn
         assert.equal(await menu.getAttribute('aria-expanded'), 'false');
         await scope.locator('#asset-search').fill('Khipu');
         assert.equal(await scope.locator('#asset-list .asset-row').count(), 1);
+        await scope.locator('#asset-search').fill('Organization profile');
+        assert.equal(await scope.locator('#asset-list .asset-row').count(), 1);
+        assert.match(await scope.locator('#asset-list').innerText(), /README[\s\S]*Organization profile/);
         await scope.locator('#asset-search').fill('no-fixture-matches');
         assert.match(await scope.locator('#asset-list').innerText(), /No public assets match/);
         await scope.locator('#asset-search').fill('');
