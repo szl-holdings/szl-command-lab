@@ -30,8 +30,9 @@ test('Atlas reflows in narrow frames, desktop widths, and 200–400% zoom', asyn
       { name: 'zoom-400', width: 1440, zoom: 4 },
       { name: 'iframe-320', width: 1440, frame: 320 },
       { name: 'iframe-744', width: 1440, frame: 744 },
+      { name: 'touch-375', width: 375, touch: true },
     ]) {
-      const page = await browser.newPage({ viewport: { width: spec.width, height: 1000 }, reducedMotion: 'reduce' });
+      const page = await browser.newPage({ viewport: { width: spec.width, height: 1000 }, reducedMotion: 'reduce', hasTouch: Boolean(spec.touch), isMobile: Boolean(spec.touch) });
       const errors = [];
       page.on('pageerror', error => errors.push(error.message));
       await page.route(`${origin}/api/**`, route => {
@@ -51,10 +52,12 @@ test('Atlas reflows in narrow frames, desktop widths, and 200–400% zoom', asyn
         await page.goto(origin);
       }
       await scope.locator('#asset-list .asset-row').first().waitFor();
+      await scope.locator('.demo-disclosure > summary').click();
       if (spec.zoom) {
         await scope.evaluate(zoom => { document.documentElement.style.zoom = String(zoom); }, spec.zoom);
-        await scope.waitForFunction(zoom => document.documentElement.dataset.szlZoomTier === (zoom >= 3 ? 'extreme' : 'high'), spec.zoom);
       }
+      await scope.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+      await scope.evaluate(() => window.scrollTo(0, 0));
       const layout = await scope.evaluate(() => {
         const zoom = Number.parseFloat(getComputedStyle(document.documentElement).zoom) || 1;
         const view = window.innerWidth;
@@ -67,13 +70,24 @@ test('Atlas reflows in narrow frames, desktop widths, and 200–400% zoom', asyn
           const box = node.getBoundingClientRect();
           return box.width > 0 && (box.right > view + 2 || box.left < -2);
         }).map(node => ({ tag: node.tagName, class: node.className.baseVal || node.className, text: (node.textContent || '').trim().slice(0, 55), box: node.getBoundingClientRect().toJSON() }));
-        return { viewport: view, hero: rect.toJSON(), overflow, scrollWidth: document.documentElement.scrollWidth, zoom };
+        const smallTargets = [...document.querySelectorAll('a[href],button,input,select,summary')].filter(node => {
+          if (node.closest('.skip, [hidden]') || !node.getClientRects().length) return false;
+          const target = node.tagName === 'INPUT' && node.closest('label') ? node.closest('label') : node;
+          const box = target.getBoundingClientRect();
+          return box.width > 0 && (box.height / zoom < 43.5 || box.width / zoom < 43.5);
+        }).map(node => ({ tag: node.tagName, id: node.id, text: (node.textContent || '').trim().slice(0, 55) }));
+        return { viewport: view, hero: rect.toJSON(), overflow, smallTargets, scrollWidth: document.documentElement.scrollWidth, zoom,
+          zoomTier: document.documentElement.dataset.szlZoomTier || null,
+          bodyWidth: getComputedStyle(document.body).width,
+          experience: Boolean(window.SZLPublicExperience),
+        };
       });
       const failures = [];
       if (layout.hero.width < Math.min(240, layout.viewport * .7)) failures.push('hero collapsed');
       if (layout.hero.height < 120) failures.push('hero has no normal-flow height');
       if (layout.overflow.length) failures.push('content leaves the viewport');
       if (errors.length) failures.push('page JavaScript error');
+      if (spec.touch && layout.smallTargets.length) failures.push('touch control is smaller than 44px');
       results.push({ ...spec, ...layout, errors, failures });
       if (spec.name === 'width-320') {
         const menu = scope.locator('#menu-button');
@@ -91,7 +105,7 @@ test('Atlas reflows in narrow frames, desktop widths, and 200–400% zoom', asyn
         await scope.locator('#asset-search').fill('');
         await scope.evaluate(() => window.scrollTo(0, 0));
       }
-      if (evidenceDir && (failures.length || ['width-320', 'width-1440', 'iframe-744'].includes(spec.name))) {
+      if (evidenceDir && (failures.length || spec.zoom || spec.frame || ['width-320', 'width-1440', 'touch-375'].includes(spec.name))) {
         mkdirSync(evidenceDir, { recursive: true });
         await page.screenshot({ path: resolve(evidenceDir, `${spec.name}.png`), fullPage: false });
       }
@@ -104,5 +118,5 @@ test('Atlas reflows in narrow frames, desktop widths, and 200–400% zoom', asyn
       writeFileSync(resolve(evidenceDir, 'responsive-results.json'), JSON.stringify({ observed_at: new Date().toISOString(), scope: 'LOCAL_BROWSER_SYNTHETIC_PROVIDER_DATA', results }, null, 2) + '\n');
     }
   }
-  assert.deepEqual(results.filter(row => row.failures.length).map(row => ({ name: row.name, failures: row.failures, hero: row.hero, overflow: row.overflow.slice(0, 8) })), []);
+  assert.deepEqual(results.filter(row => row.failures.length).map(row => ({ name: row.name, failures: row.failures, hero: row.hero, overflow: row.overflow.slice(0, 8), smallTargets: row.smallTargets, zoomTier: row.zoomTier, experience: row.experience, bodyWidth: row.bodyWidth })), []);
 });
