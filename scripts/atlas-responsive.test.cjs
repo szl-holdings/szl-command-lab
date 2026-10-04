@@ -85,6 +85,7 @@ test('Atlas reflows in narrow frames, desktop widths, and 200–400% zoom', asyn
       const failures = [];
       if (layout.hero.width < Math.min(240, layout.viewport * .7)) failures.push('hero collapsed');
       if (layout.hero.height < 120) failures.push('hero has no normal-flow height');
+      if (Math.abs(layout.zoom - (spec.zoom || 1)) > .01) failures.push('requested CSS zoom was not applied');
       if (layout.overflow.length) failures.push('content leaves the viewport');
       if (errors.length) failures.push('page JavaScript error');
       if (spec.touch && layout.smallTargets.length) failures.push('touch control is smaller than 44px');

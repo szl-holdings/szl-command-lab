@@ -180,8 +180,10 @@ kernel listings are not additional trained models.
 The `atlas-responsive-browser` PR job starts the shipped Python gateway and runs
 `scripts/atlas-responsive.test.cjs` in Chromium with synthetic provider data.
 It checks 320, 375, 744, 768, 1024, 1440 and 1920px widths, 200% and 400% CSS zoom,
-and 320/744px frames inside a 1440px host. It measures the hero box and every
-visible content boundary, then exercises navigation, Escape and catalog search.
+and 320/744px frames inside a 1440px host, plus a 375px coarse-touch case.
+It verifies that requested CSS zoom was applied, measures the hero box and every
+visible content boundary with the demo open, then exercises navigation, Escape,
+catalog search, and 44px touch targets.
 Screenshots and JSON measurements are retained as a run artifact. This tests
 rendering; it does not certify live provider data or production capability.
 
