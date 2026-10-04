@@ -24,6 +24,7 @@ const fixture = {
 test('Atlas reflows in narrow frames, desktop widths, and 200–400% zoom', async () => {
   const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH, headless: true });
   const results = [];
+  const observationResults = [];
   try {
     for (const spec of [
       ...[320, 375, 744, 768, 1024, 1440, 1920].map(width => ({ name: `width-${width}`, width })),
@@ -116,11 +117,75 @@ test('Atlas reflows in narrow frames, desktop widths, and 200–400% zoom', asyn
       }
       await page.close();
     }
+    for (const mode of ['unavailable', 'cached', 'observed-zero', 'legacy-failure']) {
+      const page = await browser.newPage({ viewport: { width: 320, height: 1000 }, reducedMotion: 'reduce' });
+      const errors = [];
+      page.on('pageerror', error => errors.push(error.message));
+      const payload = structuredClone(fixture);
+      payload.captured_at = '2026-10-04T16:10:00Z';
+      payload.errors = { models: 'models inventory unavailable: TimeoutError' };
+      payload.family_observations = Object.fromEntries(['models', 'kernels', 'datasets', 'spaces'].map(family => [family, { state: 'FRESH', observed_at: payload.captured_at }]));
+      if (mode === 'cached') {
+        payload.family_observations = Object.fromEntries(['models', 'kernels', 'datasets', 'spaces'].map(family => [family, { state: 'CACHED', observed_at: '2026-10-04T16:00:00Z' }]));
+        payload.assets = payload.assets.map(asset => ({ ...asset, observation_state: 'CACHED', observed_at: '2026-10-04T16:00:00Z' }));
+      } else {
+        payload.assets = payload.assets.filter(asset => asset.type !== 'model');
+        payload.counts.assets -= 1;
+        payload.counts.models = mode === 'unavailable' ? null : 0;
+        payload.family_observations.models = { state: mode === 'observed-zero' ? 'FRESH' : 'UNAVAILABLE', observed_at: mode === 'observed-zero' ? payload.captured_at : null };
+        if (mode === 'observed-zero') { payload.errors = {}; payload.state = 'VERIFIED_PUBLIC_LISTING'; }
+        if (mode === 'legacy-failure') delete payload.family_observations;
+      }
+      await page.route(`${origin}/api/**`, route => {
+        const path = new URL(route.request().url()).pathname;
+        const data = path === '/api/catalog' ? payload : path === '/api/estate'
+          ? { surfaces: [], reachable_surfaces: 0, simulated_surfaces: 0, captured_at: payload.captured_at }
+          : { state: 'REVISION_UNAVAILABLE', source_revision: null };
+        return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(data) });
+      });
+      await page.goto(origin);
+      await page.waitForFunction(() => document.querySelector('#state-models').textContent !== 'Awaiting observation');
+      const metric = await page.locator('#count-models').innerText();
+      const observation = await page.locator('#state-models').innerText();
+      const capture = await page.locator('#capture-line').innerText();
+      if (mode === 'cached') {
+        assert.equal(metric, '1');
+        assert.match(observation, /Cached · observed Oct 4, 16:00 UTC/);
+        assert.match(capture, /PARTIAL.*checked Oct 4, 16:10 UTC.*models: cached/);
+        for (const selector of ['#model-spotlights', '#surface-grid', '#evidence-grid', '#kernel-list', '#asset-list']) {
+          assert.match(await page.locator(selector).innerText(), /Cached listing · observed Oct 4, 16:00 UTC/);
+        }
+      } else if (mode === 'observed-zero') {
+        assert.equal(metric, '0');
+        assert.match(observation, /Observed Oct 4, 16:10 UTC/);
+        assert.match(await page.locator('#model-spotlights').innerText(), /No model repositories were present/);
+      } else {
+        assert.equal(metric, '—');
+        assert.match(observation, /Unavailable · no current count/);
+        assert.match(capture, /PARTIAL.*models: unavailable/);
+        assert.match(await page.locator('#model-spotlights').innerText(), /Model inventory is unavailable/);
+      }
+      await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+      const overflow = await page.evaluate(() => [...document.querySelectorAll('.metric-band *, #model-spotlights *, #kernel-list *, #capture-line')].filter(node => {
+        if (!node.getClientRects().length) return false;
+        const rect = node.getBoundingClientRect();
+        return rect.width > 0 && (rect.left < -2 || rect.right > innerWidth + 2);
+      }).map(node => ({ text: node.textContent.trim().slice(0, 60), rect: node.getBoundingClientRect().toJSON() })));
+      observationResults.push({ mode, metric, observation, capture, errors, overflow });
+      assert.deepEqual(errors, []);
+      assert.deepEqual(overflow, []);
+      if (evidenceDir) {
+        mkdirSync(evidenceDir, { recursive: true });
+        await page.locator('.metric-band').scrollIntoViewIfNeeded();
+        await page.screenshot({ path: resolve(evidenceDir, `catalog-${mode}.png`), fullPage: false });
+      }
+      await page.close();
+    }
   } finally {
     await browser.close();
     if (evidenceDir) {
       mkdirSync(evidenceDir, { recursive: true });
-      writeFileSync(resolve(evidenceDir, 'responsive-results.json'), JSON.stringify({ observed_at: new Date().toISOString(), scope: 'LOCAL_BROWSER_SYNTHETIC_PROVIDER_DATA', results }, null, 2) + '\n');
+      writeFileSync(resolve(evidenceDir, 'responsive-results.json'), JSON.stringify({ observed_at: new Date().toISOString(), scope: 'LOCAL_BROWSER_SYNTHETIC_PROVIDER_DATA', results, observationResults }, null, 2) + '\n');
     }
   }
   assert.deepEqual(results.filter(row => row.failures.length).map(row => ({ name: row.name, failures: row.failures, hero: row.hero, overflow: row.overflow.slice(0, 8), smallTargets: row.smallTargets, zoomTier: row.zoomTier, experience: row.experience, bodyWidth: row.bodyWidth })), []);
