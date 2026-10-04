@@ -9,6 +9,52 @@ permissions:
   contents: read
 
 jobs:
+  atlas-responsive-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Node
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: "24"
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Install isolated browser test dependency
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --prefix "$RUNNER_TEMP/atlas-browser" --no-audit --no-fund playwright@1.63.0
+          "$RUNNER_TEMP/atlas-browser/node_modules/.bin/playwright" install --with-deps chromium
+      - name: Verify the shipped Atlas with synthetic provider data
+        shell: bash
+        run: |
+          set -euo pipefail
+          HOST=127.0.0.1 PORT=7868 python gateway.py > "$RUNNER_TEMP/atlas-preview.log" 2>&1 &
+          preview_pid=$!
+          trap 'kill "$preview_pid" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:7868/ > /dev/null; then break; fi
+            sleep 1
+          done
+          NODE_PATH="$RUNNER_TEMP/atlas-browser/node_modules" \
+            ATLAS_EVIDENCE_DIR="$RUNNER_TEMP/atlas-browser-evidence" \
+            node --test scripts/atlas-responsive.test.cjs
+      - name: Retain browser measurements and screenshots
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: atlas-responsive-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/atlas-browser-evidence/
+            ${{ runner.temp }}/atlas-preview.log
+          if-no-files-found: error
+
   public-experience-contract:
     runs-on: ubuntu-latest
     timeout-minutes: 12
