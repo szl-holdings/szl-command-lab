@@ -21,6 +21,12 @@ jobs:
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
+      - name: Set up Node for estate contract regressions
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: "24"
+      - name: Verify static and typed estate consumers
+        run: node --test scripts/atlas-estate-ui.test.mjs scripts/atlas-estate-consumer.test.mjs
       - name: Verify local responsive assets and source binding
         shell: bash
         env:

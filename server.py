@@ -682,6 +682,11 @@ def recapture_estate(*, force: bool = False) -> dict[str, Any]:
 
         energy = probe()
         body = evaluate_anatomy(seed=11)
+        kernel_ok = (
+            type(body.get("live_count")) is int
+            and body["live_count"] == 5
+            and body.get("blocked") is False
+        )
 
         def one(row: tuple[str, str, str, str | None]) -> dict[str, Any]:
             ident, role, href, url = row
@@ -690,24 +695,23 @@ def recapture_estate(*, force: bool = False) -> dict[str, Any]:
                     "id": ident,
                     "role": role,
                     "href": href,
-                    "honesty": "LIVE" if body.get("live_count") == 5 else "UNAVAILABLE",
-                    "detail": f"local kernel {body.get('live_count', 0)}/5",
-                    "http": 200,
+                    "honesty": (
+                        "BLOCKED" if body.get("blocked") is True
+                        else "SIMULATED" if kernel_ok else "UNAVAILABLE"
+                    ),
+                    "detail": "Synthetic local kernel; no runtime capability or authorization asserted",
+                    "http": None,
+                    "reachable": None,
+                    "evidence_scope": "synthetic_kernel",
                 }
-            status, text = _hit(url)
+            # Response shape is not a health contract: error JSON, malformed
+            # JSON, and an HTML application error can all arrive with HTTP 200.
+            status, _text = _hit(url)
             honesty = "UNAVAILABLE"
             detail = "no response" if status is None else f"HTTP {status}"
             if status == 200:
-                sample = text.strip().lower()
-                if sample.startswith("{") or sample.startswith("["):
-                    honesty = "LIVE"
-                    detail = "structured health response"
-                elif "<html" in sample or "<!doctype" in sample:
-                    honesty = "REACHABLE"
-                    detail = "HTML 200; runtime-specific health not asserted"
-                else:
-                    honesty = "REACHABLE"
-                    detail = "HTTP 200"
+                honesty = "MEASURED"
+                detail = "HTTP 200; reachability only, capability UNKNOWN"
             return {
                 "id": ident,
                 "role": role,
@@ -715,6 +719,8 @@ def recapture_estate(*, force: bool = False) -> dict[str, Any]:
                 "honesty": honesty,
                 "detail": detail,
                 "http": status,
+                "reachable": status == 200,
+                "evidence_scope": "http_reachability",
             }
 
         with ThreadPoolExecutor(max_workers=8) as executor:
@@ -725,7 +731,7 @@ def recapture_estate(*, force: bool = False) -> dict[str, Any]:
             "captured_at": utc_now(),
             "source": "SZLHOLDINGS/szl-command-lab",
             "kernel": {
-                "ok": body.get("live_count") == 5 and not body.get("blocked", True),
+                "ok": kernel_ok,
                 "live_count": body.get("live_count"),
                 "blocked": body.get("blocked"),
                 "verdict": body.get("verdict"),
@@ -736,8 +742,10 @@ def recapture_estate(*, force: bool = False) -> dict[str, Any]:
                 "energy": energy,
             },
             "surfaces": surfaces,
-            "live_surfaces": sum(1 for item in surfaces if item["honesty"] == "LIVE"),
-            "reachable_surfaces": sum(1 for item in surfaces if item["honesty"] == "REACHABLE"),
+            # Retained for v1 readers; this probe cannot establish live capability.
+            "live_surfaces": 0,
+            "reachable_surfaces": sum(1 for item in surfaces if item["reachable"] is True),
+            "simulated_surfaces": sum(1 for item in surfaces if item["honesty"] == "SIMULATED"),
             "boundary": "HTTP 200 proves reachability only; each surface owns its capability evidence.",
         }
         _estate_cache = payload

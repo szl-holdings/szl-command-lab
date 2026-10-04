@@ -4,7 +4,7 @@ import { hydrateLiveOrgan, type Organ } from "@/lib/organs";
 export const COMMAND_LAB_SPACE = "https://huggingface.co/spaces/SZLHOLDINGS/szl-command-lab";
 export const COMMAND_LAB_RUNTIME = "https://szlholdings-szl-command-lab.hf.space";
 
-export type SurfaceHonesty = "LIVE" | "REACHABLE" | "UNAVAILABLE";
+export type SurfaceHonesty = "MEASURED" | "SIMULATED" | "BLOCKED" | "UNAVAILABLE";
 
 export type LiveSurface = {
   id: string;
@@ -13,6 +13,8 @@ export type LiveSurface = {
   honesty: SurfaceHonesty;
   detail: string;
   http: number | null;
+  reachable: boolean | null;
+  evidence_scope: "http_reachability" | "synthetic_kernel";
 };
 
 export type LiveEnergy = {
@@ -45,7 +47,7 @@ export type LiveEstate = {
 const ESTATE_URL = `${COMMAND_LAB_RUNTIME}/api/estate`;
 const ESTATE_SCHEMA = "szl.atlas.estate/v1";
 const SPACE_HREF_PREFIX = "https://huggingface.co/spaces/SZLHOLDINGS/";
-const HONESTY: ReadonlySet<SurfaceHonesty> = new Set(["LIVE", "REACHABLE", "UNAVAILABLE"]);
+const HONESTY: ReadonlySet<SurfaceHonesty> = new Set(["MEASURED", "SIMULATED", "BLOCKED", "UNAVAILABLE"]);
 
 const EMPTY_ENERGY: LiveEnergy = {
   channel: "UNAVAILABLE",
@@ -91,10 +93,20 @@ function surfacesFrom(http: number | null, json: unknown): LiveSurface[] {
   for (const raw of body.surfaces) {
     if (!raw || typeof raw !== "object") continue;
     const row = raw as Record<string, unknown>;
-    const { id, role, href, honesty, detail, http: status } = row;
+    const { id, role, href, honesty, detail, http: status, reachable, evidence_scope: scope } = row;
     if (typeof id !== "string" || typeof role !== "string" || typeof href !== "string") continue;
     if (!href.startsWith(SPACE_HREF_PREFIX) || typeof honesty !== "string") continue;
     if (!HONESTY.has(honesty as SurfaceHonesty)) continue;
+    // A measured HTTP response is not a capability or authorization verdict.
+    // Reject legacy and contradictory rows rather than inferring their scope.
+    if (scope === "http_reachability") {
+      if (status !== null && !(typeof status === "number" && Number.isInteger(status) && status >= 100 && status <= 599)) continue;
+      if (status === 200) {
+        if (honesty !== "MEASURED" || reachable !== true) continue;
+      } else if (honesty !== "UNAVAILABLE" || reachable !== false) continue;
+    } else if (scope === "synthetic_kernel") {
+      if (status !== null || reachable !== null || honesty === "MEASURED") continue;
+    } else continue;
     surfaces.push({
       id,
       role,
@@ -102,6 +114,8 @@ function surfacesFrom(http: number | null, json: unknown): LiveSurface[] {
       honesty: honesty as SurfaceHonesty,
       detail: typeof detail === "string" ? detail : "",
       http: typeof status === "number" ? status : null,
+      reachable: typeof reachable === "boolean" ? reachable : null,
+      evidence_scope: scope,
     });
   }
   return surfaces;
