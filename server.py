@@ -40,6 +40,7 @@ USER_AGENT = "szl-atlas/1.0 (+https://github.com/szl-holdings/szl-command-lab)"
 MAX_PROVIDER_BYTES = 8_000_000
 MAX_INDEX_BYTES = 2_000_000
 CATALOG_TTL_SECONDS = 120
+CATALOG_SNAPSHOT_MAX_AGE_SECONDS = 900
 ESTATE_TTL_SECONDS = 30
 SHA_RE = re.compile(r"^[0-9a-f]{40}$")
 YARQA_SOURCE_REPOSITORY = "szl-holdings/yarqa"
@@ -428,6 +429,7 @@ SURFACES: tuple[tuple[str, str, str, str | None], ...] = (
 _catalog_cache: dict[str, Any] | None = None
 _catalog_at = 0.0
 _catalog_lock = threading.Lock()
+_catalog_snapshots: dict[str, dict[str, Any]] = {}
 _estate_cache: dict[str, Any] | None = None
 _estate_at = 0.0
 _estate_lock = threading.Lock()
@@ -602,10 +604,15 @@ def _asset_score(asset: dict[str, Any]) -> tuple[int, int, str]:
 
 def recapture_catalog(*, force: bool = False) -> dict[str, Any]:
     global _catalog_cache, _catalog_at
-    now = time.monotonic()
     with _catalog_lock:
+        now = time.monotonic()
         if not force and _catalog_cache is not None and now - _catalog_at < CATALOG_TTL_SECONDS:
-            return _catalog_cache
+            cached_families = [
+                family for family, observation in _catalog_cache.get("family_observations", {}).items()
+                if observation["state"] == "CACHED"
+            ]
+            if all(now - _catalog_snapshots[family]["monotonic"] <= CATALOG_SNAPSHOT_MAX_AGE_SECONDS for family in cached_families):
+                return _catalog_cache
 
         families = ("models", "datasets", "spaces", "kernels")
         rows_by_family: dict[str, list[dict[str, Any]]] = {}
@@ -638,52 +645,51 @@ def recapture_catalog(*, force: bool = False) -> dict[str, Any]:
                 except Exception as exc:
                     errors["reserved_profile"] = f"reserved profile unavailable: {type(exc).__name__}"
 
+        captured_at = utc_now()
+        captured_mono = time.monotonic()
         assets: list[dict[str, Any]] = []
+        observations: dict[str, dict[str, Any]] = {}
+        counts: dict[str, int | None] = {}
         for family in families:
-            assets.extend(_normalize_asset(row, family) for row in rows_by_family[family])
-
-        # Some provider generations exposed kernel cards through the model API.
-        # Include those as kernels only when no first-class kernel endpoint was
-        # available, while retaining the original model records in the catalog.
-        if not rows_by_family["kernels"]:
-            inferred = []
-            for asset in assets:
-                if asset["type"] != "model":
-                    continue
-                tags = {str(tag).lower() for tag in asset.get("tags", [])}
-                library = str(asset.get("library") or "").lower()
-                if "kernel" in tags or "kernels" in tags or library == "kernels":
-                    clone = dict(asset)
-                    clone["type"] = "kernel"
-                    clone["href"] = f"https://huggingface.co/{asset['id']}"
-                    inferred.append(clone)
-            assets.extend(inferred)
-
-        # Public catalog must never expose private artifacts even if a provider
-        # changes its unauthenticated response contract.
-        assets = [asset for asset in assets if not asset["private"] and not asset["slug"].startswith("unknown-")]
-        assets = list({(asset["type"], asset["id"]): asset for asset in assets}.values())
+            snapshot = _catalog_snapshots.get(family)
+            observation = {"state": "UNAVAILABLE", "observed_at": None, "checked_at": captured_at, "age_seconds": None}
+            family_assets: list[dict[str, Any]] = []
+            if family not in errors:
+                normalized = [_normalize_asset(row, family) for row in rows_by_family[family]]
+                public = [asset for asset in normalized if not asset["private"] and not asset["slug"].startswith("unknown-")]
+                family_assets = list({asset["id"]: asset for asset in public}.values())
+                partial = family == "spaces" and "reserved_profile" in errors
+                observation.update(state="PARTIAL" if partial else "FRESH", observed_at=captured_at, age_seconds=0)
+                if not partial:
+                    _catalog_snapshots[family] = {
+                        "assets": family_assets, "observed_at": captured_at, "monotonic": captured_mono,
+                        "reserved_profile": dict(profile_evidence) if family == "spaces" else None,
+                    }
+            elif snapshot is not None:
+                age = max(0, captured_mono - snapshot["monotonic"])
+                observation["last_success_at"] = snapshot["observed_at"]
+                if age <= CATALOG_SNAPSHOT_MAX_AGE_SECONDS:
+                    family_assets = snapshot["assets"]
+                    observation.update(state="CACHED", observed_at=snapshot["observed_at"], age_seconds=int(age))
+                    if family == "spaces":
+                        previous = snapshot["reserved_profile"]
+                        profile_evidence = {**previous, "source_state": previous["state"], "state": "CACHED", "observed_at": snapshot["observed_at"]}
+            # A model tag cannot establish native kernel namespace membership.
+            counts[family] = None if observation["state"] == "UNAVAILABLE" else len(family_assets)
+            observations[family] = {**observation, "count": counts[family]}
+            assets.extend({**asset, "observation_state": observation["state"], "observed_at": observation["observed_at"]} for asset in family_assets)
         assets.sort(key=_asset_score, reverse=True)
-
-        counts = {
-            family: sum(1 for asset in assets if asset["type"] == family[:-1])
-            for family in families
-        }
-        # Correct plural key names for the public contract.
-        counts = {
-            "models": counts["models"],
-            "datasets": counts["datasets"],
-            "spaces": counts["spaces"],
-            "kernels": counts["kernels"],
-            "assets": len(assets),
-        }
-        state = "VERIFIED_PUBLIC_LISTING" if not errors else ("PARTIAL" if assets else "UNAVAILABLE")
+        counts["assets"] = len(assets)
+        any_observed = any(observation["state"] != "UNAVAILABLE" for observation in observations.values())
+        state = "VERIFIED_PUBLIC_LISTING" if not errors else ("PARTIAL" if any_observed else "UNAVAILABLE")
         payload = {
             "schema": "szl.atlas.catalog/v1",
             "organization": HF_ORG,
-            "captured_at": utc_now(),
+            "captured_at": captured_at,
             "state": state,
             "counts": counts,
+            "family_observations": observations,
+            "snapshot_max_age_seconds": CATALOG_SNAPSHOT_MAX_AGE_SECONDS,
             "errors": errors,
             "reserved_profile": profile_evidence,
             "assets": assets,
@@ -697,13 +703,15 @@ def recapture_catalog(*, force: bool = False) -> dict[str, Any]:
             },
             "boundary": (
                 "Counts are repository records by namespace; model and kernel IDs may overlap. "
+                "Null counts are unavailable. Cached records retain their last successful observation time; "
+                "the observed record total may mix fresh and cached families. "
                 "The reserved README Space is the organization profile. "
                 "Listing and reachability are not benchmark superiority, production authorization, "
                 "regulatory approval, customer adoption, or investment performance."
             ),
         }
         _catalog_cache = payload
-        _catalog_at = now
+        _catalog_at = captured_mono
         return payload
 
 
