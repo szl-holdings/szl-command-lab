@@ -16,6 +16,9 @@ PROFILE = {"id": "SZLHOLDINGS/README", "private": False, "sdk": "static", "sha":
 
 
 def catalog_fixture(monkeypatch, spaces=None):
+    monkeypatch.setattr(server, "_catalog_cache", None)
+    monkeypatch.setattr(server, "_catalog_at", 0.0)
+    monkeypatch.setattr(server, "_catalog_snapshots", {})
     families = {
         "models": [{"id": "SZLHOLDINGS/shared-kernel", "private": False}],
         "kernels": [{"id": "SZLHOLDINGS/shared-kernel", "private": False}],

@@ -43,6 +43,7 @@ def test_catalog_is_exact_public_inventory(monkeypatch) -> None:
     monkeypatch.setattr(server, "_reserved_profile", lambda: (None, {"state": "NOT_PUBLICLY_OBSERVABLE"}))
     monkeypatch.setattr(server, "_catalog_cache", None)
     monkeypatch.setattr(server, "_catalog_at", 0.0)
+    monkeypatch.setattr(server, "_catalog_snapshots", {})
 
     payload = server.recapture_catalog(force=True)
     assert payload["state"] == "VERIFIED_PUBLIC_LISTING"
@@ -71,11 +72,13 @@ def test_catalog_partial_state_never_fabricates_missing_family(monkeypatch) -> N
     monkeypatch.setattr(server, "_provider_rows", rows)
     monkeypatch.setattr(server, "_catalog_cache", None)
     monkeypatch.setattr(server, "_catalog_at", 0.0)
+    monkeypatch.setattr(server, "_catalog_snapshots", {})
 
     payload = server.recapture_catalog(force=True)
     assert payload["state"] == "PARTIAL"
     assert payload["counts"]["models"] == 1
-    assert payload["counts"]["datasets"] == 0
+    assert payload["counts"]["datasets"] is None
+    assert payload["family_observations"]["datasets"]["state"] == "UNAVAILABLE"
     assert set(payload["errors"]) == {"datasets", "spaces", "kernels"}
 
 
@@ -178,5 +181,6 @@ def test_catalog_payload_is_json_serializable(monkeypatch) -> None:
     monkeypatch.setattr(server, "_reserved_profile", lambda: (None, {"state": "NOT_PUBLICLY_OBSERVABLE"}))
     monkeypatch.setattr(server, "_catalog_cache", None)
     monkeypatch.setattr(server, "_catalog_at", 0.0)
+    monkeypatch.setattr(server, "_catalog_snapshots", {})
     payload = server.recapture_catalog(force=True)
     json.dumps(payload, allow_nan=False)

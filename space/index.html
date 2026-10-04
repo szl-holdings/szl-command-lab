@@ -921,10 +921,10 @@
 
     <div class="metric-band" aria-label="Observed public repository listings">
       <div class="shell metrics">
-        <div class="metric"><div class="metric-label">Model namespace</div><div class="metric-value" id="count-models">—</div><p class="metric-note">Repositories, including kernels</p></div>
-        <div class="metric"><div class="metric-label">Kernels</div><div class="metric-value" id="count-kernels">—</div><p class="metric-note">Also listed in the model namespace</p></div>
-        <div class="metric"><div class="metric-label">Datasets</div><div class="metric-value" id="count-datasets">—</div><p class="metric-note">Evidence and evaluation assets</p></div>
-        <div class="metric"><div class="metric-label">Spaces</div><div class="metric-value" id="count-spaces">—</div><p class="metric-note">Interactive public surfaces</p></div>
+        <div class="metric"><div class="metric-label">Model namespace</div><div class="metric-value" id="count-models">—</div><p class="metric-note">Repositories, including kernels</p><p class="metric-note" id="state-models">Awaiting observation</p></div>
+        <div class="metric"><div class="metric-label">Kernels</div><div class="metric-value" id="count-kernels">—</div><p class="metric-note">Also listed in the model namespace</p><p class="metric-note" id="state-kernels">Awaiting observation</p></div>
+        <div class="metric"><div class="metric-label">Datasets</div><div class="metric-value" id="count-datasets">—</div><p class="metric-note">Evidence and evaluation assets</p><p class="metric-note" id="state-datasets">Awaiting observation</p></div>
+        <div class="metric"><div class="metric-label">Spaces</div><div class="metric-value" id="count-spaces">—</div><p class="metric-note">Interactive surfaces and organization profile</p><p class="metric-note" id="state-spaces">Awaiting observation</p></div>
       </div>
     </div>
 
@@ -1131,6 +1131,41 @@
       return new Intl.DateTimeFormat("en", { year: "numeric", month: "short", day: "numeric" }).format(date);
     }
 
+    function observationTime(value) {
+      const date = value ? new Date(value) : null;
+      if (!date || Number.isNaN(date.getTime())) return "time unavailable";
+      return `${new Intl.DateTimeFormat("en", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit", hourCycle: "h23", timeZone: "UTC" }).format(date)} UTC`;
+    }
+
+    function familyObservation(family) {
+      const count = state.catalog?.counts?.[family];
+      if (typeof count !== "number" || !Number.isFinite(count) || count < 0) return { state: "UNAVAILABLE" };
+      const observation = state.catalog?.family_observations?.[family];
+      if (observation) return observation;
+      if (state.catalog?.errors?.[family]) return { state: "UNAVAILABLE" };
+      return {
+        state: family === "spaces" && state.catalog?.errors?.reserved_profile ? "PARTIAL" : "OBSERVED",
+        observed_at: state.catalog?.captured_at,
+      };
+    }
+
+    function observationLabel(observation) {
+      if (observation.state === "UNAVAILABLE") return "Unavailable · no current count";
+      const time = observationTime(observation.observed_at);
+      if (observation.state === "CACHED") return `Cached · observed ${time}`;
+      if (observation.state === "PARTIAL") return `Partial listing · observed ${time}`;
+      return `Observed ${time}`;
+    }
+
+    function cachedAssetLabel(asset) {
+      return asset.observation_state === "CACHED" ? `Cached listing · observed ${observationTime(asset.observed_at)}` : null;
+    }
+
+    function cachedAssetNote(asset) {
+      const label = asset && cachedAssetLabel(asset);
+      return label ? el("p", { class: "metric-note", text: label }) : null;
+    }
+
     function assetBySlug(slug, type) {
       const assets = state.catalog?.assets || [];
       const lower = slug.toLowerCase();
@@ -1146,16 +1181,21 @@
     function renderCounts() {
       const counts = state.catalog?.counts || {};
       ["models", "kernels", "datasets", "spaces"].forEach((name) => {
-        const target = $(`#count-${name}`);
-        target.textContent = Number.isFinite(Number(counts[name])) ? String(counts[name]) : "—";
+        const observation = familyObservation(name);
+        $(`#count-${name}`).textContent = observation.state === "UNAVAILABLE" ? "—" : String(counts[name]);
+        $(`#state-${name}`).textContent = observationLabel(observation);
       });
       const line = $("#capture-line");
       if (!state.catalog) {
         line.textContent = "Public Hub inventory unavailable; no count was inferred.";
         return;
       }
-      const status = state.catalog.state.replaceAll("_", " ");
-      line.textContent = `${status} · ${state.catalog.counts.assets || 0} public records · captured ${safeDate(state.catalog.captured_at)}`;
+      const status = String(state.catalog.state || "UNAVAILABLE").replaceAll("_", " ");
+      const gaps = ["models", "kernels", "datasets", "spaces"].flatMap(name => {
+        const observed = familyObservation(name);
+        return ["UNAVAILABLE", "CACHED", "PARTIAL"].includes(observed.state) ? [`${name}: ${observed.state.toLowerCase()}`] : [];
+      });
+      line.textContent = `${status} · ${counts.assets ?? 0} observed records · checked ${observationTime(state.catalog.captured_at)}${gaps.length ? ` · ${gaps.join("; ")}` : ""}`;
     }
 
     function renderSurfaces() {
@@ -1173,6 +1213,7 @@
           el("div", { class: "surface-index", text: `${item.index} / ${honesty}` }),
           el("h3", { text: item.title }),
           el("p", { text: item.role }),
+          cachedAssetNote(asset),
           el("span", { class: "go", text: runtime?.detail || (asset ? "Open public Space ↗" : "Runtime not asserted ↗") }),
         ]);
         grid.append(card);
@@ -1201,7 +1242,7 @@
         });
       }
       if (!chosen.length) {
-        grid.append(el("p", { class: "empty", text: "Model inventory is unavailable; the Atlas did not invent a spotlight." }));
+        grid.append(el("p", { class: "empty", text: familyObservation("models").state === "UNAVAILABLE" ? "Model inventory is unavailable; no current count or spotlight was inferred." : "No model repositories were present in this observation." }));
         return;
       }
       chosen.slice(0, 6).forEach(({ asset, spec }) => {
@@ -1214,6 +1255,7 @@
           el("div", { class: "asset-type", text: spec.label }),
           el("h3", { text: asset.slug }),
           el("p", { class: "body", text: spec.body }),
+          cachedAssetNote(asset),
           el("div", { class: "asset-meta" }, meta),
         ]));
       });
@@ -1224,13 +1266,13 @@
       target.replaceChildren();
       const kernels = (state.catalog?.assets || []).filter((asset) => asset.type === "kernel").slice(0, 24);
       if (!kernels.length) {
-        target.append(el("span", { class: "kernel-chip", text: "Kernel listing unavailable · open the Kernel Hub" }));
+        target.append(el("span", { class: "kernel-chip", text: familyObservation("kernels").state === "UNAVAILABLE" ? "Kernel listing unavailable · open the Kernel Hub" : "No native kernels were present in this observation" }));
         return;
       }
       kernels.forEach((asset) => {
         target.append(el("a", { class: "kernel-chip", href: asset.href, target: "_blank", rel: "noreferrer" }, [
           el("span", { class: "kernel-dot", "aria-hidden": "true" }),
-          el("span", { text: asset.slug }),
+          el("span", { text: `${asset.slug}${cachedAssetLabel(asset) ? ` · ${cachedAssetLabel(asset)}` : ""}` }),
         ]));
       });
     }
@@ -1251,7 +1293,7 @@
         });
       }
       if (!chosen.length) {
-        grid.append(el("p", { class: "empty", text: "Dataset inventory is unavailable; no evidence repository was fabricated." }));
+        grid.append(el("p", { class: "empty", text: familyObservation("datasets").state === "UNAVAILABLE" ? "Dataset inventory is unavailable; no current count or repository was inferred." : "No dataset repositories were present in this observation." }));
         return;
       }
       chosen.slice(0, 6).forEach(({ asset, spec }) => {
@@ -1259,6 +1301,7 @@
           el("div", { class: "asset-type", text: "Public evidence artifact" }),
           el("h3", { text: asset.slug }),
           el("p", { text: spec.body }),
+          cachedAssetNote(asset),
           el("span", { class: "go", text: `${compactNumber(asset.downloads)} downloads · inspect ↗` }),
         ]));
       });
@@ -1290,7 +1333,7 @@
         list.append(el("li", { class: "empty", text: state.catalog ? "No public assets match this search." : "Public catalog unavailable." }));
       } else {
         assets.slice(0, state.limit).forEach((asset) => {
-          const detail = [asset.role_label, asset.pipeline, asset.library, asset.sdk, ...(asset.tags || []).slice(0, 3)].filter(Boolean).join(" · ") || "metadata on artifact page";
+          const detail = [cachedAssetLabel(asset), asset.role_label, asset.pipeline, asset.library, asset.sdk, ...(asset.tags || []).slice(0, 3)].filter(Boolean).join(" · ") || "metadata on artifact page";
           const row = el("a", { class: "asset-row", href: asset.href, target: "_blank", rel: "noreferrer" }, [
             el("span", { class: "asset-name" }, [el("strong", { text: asset.slug }), el("span", { text: detail })]),
             el("span", { class: "asset-cell" }, [el("b", { text: asset.type.toUpperCase() }), "type"]),

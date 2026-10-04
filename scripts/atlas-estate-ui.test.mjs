@@ -8,6 +8,7 @@ const start = html.indexOf("    function renderSurfaces() {");
 const end = html.indexOf("    function renderModelSpotlights() {", start);
 assert.ok(start >= 0 && end > start, "test the shipped static renderer");
 const renderer = html.slice(start, end);
+const observationHelpers = html.slice(html.indexOf("    function observationTime("), html.indexOf("    function assetBySlug("));
 
 function render(estate, asset = null) {
   const nodes = new Map();
@@ -21,12 +22,12 @@ function render(estate, asset = null) {
     }
     return nodes.get(selector);
   };
-  vm.runInNewContext(`${renderer}\nrenderSurfaces();`, {
+  vm.runInNewContext(`${observationHelpers}\n${renderer}\nrenderSurfaces();`, {
     state: { estate },
     FLAGSHIPS: [{ slug: "remote", index: "01", title: "Remote", role: "Navigation" }],
     assetBySlug: () => asset,
     $: node,
-    el: (tag, attrs, children = []) => ({ tag, ...attrs, children }),
+    el: (tag, attrs, children = []) => ({ tag, ...attrs, children: children.filter(child => child != null) }),
     safeDate: () => "fixture time",
   });
   return nodes;
@@ -61,6 +62,14 @@ test("unavailable estate stays unavailable", () => {
 test("catalog-only navigation is declared, not measured", () => {
   const nodes = render(null, { href: "https://example.invalid" });
   assert.equal(nodes.get("#surface-grid").children[0].children[0].text, "01 / DECLARED");
+});
+
+test("cached public listing remains separate from current HTTP reachability", () => {
+  const nodes = render(null, { href: "https://example.invalid", observation_state: "CACHED", observed_at: "2026-10-04T16:00:00Z" });
+  const card = nodes.get("#surface-grid").children[0];
+  assert.equal(card.children[0].text, "01 / DECLARED");
+  assert.match(card.children[3].text, /Cached listing · observed Oct 4, 16:00 UTC/);
+  assert.equal(nodes.get("#estate-state").textContent, "Runtime unavailable");
 });
 
 for (const legacy of ["LIVE", "REACHABLE"]) {
