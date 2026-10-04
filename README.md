@@ -19,6 +19,30 @@ tags:
   - szl-holdings
 ---
 
+<!-- szl:card-presentation:v1 -->
+<p><a href="https://huggingface.co/spaces/SZLHOLDINGS/szl-command-lab"><img src="https://raw.githubusercontent.com/szl-holdings/.github/main/profile/assets/szl/logos/szl_mark_holographic.svg" alt="SZL Holdings" width="112" /></a></p>
+
+# SZL Command Lab
+
+Explore SZL systems, models, kernels and datasets in one searchable place. Follow each item to its source, current observations and stated use limits.
+
+**Artifact:** Public portfolio application
+
+**Stage:** Exploration and bounded demonstrations
+
+[**Explore Command Lab →**](https://huggingface.co/spaces/SZLHOLDINGS/szl-command-lab) · [**Build with the source →**](https://github.com/szl-holdings/szl-command-lab) · [**Inspect exact source →**](https://github.com/szl-holdings/szl-command-lab/blob/07af64494e13ed2cb373abd44a9d9f5b117b9603/README.md)
+
+## Use limits
+
+- Catalog membership and reachable URLs do not establish model quality or operational readiness.
+- The five-organ demonstration is synthetic; it grants no action authority.
+- Unavailable or partial provider observations remain visible and must not be interpreted as a complete inventory.
+
+<details>
+<summary>Technical documentation, original evidence and reproduction</summary>
+
+<!-- szl:preserved-source-body:start -->
+
 <p align="center">
   <a href="https://huggingface.co/spaces/SZLHOLDINGS/szl-command-lab">
     <img src="https://huggingface.co/spaces/SZLHOLDINGS/README/resolve/main/assets/estate-command-system.svg"
@@ -236,3 +260,7 @@ its exact source-binding evidence before a consequential deployment decision.
 Apache-2.0 · Control before action · Evidence after
 
 </div>
+
+<!-- szl:preserved-source-body:end -->
+
+</details>

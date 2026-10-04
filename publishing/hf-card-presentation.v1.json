@@ -1,0 +1,26 @@
+{
+  "schema": "szl.source-card-presentation/v1",
+  "source_repository": "szl-holdings/szl-command-lab",
+  "source_revision": "07af64494e13ed2cb373abd44a9d9f5b117b9603",
+  "cards": [
+    {
+      "repo_id": "SZLHOLDINGS/szl-command-lab",
+      "kind": "spaces",
+      "source_path": "README.md",
+      "source_url": "https://github.com/szl-holdings/szl-command-lab/blob/07af64494e13ed2cb373abd44a9d9f5b117b9603/README.md",
+      "canonical_publisher": "https://github.com/szl-holdings/szl-command-lab/blob/07af64494e13ed2cb373abd44a9d9f5b117b9603/.github/workflows/hf-sync.yml",
+      "publication_state": "SOURCE_REVIEW_PENDING",
+      "artifact": "Public portfolio application",
+      "stage": "Exploration and bounded demonstrations",
+      "before_sha256": "e77617982403ab81a0a6cd630a08c4587fef5d34166f8b5fa43f27c44832e6e6",
+      "front_matter_sha256": "480ddb41f0ac3d9b931ee82eb82d0957399f415784b33f170e28dcb7e4d8c049",
+      "preserved_body_sha256": "3de41e2253282f0782d343fdfb3acc22b10f210b37f61e86977d244661be0859",
+      "after_sha256": "96122f7bdcec1112f1032c5b4f65794ea8e1dc704d13656bd73067ef97ff2bac",
+      "bytes_before": 10345,
+      "bytes_after": 11681,
+      "front_matter_preserved": true,
+      "original_body_preserved": true,
+      "provider_or_runtime_promotion": false
+    }
+  ]
+}
