@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en" data-szl-surface="atlas-v1">
+<html lang="en" data-szl-surface="atlas-v1" data-szl-holo-disabled="native-atlas">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#05070b" />
+  <meta name="theme-color" content="#090b10" />
   <meta name="color-scheme" content="dark" />
   <meta name="description" content="Explore the SZL governed AI estate: public systems, models, kernels, datasets, source revisions, and evidence boundaries." />
   <meta name="keywords" content="governed AI, AI provenance, model governance, inference kernels, verifiable AI, agentic systems, SZL" />
@@ -285,83 +285,6 @@
       box-shadow: 0 0 0 0 rgba(99,230,197,.55);
       animation: pulse 2.8s ease-out infinite;
       flex: 0 0 auto;
-    }
-
-    .hero-orbit {
-      position: relative;
-      aspect-ratio: 1 / 1;
-      max-width: 560px;
-      justify-self: end;
-      border: 1px solid var(--line);
-      border-radius: 50%;
-      background:
-        radial-gradient(circle at 50% 50%, rgba(91,188,255,.16), transparent 18%),
-        radial-gradient(circle at 50% 50%, rgba(177,140,255,.08), transparent 52%),
-        rgba(8, 12, 18, 0.74);
-      box-shadow: var(--shadow), inset 0 0 110px rgba(91,188,255,.04);
-      isolation: isolate;
-    }
-    .hero-orbit::before,
-    .hero-orbit::after {
-      content: "";
-      position: absolute;
-      border-radius: 50%;
-      border: 1px solid rgba(190,207,222,.15);
-      inset: 12%;
-      transform: rotate(19deg) scaleY(.54);
-    }
-    .hero-orbit::after { inset: 21%; transform: rotate(-31deg) scaleY(.62); border-color: rgba(99,230,197,.25); }
-    .orbit-ring {
-      position: absolute;
-      inset: 8%;
-      border: 1px dashed rgba(91,188,255,.27);
-      border-radius: 50%;
-      animation: spin 42s linear infinite;
-    }
-    .orbit-ring.two { inset: 27%; animation-direction: reverse; animation-duration: 26s; border-color: rgba(227,189,114,.28); }
-    .core {
-      position: absolute;
-      inset: 34%;
-      display: grid;
-      place-items: center;
-      border-radius: 50%;
-      border: 1px solid rgba(245,242,233,.32);
-      background: radial-gradient(circle at 40% 35%, rgba(245,242,233,.24), rgba(91,188,255,.12) 36%, rgba(5,7,11,.9) 75%);
-      box-shadow: 0 0 60px rgba(91,188,255,.18), inset 0 0 30px rgba(99,230,197,.09);
-      text-align: center;
-    }
-    .core strong { display: block; font: 600 clamp(2rem, 5vw, 4.2rem)/1 var(--serif); letter-spacing: -.04em; }
-    .core span { color: var(--muted); font: 9px/1.4 var(--mono); letter-spacing: .16em; text-transform: uppercase; }
-    .orbit-node {
-      position: absolute;
-      width: 86px;
-      min-height: 54px;
-      padding: 9px;
-      display: grid;
-      place-items: center;
-      border: 1px solid var(--line-bright);
-      border-radius: 12px;
-      color: var(--paper);
-      background: rgba(10,16,24,.92);
-      box-shadow: 0 14px 40px rgba(0,0,0,.28);
-      font: 700 9px/1.35 var(--mono);
-      letter-spacing: .1em;
-      text-align: center;
-      text-transform: uppercase;
-    }
-    .orbit-node:nth-of-type(3) { top: 4%; left: 50%; transform: translateX(-50%); border-color: rgba(99,230,197,.42); }
-    .orbit-node:nth-of-type(4) { top: 26%; right: -3%; border-color: rgba(91,188,255,.42); }
-    .orbit-node:nth-of-type(5) { bottom: 11%; right: 6%; border-color: rgba(177,140,255,.42); }
-    .orbit-node:nth-of-type(6) { bottom: 4%; left: 27%; border-color: rgba(227,189,114,.42); }
-    .orbit-node:nth-of-type(7) { top: 31%; left: -5%; border-color: rgba(99,230,197,.32); }
-    .scan {
-      position: absolute;
-      inset: 4%;
-      border-radius: 50%;
-      pointer-events: none;
-      background: linear-gradient(180deg, transparent 45%, rgba(99,230,197,.08) 50%, transparent 55%);
-      animation: scan 6s ease-in-out infinite;
-      mix-blend-mode: screen;
     }
 
     .metric-band { border-block: 1px solid var(--line); background: rgba(10,15,22,.58); }
@@ -713,7 +636,6 @@
 
     @media (max-width: 1020px) {
       .hero { grid-template-columns: 1fr; min-height: auto; }
-      .hero-orbit { justify-self: center; width: min(82vw, 520px); }
       .surface-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
       .spotlight-grid, .evidence-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
       .loop-layout { grid-template-columns: 1fr; }
@@ -741,8 +663,6 @@
       .shell { width: min(calc(100% - 24px), var(--max)); }
       .hero { padding-top: 58px; }
       .hero-copy h1 { font-size: clamp(3rem, 17vw, 5rem); }
-      .hero-orbit { width: 90vw; max-width: calc(100vw - 30px); }
-      .orbit-node { width: 72px; min-height: 46px; font-size: 8px; }
       .metrics { grid-template-columns: repeat(2, 1fr); }
       .metric:nth-child(2) { border-right: 0; }
       .metric:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
@@ -762,6 +682,169 @@
       html { scroll-behavior: auto; }
       *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
     }
+
+    /* Native Atlas shell: source-owned layout, independent of host iframe width.
+       Decorative chrome is opted out; shared public-experience adaptation remains. */
+    :root {
+      --void: #090b10; --ink: #090b10; --panel: #11151d; --panel-2: #171c25;
+      --bone: #f2f0e9; --paper: #d9dde3; --muted: #a7aebc; --faint: #a7aebc;
+      --line: #343c49; --line-bright: #657081;
+      --mint: #f2f0e9; --blue: #d9dde3; --violet: #d9dde3; --gold: #d9dde3;
+      --radius: 16px; --max: 1200px;
+    }
+    html[data-szl-surface="atlas-v1"],
+    html[data-szl-surface="atlas-v1"] body { overflow-x: visible; }
+    html[data-szl-surface="atlas-v1"] body {
+      min-width: 0; background: var(--void); container: atlas / inline-size;
+    }
+    body::before, body::after { content: none; }
+    .shell { width: min(calc(100% - 48px), var(--max)); min-width: 0; }
+    .shell > *, .hero-copy, .hero-actions > *, .explorer-toolbar > *, .footer > * { min-width: 0; }
+    .eyebrow { color: var(--muted); font-size: 10px; letter-spacing: .14em; }
+    .nav { display: grid; grid-template-columns: auto minmax(0,1fr) auto; gap: 20px; }
+    #site-header { background: var(--void); backdrop-filter: none; border-color: var(--line); }
+    .brand { min-width: 0; min-height: 48px; gap: 0; }
+    .brand-mark { display: none; }
+    .brand-name { font: 650 20px/1.15 var(--sans); letter-spacing: -.04em; white-space: nowrap; }
+    .brand-tag { margin-top: 5px; color: var(--muted); letter-spacing: .09em; }
+    #nav-list { position: static; display: flex; justify-content: center; padding: 0; border: 0; background: transparent; box-shadow: none; }
+    .nav-cta { border-color: var(--line); background: transparent; }
+    .menu-button { min-width: 64px; margin: 0; padding: 0 12px; font-size: 13px; }
+    .hero {
+      min-height: 0; grid-template-columns: minmax(0,1.12fr) minmax(0,.88fr);
+      gap: clamp(32px,5cqi,72px); padding-block: clamp(56px,7cqi,100px);
+    }
+    .hero-copy h1 { margin: 20px 0 24px; font: 500 clamp(2.5rem,5.7cqi,4.6rem)/1.03 var(--serif); letter-spacing: -.045em; }
+    .hero-copy h1 span { color: var(--bone); background: none; }
+    .lede { max-width: 42ch; font-size: clamp(1rem,1.6cqi,1.18rem); line-height: 1.65; color: var(--muted); }
+    .hero-actions { margin-top: 28px; gap: 10px; }
+    .button { min-height: 48px; padding: 10px 18px; line-height: 1.4; border-radius: 10px; background: transparent; }
+    .button:hover { transform: none; background: var(--panel-2); border-color: var(--bone); }
+    .button.primary { color: var(--void); border-color: var(--bone); background: var(--bone); }
+    .button.primary:hover { background: var(--paper); }
+    .truth-line { margin-top: 22px; font-size: 11px; align-items: flex-start; }
+    .pulse { display: none; }
+    .hero-visual {
+      inline-size: 100%; max-inline-size: 480px; min-inline-size: 0; margin: 0;
+      display: grid; gap: 20px; justify-self: center; padding: clamp(18px,3cqi,36px);
+      border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel);
+    }
+    .hero-artwork { display: grid; place-items: center; min-width: 0; }
+    .hero-artwork svg { display: block; inline-size: 100%; max-inline-size: 360px; block-size: auto; aspect-ratio: 8 / 5; }
+    .hero-visual figcaption { margin: 0; text-align: center; font: 11px/1.5 var(--mono); letter-spacing: .16em; color: var(--muted); white-space: nowrap; }
+    .command-principles { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 0 18px; list-style: none; padding: 0; margin: 0; }
+    .command-principles li { min-width: 0; padding-block: 12px; border-top: 1px solid var(--line); font-size: 12px; line-height: 1.4; }
+    .command-principles li:last-child { grid-column: 1 / -1; }
+    .command-principles span { color: var(--muted); margin-right: 7px; font: 10px var(--mono); }
+    .metric-band { background: transparent; }
+    .metrics { grid-template-columns: repeat(4,minmax(0,1fr)); }
+    .metric { min-height: 132px; padding: 24px 20px; }
+    .metric-value { font: 500 clamp(2.25rem,4cqi,3.5rem)/1.1 var(--sans); letter-spacing: -.045em; }
+    .metric-note { color: var(--muted); }
+    section.content { padding-block: clamp(52px,7cqi,88px); }
+    .section-head { grid-template-columns: minmax(0,1fr) minmax(0,.8fr); gap: 32px; margin-bottom: 28px; }
+    .section-head h2 { font-size: clamp(2rem,4cqi,3.5rem); line-height: 1.06; }
+    .section-head p:last-child { font-size: 15px; }
+    .surface-grid { grid-template-columns: repeat(3,minmax(0,1fr)); }
+    .surface-card, .asset-card, .persona, .loop-panel, .explorer, .manifest-card { background: var(--panel); box-shadow: none; }
+    .surface-card { min-height: 220px; }
+    .surface-card::after, .fabric::before, .loop-stage::before { content: none; }
+    .surface-card:hover, .asset-card:hover { transform: none; border-color: var(--line-bright); }
+    .surface-card .go, .manifest-card .go { line-height: 1.6; letter-spacing: .04em; }
+    .asset-card { min-height: 270px; }
+    .asset-card h3 { font-family: var(--sans); font-size: 1.5rem; line-height: 1.2; letter-spacing: -.035em; }
+    .tiny { color: var(--muted); font-size: 10px; padding: 5px 8px; line-height: 1.4; }
+    .fabric { background: var(--panel); border-radius: var(--radius); padding: clamp(22px,4cqi,40px); }
+    .fabric h3 { font-size: clamp(2rem,4cqi,3.5rem); line-height: 1.08; }
+    .fabric-kernels { gap: 10px; }
+    .kernel-chip { max-width: 100%; min-height: 44px; border-color: var(--line); background: transparent; padding-block: 10px; }
+    .kernel-chip span { min-width: 0; overflow-wrap: anywhere; }
+    .kernel-dot { flex: 0 0 5px; width: 5px; height: 5px; background: var(--muted); box-shadow: none; }
+    .manifest-card h3 { font: 500 1.4rem/1.25 var(--sans); letter-spacing: -.03em; }
+    .loop-layout { grid-template-columns: minmax(0,1fr) minmax(0,1fr); }
+    .loop-panel h3 { font-size: clamp(1.8rem,3.5cqi,2.8rem); line-height: 1.1; }
+    .loop-stage { display: block; min-height: 0; padding: 24px; background: var(--panel); overflow: visible; }
+    .organ-map { width: 100%; aspect-ratio: auto; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
+    .organ-line { display: none; }
+    .organ-map .organ-node:nth-child(n) { position: static; inset: auto; transform: none; min-width: 0; min-height: 68px; padding: 12px 8px; box-shadow: none; border-color: var(--line); background: transparent; }
+    .organ-map .organ-node:last-child { grid-column: 1 / -1; }
+    .organ-node span { color: var(--muted); }
+    .loop-result { position: static; margin-top: 16px; min-height: 0; background: transparent; backdrop-filter: none; }
+    .toggle { padding-block: 12px; line-height: 1.45; }
+    .toggle input { flex: 0 0 18px; }
+    .persona-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+    .persona { min-height: 0; }
+    .persona h3 { line-height: 1.12; }
+    .persona a { min-height: 44px; align-items: center; line-height: 1.5; }
+    .filter { min-height: 44px; padding-block: 10px; }
+    .select { width: 100%; }
+    .asset-row { grid-template-columns: minmax(0,1.4fr) .5fr .5fr .7fr 20px; gap: 14px; }
+    .asset-name strong, .asset-name span { white-space: normal; overflow: visible; overflow-wrap: anywhere; }
+    .explorer-foot { flex-wrap: wrap; }
+    .closing { padding-block: clamp(60px,9cqi,110px); border-top: 1px solid var(--line); }
+    .closing h2 { font-size: clamp(2.5rem,5cqi,4.5rem); line-height: 1.05; }
+    .footer-links a { min-height: 44px; }
+    .demo-disclosure { border-top: 1px solid var(--line); }
+    .demo-disclosure > summary { min-height: 56px; padding: 16px 8px; cursor: pointer; font-size: 15px; }
+    .demo-disclosure > summary span { display: block; color: var(--muted); font-size: 12px; margin-top: 4px; }
+    .demo-disclosure[open] > summary { margin-bottom: 16px; }
+    @container atlas (max-width: 56rem) {
+      .nav { grid-template-columns: minmax(0,1fr) auto; gap: 0 12px; padding-block: 12px; }
+      .nav > nav { grid-column: 1 / -1; order: 3; }
+      #nav-list { display: none; }
+      #site-header.menu-open #nav-list { display: grid; padding-top: 12px; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 4px; }
+      #site-header { position: relative; }
+      .nav-cta { display: none; }
+      .menu-button { display: inline-grid; place-items: center; order: 2; }
+      .surface-grid, .spotlight-grid, .evidence-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+      .section-head { grid-template-columns: minmax(0,1fr); gap: 18px; }
+      .loop-layout { grid-template-columns: minmax(0,1fr); }
+      .explorer-toolbar { grid-template-columns: minmax(0,1fr) minmax(0,1fr); }
+      .explorer-toolbar > label:first-child { grid-column: 1 / -1; }
+    }
+    @container atlas (max-width: 48rem) {
+      .hero { grid-template-columns: minmax(0,1fr); gap: 32px; }
+      .hero-visual { max-inline-size: 480px; justify-self: start; }
+      .hero-copy { max-width: 620px; }
+      .fabric-top, .footer { grid-template-columns: minmax(0,1fr); }
+      .footer-links { justify-content: flex-start; }
+    }
+    @container atlas (max-width: 36rem) {
+      .shell { width: calc(100% - 32px); }
+      .hero { padding-block: 40px; }
+      .hero-actions { display: grid; grid-template-columns: minmax(0,1fr); }
+      .hero-actions .button { justify-content: space-between; }
+      .hero-visual { padding: 20px; }
+      .metrics { grid-template-columns: repeat(2,minmax(0,1fr)); }
+      .metric { padding: 20px 14px; }
+      .metric:nth-child(2) { border-right: 0; }
+      .metric:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+      .surface-grid, .spotlight-grid, .evidence-grid, .persona-grid { grid-template-columns: minmax(0,1fr); }
+      .surface-card, .asset-card, .manifest-card { min-height: 0; gap: 12px; }
+      .surface-card h3 { margin-top: 16px; }
+      .asset-card h3, .manifest-card h3 { margin-block: 8px; }
+      .asset-card .body, .manifest-card p { margin-bottom: 0; }
+      .asset-meta { padding-top: 10px; }
+      .asset-row { grid-template-columns: minmax(0,1fr) 20px; }
+      .asset-row .asset-cell { display: none; }
+      .explorer-toolbar { grid-template-columns: minmax(0,1fr); padding: 16px; }
+      .loop-panel { padding: 20px; }
+      .loop-stage { padding: 16px; }
+    }
+    @media (prefers-contrast: more) { :root { --line: #7d8796; --muted: #d9dde3; } }
+    @media (forced-colors: active) {
+      .hero-visual, .surface-card, .asset-card, .manifest-card, .button { border: 1px solid CanvasText; }
+      .hero-artwork svg { forced-color-adjust: none; }
+    }
+    @media print {
+      #site-header, .hero-actions, .controls, .explorer-toolbar, .filter-row, .explorer-foot { display: none; }
+      html[data-szl-surface="atlas-v1"] body { color: #111; background: #fff; }
+      .shell { width: 100%; }
+      .hero, .section-head, .footer { grid-template-columns: 1fr; }
+      .hero-visual { break-inside: avoid; background: #11151d; }
+      .surface-card, .asset-card, .manifest-card { break-inside: avoid; }
+      .closing { padding-block: 24px; }
+    }
   </style>
 </head>
 <body>
@@ -776,13 +859,13 @@
         <ul id="nav-list">
           <li><a class="nav-link" href="#systems">Systems</a></li>
           <li><a class="nav-link" href="#models">Models</a></li>
-          <li><a class="nav-link" href="#kernels">Kernels</a></li>
+          <li><a class="nav-link" href="#build">Build</a></li>
           <li><a class="nav-link" href="#evidence">Evidence</a></li>
           <li><a class="nav-link" href="#explore">Explore all</a></li>
         </ul>
       </nav>
       <a class="nav-cta" href="https://a-11-oy.com" target="_blank" rel="noreferrer">Enter A11oy ↗</a>
-      <button class="menu-button" id="menu-button" type="button" aria-expanded="false" aria-controls="nav-list" aria-label="Open navigation">☰</button>
+      <button class="menu-button" id="menu-button" type="button" aria-expanded="false" aria-controls="nav-list" aria-label="Open navigation">Menu</button>
     </div>
   </header>
 
@@ -791,31 +874,54 @@
       <div class="hero-copy">
         <p class="eyebrow">Control before action · evidence after</p>
         <h1>Governed intelligence.<span>Portable evidence.</span></h1>
-        <p class="lede">One public atlas for the systems, models, kernels, and evidence behind SZL. Every artifact gets a route to source. Every consequential claim gets a boundary. Every action is designed to leave a receipt.</p>
+        <p class="lede">Explore the systems and research behind SZL. Follow each artifact to its source, its intended use, and the evidence available today.</p>
         <div class="hero-actions">
-          <a class="button primary" href="https://a-11-oy.com" target="_blank" rel="noreferrer">Enter the product <span class="arrow">↗</span></a>
-          <a class="button" href="#explore">Explore the estate <span class="arrow">↓</span></a>
-          <a class="button ghost" href="https://a11oy.net" target="_blank" rel="noreferrer">Inspect evidence ↗</a>
+          <a class="button primary" href="#systems">Explore the work <span class="arrow" aria-hidden="true">↓</span></a>
+          <a class="button" href="#build">Build with SZL <span class="arrow" aria-hidden="true">↓</span></a>
         </div>
         <div class="truth-line"><span class="pulse" aria-hidden="true"></span><span id="capture-line">Recapturing the public Hub estate…</span></div>
       </div>
-      <div class="hero-orbit" aria-label="SZL governed command fabric visualization">
-        <div class="orbit-ring"></div>
-        <div class="orbit-ring two"></div>
-        <div class="core"><div><strong>SZL</strong><span>reason ↔ reality</span></div></div>
-        <div class="orbit-node">Models<br />propose</div>
-        <div class="orbit-node">Policy<br />bounds</div>
-        <div class="orbit-node">Humans<br />bind</div>
-        <div class="orbit-node">Receipts<br />persist</div>
-        <div class="orbit-node">Evidence<br />verifies</div>
-        <div class="scan"></div>
-      </div>
+      <figure class="hero-visual" aria-label="SZL governed command fabric visualization">
+        <div class="hero-artwork"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 160" role="img" aria-labelledby="szl-title szl-desc">
+  <title id="szl-title">SZL Holdings</title>
+  <desc id="szl-desc">The SZL orbital monogram. Silver letterforms cross a precise cyan, lilac and mint orbit.</desc>
+  <defs>
+    <linearGradient id="szl-orbit" x1="18" y1="125" x2="234" y2="31" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#99e7ef"/>
+      <stop offset=".46" stop-color="#c2b9ef"/>
+      <stop offset=".76" stop-color="#ecebf0"/>
+      <stop offset="1" stop-color="#a3e4ca"/>
+    </linearGradient>
+    <linearGradient id="szl-silver" x1="64" y1="50" x2="165" y2="108" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#faf9f4"/>
+      <stop offset=".55" stop-color="#d7dce4"/>
+      <stop offset="1" stop-color="#a7b2c4"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="128" cy="80" rx="116" ry="43" transform="rotate(-20 128 80)" fill="none" stroke="url(#szl-orbit)" stroke-width="1.4"/>
+  <g fill="none" stroke="url(#szl-silver)" stroke-width="13" stroke-linejoin="miter">
+    <path d="M81 53H51L43 61V70L78 86V97L70 105H39"/>
+    <path d="M94 53H135V58L96 100V105H137"/>
+    <path d="M155 47V105H201"/>
+  </g>
+  <circle cx="222.5" cy="28.6" r="3.4" fill="#a3e4ca"/>
+  <path d="M125 125L128 119L131 125" fill="none" stroke="url(#szl-orbit)" stroke-width="1.2"/>
+</svg></div>
+        <figcaption>Reason ↔ reality</figcaption>
+        <ol class="command-principles">
+          <li><span>01</span>Models propose</li>
+          <li><span>02</span>Policy bounds</li>
+          <li><span>03</span>Humans bind</li>
+          <li><span>04</span>Receipts persist</li>
+          <li><span>05</span>Evidence verifies</li>
+        </ol>
+      </figure>
     </section>
 
-    <div class="metric-band" aria-label="Live public asset counts">
+    <div class="metric-band" aria-label="Observed public repository listings">
       <div class="shell metrics">
-        <div class="metric"><div class="metric-label">Models</div><div class="metric-value" id="count-models">—</div><p class="metric-note">Published model artifacts</p></div>
-        <div class="metric"><div class="metric-label">Kernels</div><div class="metric-value" id="count-kernels">—</div><p class="metric-note">First-class compute primitives</p></div>
+        <div class="metric"><div class="metric-label">Model namespace</div><div class="metric-value" id="count-models">—</div><p class="metric-note">Repositories, including kernels</p></div>
+        <div class="metric"><div class="metric-label">Kernels</div><div class="metric-value" id="count-kernels">—</div><p class="metric-note">Also listed in the model namespace</p></div>
         <div class="metric"><div class="metric-label">Datasets</div><div class="metric-value" id="count-datasets">—</div><p class="metric-note">Evidence and evaluation assets</p></div>
         <div class="metric"><div class="metric-label">Spaces</div><div class="metric-value" id="count-spaces">—</div><p class="metric-note">Interactive public surfaces</p></div>
       </div>
@@ -823,8 +929,8 @@
 
     <section class="shell content" id="systems">
       <div class="section-head">
-        <div><p class="eyebrow">Flagship command surfaces</p><h2>Products with a point of view.</h2></div>
-        <p>The model proposes. Independent policy decides. A person binds consequential action. Source, runtime, and evidence remain separate so reachability never masquerades as readiness.</p>
+        <div><p class="eyebrow">Systems &amp; applications</p><h2>Explore the work.</h2></div>
+        <p>Start with a system, inspect its scope, and follow the source. HTTP reachability is shown separately from capability and readiness.</p>
       </div>
       <div class="status-row"><span class="status-pill" id="estate-state">Recapturing runtime</span><span id="estate-time">Live probes are bounded and cached.</span></div>
       <div class="surface-grid" id="surface-grid" aria-live="polite">
@@ -835,7 +941,7 @@
     <section class="shell content" id="models">
       <div class="section-head">
         <div><p class="eyebrow">Model constellation</p><h2>Small models. Explicit jobs.</h2></div>
-        <p>A model card is not a performance claim. The Atlas foregrounds intended roles, public usage signals, lineage links, and the exact artifact page where evaluation and limitations belong.</p>
+        <p>Browse intended roles, lineage, public usage signals, and artifact-specific evaluations. A listing or download count does not establish performance.</p>
       </div>
       <div class="spotlight-grid" id="model-spotlights" aria-live="polite">
         <div class="asset-card skeleton">Loading</div><div class="asset-card skeleton">Loading</div><div class="asset-card skeleton">Loading</div>
@@ -856,7 +962,7 @@
     <section class="shell content" id="evidence">
       <div class="section-head">
         <div><p class="eyebrow">Evidence library</p><h2>Proof before pitch.</h2></div>
-        <p>Corpora, benchmark fixtures, formal artifacts, model bills of materials, and admitted public data belong in inspectable repositories—not buried inside a marketing claim.</p>
+        <p>Inspect corpora, evaluation fixtures, formal artifacts, and model bills of materials. Each repository carries its own sources and limitations.</p>
       </div>
       <div class="evidence-grid" id="evidence-grid" aria-live="polite">
         <div class="manifest-card skeleton">Loading</div><div class="manifest-card skeleton">Loading</div><div class="manifest-card skeleton">Loading</div>
@@ -868,6 +974,8 @@
         <div><p class="eyebrow">Interactive governed loop</p><h2>Break a claim. Watch the body stop.</h2></div>
         <p>This bounded demonstration is deliberately simple: zero an advisory axis, tamper with a chain, or request a fabricated joule. The system refuses to convert missing evidence into authority.</p>
       </div>
+      <details class="demo-disclosure">
+        <summary>Inspect the bounded demo<span>Synthetic inputs · advisory output · no external action</span></summary>
       <div class="loop-layout">
         <div class="loop-panel">
           <p class="eyebrow">Run the anatomy</p>
@@ -893,17 +1001,17 @@
           <div class="loop-result" id="loop-result"><strong>READY</strong> · Run a cycle to inspect the bounded decision path.</div>
         </div>
       </div>
+      </details>
     </section>
 
-    <section class="shell content" id="paths">
+    <section class="shell content" id="build">
       <div class="section-head">
-        <div><p class="eyebrow">Three paths in</p><h2>Understand. Build. Verify.</h2></div>
-        <p>A serious technical estate needs more than one homepage. Different readers should reach the product, source, and proof without decoding the organization chart.</p>
+        <div><p class="eyebrow">Choose your path</p><h2>A clear place to start.</h2></div>
+        <p>Understand the product and its evidence, or go directly to repositories and integration contracts.</p>
       </div>
       <div class="persona-grid">
-        <article class="persona"><p class="eyebrow">Decision makers</p><h3>Understand the outcome.</h3><p>Start with the product, the operating boundary, and the problem each system is built to resolve.</p><a href="https://a-11-oy.com" target="_blank" rel="noreferrer">Enter A11oy ↗</a></article>
-        <article class="persona"><p class="eyebrow">Builders</p><h3>Read the source.</h3><p>Inspect repositories, contracts, tests, kernels, quick starts, and exact artifact revisions before integration.</p><a href="https://github.com/szl-holdings" target="_blank" rel="noreferrer">Open GitHub ↗</a></article>
-        <article class="persona"><p class="eyebrow">Reviewers</p><h3>Challenge the evidence.</h3><p>Follow receipts, limitations, provenance, evaluation records, and honest unavailable states.</p><a href="https://a11oy.net" target="_blank" rel="noreferrer">Inspect evidence ↗</a></article>
+        <article class="persona"><p class="eyebrow">Investors &amp; decision makers</p><h3>Understand the outcome.</h3><p>Start with the product, the operating boundary, and the problem each system is built to resolve.</p><a href="https://a-11-oy.com" target="_blank" rel="noreferrer">Enter A11oy ↗</a></article>
+        <article class="persona"><p class="eyebrow">Developers</p><h3>Read the source.</h3><p>Inspect repositories, contracts, tests, kernels, quick starts, and exact artifact revisions before integration.</p><a href="https://github.com/szl-holdings" target="_blank" rel="noreferrer">Open GitHub ↗</a></article>
       </div>
     </section>
 
@@ -1255,15 +1363,15 @@
       nodes.forEach((node, index) => {
         const organ = byName.get(order[index]);
         const status = organ?.status || "UNAVAILABLE";
-        $("span", node).textContent = status;
+        $("span", node).textContent = status === "LIVE" ? "PASS · demo" : status;
         node.classList.toggle("down", status === "DOWN" || status === "UNAVAILABLE");
       });
       const result = $("#loop-result");
       const blocked = Boolean(body.blocked);
       result.classList.toggle("blocked", blocked);
       result.replaceChildren(
-        el("strong", { text: blocked ? "BLOCKED" : "ADVISORY BODY" }),
-        document.createTextNode(` · ${body.live_count || 0}/5 organs LIVE · energy ${energy.honesty || "UNAVAILABLE"} · Conjecture 1 ${body.conjecture_1 || "OPEN"} · proven_trust false`),
+        el("strong", { text: blocked ? "BLOCKED" : "ADVISORY DEMO" }),
+        document.createTextNode(` · ${body.live_count || 0}/5 checks passed · energy ${energy.honesty || "UNAVAILABLE"} · Conjecture 1 ${body.conjecture_1 || "OPEN"} · proven_trust false`),
       );
     }
 
@@ -1304,15 +1412,24 @@
       const header = $("#site-header");
       const open = header.classList.toggle("menu-open");
       $("#menu-button").setAttribute("aria-expanded", String(open));
-      $("#menu-button").textContent = open ? "×" : "☰";
+      $("#menu-button").textContent = open ? "Close" : "Menu";
+      $("#menu-button").setAttribute("aria-label", open ? "Close navigation" : "Open navigation");
     });
     $$("#nav-list a").forEach((link) => link.addEventListener("click", () => {
       $("#site-header").classList.remove("menu-open");
       $("#menu-button").setAttribute("aria-expanded", "false");
-      $("#menu-button").textContent = "☰";
+      $("#menu-button").textContent = "Menu";
+      $("#menu-button").setAttribute("aria-label", "Open navigation");
     }));
 
-    Promise.allSettled([loadCatalog(false), loadEstate(), loadBuild(), runLoop()]);
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && $("#site-header").classList.contains("menu-open")) {
+        $("#menu-button").click();
+        $("#menu-button").focus();
+      }
+    });
+
+    Promise.allSettled([loadCatalog(false), loadEstate(), loadBuild()]);
   </script>
 </body>
 </html>

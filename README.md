@@ -162,6 +162,39 @@ SZL_GIT_SHA=<exact-40-character-source-revision>
 
 ## Verification
 
+### Responsive Atlas
+
+The Atlas owns its navigation and layout. The shared holographic helper retains
+viewport and accessibility adaptation, while its optional decorative rail and
+ambient layer are disabled on this native surface. The hero uses the original
+SZL orbital mark as inline vector geometry inside normal document flow. The mark,
+caption and governance labels have intrinsic dimensions and never depend on
+absolutely positioned text. Container queries use the Space's own available
+width, including an embedded Hugging Face frame and CSS zoom.
+
+The first two paths are **Explore the work** and **Build with SZL**. The bounded
+demo is disclosed on demand, requires a user click to run, and labels successful
+organ checks as demo results. Model-namespace counts include kernel repositories;
+kernel listings are not additional trained models.
+
+The `atlas-responsive-browser` PR job starts the shipped Python gateway and runs
+`scripts/atlas-responsive.test.cjs` in Chromium with synthetic provider data.
+It checks 320, 375, 744, 768, 1024, 1440 and 1920px widths, 200% and 400% CSS zoom,
+and 320/744px frames inside a 1440px host. It measures the hero box and every
+visible content boundary, then exercises navigation, Escape and catalog search.
+Screenshots and JSON measurements are retained as a run artifact. This tests
+rendering; it does not certify live provider data or production capability.
+
+To run the same matrix locally, install the repository's Playwright dependency
+and Chromium, start `HOST=127.0.0.1 PORT=7868 python gateway.py`, then run:
+
+```bash
+ATLAS_EVIDENCE_DIR=/tmp/atlas-browser-evidence node --test scripts/atlas-responsive.test.cjs
+```
+
+`ATLAS_TEST_ORIGIN` may point to another loopback port. The test rejects public
+origins and intercepts provider API requests with explicit fixtures.
+
 Install the test tool used by the repository CI before running the suite:
 
 ```bash
