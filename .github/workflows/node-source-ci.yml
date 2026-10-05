@@ -1,0 +1,39 @@
+name: Node source CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  source:
+    name: Node ${{ matrix.node }} (install, typecheck, tests, build)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ["22", "24"]
+    steps:
+      - name: Checkout candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Node
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - name: Install the committed dependency graph
+        run: npm ci
+      - name: Typecheck the app
+        run: npm run typecheck
+      - name: Test app data and fail-closed identity
+        run: npm run test:ts
+      - name: Test migration and sign-out contracts
+        run: node --test scripts/migration-plan.test.mjs scripts/sign-out-plan.test.mjs
+      - name: Build the app
+        run: npm run build
