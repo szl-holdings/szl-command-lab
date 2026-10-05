@@ -62,7 +62,7 @@ function Home() {
 
       <section className="border-y border-line">
         <div className="mx-auto grid max-w-6xl gap-px bg-line sm:grid-cols-2 lg:grid-cols-4">
-          {ORIGINS.filter((o) => o.host !== "a11oy.com").map((origin) => (
+          {ORIGINS.map((origin) => (
             <article key={origin.host} className="bg-ink px-5 py-6">
               <p className="font-mono text-xs uppercase tracking-[0.14em] text-mute">{origin.role}</p>
               <p className="mt-2 font-display text-2xl">{origin.host}</p>
