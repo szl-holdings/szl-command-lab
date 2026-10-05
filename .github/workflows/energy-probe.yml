@@ -4,6 +4,8 @@ on:
   push:
     paths:
       - "space/energy.py"
+      - "python/energy.py"
+      - "atlas_energy.py"
       - "space/requirements.txt"
       - ".github/workflows/energy-probe.yml"
   pull_request:

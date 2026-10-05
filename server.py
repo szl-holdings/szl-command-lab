@@ -23,7 +23,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 from urllib.error import HTTPError, URLError
 from urllib.parse import parse_qs, urlencode, urlparse
 from urllib.request import Request, urlopen
@@ -31,6 +31,8 @@ from urllib.request import Request, urlopen
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(HERE / "python"))
+
+from atlas_energy import measure_run, probe  # noqa: E402
 
 HF_ORG = "SZLHOLDINGS"
 HF_API_ORIGIN = "https://huggingface.co"
@@ -159,112 +161,13 @@ def run_yarqa_demo() -> dict[str, Any]:
 # fallback keeps this Space auditable and operational if an older flattened
 # publication omits those modules.
 try:
-    from energy import measure_run, probe  # type: ignore
     from kernel import evaluate_anatomy, selftest  # type: ignore
 except ImportError:
     LOCKED_EIGHT = ("F1", "F4", "F7", "F11", "F12", "F18", "F19", "F22")
     YUYAY_FLOORS = (0.95, 0.95) + (0.90,) * 11
     ZERO = "0" * 64
     CHAIN_OPS = ("anatomy.brain", "anatomy.heart", "anatomy.skeleton")
-    POWERCAP = Path("/sys/class/powercap")
-    RAPL = Path("/sys/class/powercap/intel-rapl:0/energy_uj")
 
-    def _rapl_uj() -> int | None:
-        candidates = [RAPL]
-        try:
-            if POWERCAP.is_dir():
-                candidates.extend(sorted(POWERCAP.glob("intel-rapl:*/energy_uj")))
-        except OSError:
-            pass
-        seen: set[Path] = set()
-        for path in candidates:
-            if path in seen:
-                continue
-            seen.add(path)
-            try:
-                if path.is_file():
-                    return int(path.read_text(encoding="utf-8").strip())
-            except (OSError, ValueError):
-                continue
-        return None
-
-    def _nvml_mj() -> float | None:
-        try:
-            import pynvml  # type: ignore
-        except ImportError:
-            return None
-        try:
-            pynvml.nvmlInit()
-            handle = pynvml.nvmlDeviceGetHandleByIndex(0)
-            value = float(pynvml.nvmlDeviceGetTotalEnergyConsumption(handle))
-            pynvml.nvmlShutdown()
-            return value
-        except Exception:
-            try:
-                pynvml.nvmlShutdown()
-            except Exception:
-                pass
-            return None
-
-    def probe(*, sample_s: float = 0.05) -> dict[str, Any]:
-        start = _rapl_uj()
-        if start is not None:
-            time.sleep(max(0.0, sample_s))
-            end = _rapl_uj()
-            if end is None:
-                end = start
-            return {
-                "channel": "LIVE",
-                "honesty": "MEASURED",
-                "source": "intel-rapl",
-                "package_energy_j": end / 1_000_000.0,
-                "sample_delta_j": max(0.0, (end - start) / 1_000_000.0),
-                "inference_energy_j": None,
-                "energy_j": None,
-                "note": "RAPL package counter measured on this runtime.",
-            }
-        nvml_mj = _nvml_mj()
-        if nvml_mj is not None:
-            return {
-                "channel": "LIVE",
-                "honesty": "MEASURED",
-                "source": "nvml",
-                "package_energy_j": nvml_mj / 1000.0,
-                "sample_delta_j": None,
-                "inference_energy_j": None,
-                "energy_j": None,
-                "note": "NVML total-energy counter measured on this runtime.",
-            }
-        return {
-            "channel": "LIVE",
-            "honesty": "UNAVAILABLE",
-            "source": None,
-            "package_energy_j": None,
-            "sample_delta_j": None,
-            "inference_energy_j": None,
-            "energy_j": None,
-            "note": "No readable RAPL or NVML counter; no joule value is inferred.",
-        }
-
-    def measure_run(fn: Callable[[], Any]) -> tuple[Any, dict[str, Any]]:
-        start = _rapl_uj()
-        t0 = time.perf_counter()
-        result = fn()
-        duration = time.perf_counter() - t0
-        end = _rapl_uj()
-        energy = probe(sample_s=0.0)
-        energy["duration_s"] = duration
-        if start is not None and end is not None:
-            measured = max(0.0, (end - start) / 1_000_000.0)
-            energy.update(
-                {
-                    "honesty": "MEASURED",
-                    "inference_energy_j": measured,
-                    "energy_j": measured,
-                    "note": f"RAPL delta around the bounded kernel ({duration:.4f}s).",
-                }
-            )
-        return result, energy
 
     def _wgm(values: list[float], weights: list[float]) -> float:
         if len(values) != len(weights) or not values:

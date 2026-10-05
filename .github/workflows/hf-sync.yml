@@ -6,6 +6,7 @@ name: Sync canonical SZL Atlas to Hugging Face Space
     paths:
       - Dockerfile
       - server.py
+      - atlas_energy.py
       - gateway.py
       - space/**
       - README.md
