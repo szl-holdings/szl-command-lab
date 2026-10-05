@@ -70,7 +70,8 @@ def _read_rapl(identity: str | None = None) -> _Counter | None:
                 candidates.extend(sorted(POWERCAP.glob("intel-rapl:*/energy_uj")))
                 candidates.extend(sorted(POWERCAP.glob("intel-rapl:*:*/energy_uj")))
         except OSError:
-            pass
+            # Enumeration is incomplete; retain only the explicit default candidate.
+            candidates = [RAPL]
     seen: set[Path] = set()
     for candidate in candidates:
         try:
@@ -99,6 +100,7 @@ def _read_nvml(identity: str | None = None) -> _Counter | None:
     except ImportError:
         return None
     initialized = False
+    reading = None
     try:
         pynvml.nvmlInit()
         initialized = True
@@ -115,7 +117,7 @@ def _read_nvml(identity: str | None = None) -> _Counter | None:
             return None
         value = pynvml.nvmlDeviceGetTotalEnergyConsumption(handle)
         if _valid_value(value):
-            return _Counter("nvml", observed, value)
+            reading = _Counter("nvml", observed, value)
     except Exception:
         # Driver errors are unavailable observations, not public exception text.
         return None
@@ -124,8 +126,9 @@ def _read_nvml(identity: str | None = None) -> _Counter | None:
             try:
                 pynvml.nvmlShutdown()
             except Exception:
-                pass
-    return None
+                # A failed library release invalidates this sample; do not publish it.
+                reading = None
+    return reading
 
 
 def _payload(note: str) -> dict[str, Any]:
@@ -204,21 +207,26 @@ def measure_run(fn: Callable[[], T]) -> tuple[T, dict[str, Any]]:
 def _cuda_inventory() -> dict[str, Any]:
     """Explicit inventory only; normal energy probes never import torch or run a CLI."""
     out: dict[str, Any] = {"torch_import": False, "torch_version": None,
-                           "cuda_available": False, "cuda_device": None, "nvidia_smi": None}
+                           "cuda_available": False, "cuda_device": None, "nvidia_smi": None,
+                           "torch_inventory_state": "UNAVAILABLE", "driver_inventory_state": "UNAVAILABLE"}
     try:
         import torch  # type: ignore
         out.update(torch_import=True, torch_version=str(torch.__version__),
                    cuda_available=bool(torch.cuda.is_available()))
         if out["cuda_available"]:
             out["cuda_device"] = str(torch.cuda.get_device_name(0))
+        out["torch_inventory_state"] = "OBSERVED"
     except Exception:
-        pass
+        # Discard partial device availability on a failed runtime inventory.
+        out.update(cuda_available=False, cuda_device=None, torch_inventory_state="UNAVAILABLE")
     try:
         proc = subprocess.run(["nvidia-smi", "-L"], capture_output=True, text=True, timeout=3)
         if proc.returncode == 0 and proc.stdout.strip():
             out["nvidia_smi"] = proc.stdout.strip().splitlines()[0][:200]
+            out["driver_inventory_state"] = "OBSERVED"
     except Exception:
-        pass
+        # A missing driver CLI is an unavailable observation, not an empty success.
+        out.update(nvidia_smi=None, driver_inventory_state="UNAVAILABLE")
     return out
 
 

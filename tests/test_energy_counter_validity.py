@@ -250,3 +250,42 @@ def test_energy_api_serializes_missing_sample_as_null_joules():
     status, payload = handler._send_json.call_args.args
     assert status == 200  # The observation endpoint works; the measurement is unavailable.
     assert_unavailable(payload)
+
+
+@pytest.mark.parametrize("phase", ["init", "shutdown"])
+def test_nvml_lifecycle_failures_cannot_publish_an_observation(phase):
+    fake = SimpleNamespace(nvmlInit=Mock(), nvmlShutdown=Mock(),
+        nvmlDeviceGetHandleByIndex=Mock(return_value="handle"),
+        nvmlDeviceGetUUID=Mock(return_value="GPU-synthetic"),
+        nvmlDeviceGetTotalEnergyConsumption=Mock(return_value=2000))
+    failed = fake.nvmlInit if phase == "init" else fake.nvmlShutdown
+    failed.side_effect = RuntimeError("synthetic lifecycle failure")
+    with patch.dict(sys.modules, {"pynvml": fake}):
+        assert READ_NVML() is None
+    if phase == "init":
+        fake.nvmlShutdown.assert_not_called()
+    else:
+        fake.nvmlShutdown.assert_called_once_with()
+
+
+def test_rapl_enumeration_failure_retains_only_the_explicit_candidate(tmp_path, monkeypatch):
+    counter = tmp_path / "default_counter"
+    counter.write_text("500\n", encoding="ascii")
+    monkeypatch.setattr(energy, "RAPL", counter)
+    with patch.object(Path, "is_dir", side_effect=OSError("synthetic enumeration failure")):
+        assert READ_RAPL() == sample(500, identity=str(counter.resolve()))
+
+
+def test_hardware_inventory_errors_have_explicit_unavailable_states():
+    # Recover the real inventory function from the source rather than unpatching
+    # the autouse safety boundary for normal energy probes.
+    spec = importlib.util.spec_from_file_location("isolated_inventory_contract", ROOT / "atlas_energy.py")
+    module = importlib.util.module_from_spec(spec)
+    with patch.dict(sys.modules, {spec.name: module, "torch": None}):
+        spec.loader.exec_module(module)
+        with patch.object(module.subprocess, "run", side_effect=OSError("synthetic CLI absence")):
+            out = module._cuda_inventory()
+    assert out["torch_inventory_state"] == "UNAVAILABLE"
+    assert out["driver_inventory_state"] == "UNAVAILABLE"
+    assert out["nvidia_smi"] is None
+    assert out["cuda_available"] is False
