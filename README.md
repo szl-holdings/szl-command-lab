@@ -186,6 +186,31 @@ SZL_GIT_SHA=<exact-40-character-source-revision>
 
 ## Verification
 
+### Energy counter evidence
+
+`atlas_energy.py` is the single energy implementation used by the Atlas server
+and the `python/energy.py` and `space/energy.py` compatibility entrypoints. The
+Dockerfile-derived canonical publication includes this module; the existing
+single-writer workflow also watches its changes.
+
+A missing second read, changed counter identity, decreasing counter, negative
+value, overflow, NaN or infinity leaves energy `UNAVAILABLE` with null joules.
+A valid unchanged counter is a measured zero; it is not confused with a missing
+sample. RAPL intervals retain the same resolved counter file and NVML intervals
+the same device UUID. Wrap/reset correction is not inferred. A post-run snapshot
+cannot substitute for a complete interval around the callable.
+
+The legacy `energy_j` and `inference_energy_j` names retain the observed shared
+counter interval for compatibility. They are **not isolated inference energy**;
+the payload and interface state that attribution limit. Ordinary probes do not
+import torch or invoke a driver CLI; full hardware inventory remains a separate
+explicit call. No model is loaded by this change.
+
+`tests/test_energy_counter_validity.py` exercises synthetic counter faults,
+identity changes, true zeroes, serialization, entrypoint ownership, publication
+membership and the visible attribution boundary. These are software contracts,
+not measured hardware energy, CUDA benchmarks or model-quality evidence.
+
 ### Responsive Atlas
 
 The Atlas owns its navigation and layout. The shared holographic helper retains

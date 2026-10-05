@@ -25,6 +25,7 @@ RUN python -m pip install --no-cache-dir \
     && python -I -c "import yarqa; assert yarqa.__version__ == '0.5.0'"
 
 COPY server.py ./server.py
+COPY atlas_energy.py ./atlas_energy.py
 COPY gateway.py ./gateway.py
 COPY space/index.html ./index.html
 COPY space/launchpad.html ./launchpad.html
