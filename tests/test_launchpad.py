@@ -16,7 +16,7 @@ INDEX = ROOT / "space" / "index.html"
 LAUNCHPAD = ROOT / "space" / "launchpad.html"
 DOCKERFILE = ROOT / "Dockerfile"
 DEPLOY_WORKFLOW = ROOT / ".github" / "workflows" / "hf-sync.yml"
-REUSABLE_DEPLOY_SHA = "3537cba978d018c7c924ab1f90e18c0f879eb886"
+REUSABLE_DEPLOY_SHA = "e1d079215b4de816cea18eb86f322820ffa40df0"
 HF_PUBLISHER_SECRET_EXPRESSION = (
     "HF_TOKEN: ${{ secrets.HF_ORG_TOKEN || secrets.HF_ORG_TOKEN1 || "
     "secrets.HF_WRITE_TOKEN || secrets.HF_TOKEN || secrets.HUGGINGFACE_TOKEN || "
