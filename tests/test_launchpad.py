@@ -67,6 +67,9 @@ def test_launchpad_file_load_is_bounded_and_contract_checked() -> None:
 
 def test_launchpad_html_is_accessible_and_evidence_honest() -> None:
     text = LAUNCHPAD.read_text(encoding="utf-8")
+    status, raw, _state = gateway._load_launchpad()
+    assert status == 200
+    rendered = raw.decode("utf-8")
 
     for marker in (
         'lang="en"',
@@ -95,6 +98,7 @@ def test_launchpad_html_is_accessible_and_evidence_honest() -> None:
         "Fleet health:",
     ):
         assert forbidden not in text
+        assert forbidden not in rendered
 
     assert "<script" not in text
     assert 'fetch("/api/launchpad"' not in text
@@ -247,6 +251,7 @@ def test_launchpad_renders_registered_cards_and_source_status_without_script() -
         assert f'<strong>{row["id"]}</strong>' in text
     assert "Navigation does not certify availability" in text
     assert "navigation is not runtime proof" in text
+    assert text.count("Availability and capability are verified separately.") == payload["surface_count"]
 
 
 def test_launchpad_escapes_all_registry_text_and_url_attributes() -> None:
@@ -270,6 +275,7 @@ def test_launchpad_escapes_all_registry_text_and_url_attributes() -> None:
     assert '&lt;b onclick=&quot;x&quot;&gt;role&lt;/b&gt;' in text
     assert 'href="https://example.org/?next=&quot;&lt;script&gt;&amp;x=1"' in text
     assert '&lt;img src=x onerror=&quot;x&quot;&gt;' in text
+    assert text.count("Availability and capability are verified separately.") == 1
 
 
 def test_launchpad_bad_registry_fails_closed_without_partial_links(monkeypatch) -> None:
@@ -289,6 +295,7 @@ def test_launchpad_bad_registry_fails_closed_without_partial_links(monkeypatch) 
         assert (status, state) == (503, "UNAVAILABLE")
         assert b"Registry unavailable. No destination state is inferred." in raw
         assert b'class="card external"' not in raw
+        assert b"Availability and capability are verified separately." not in raw
         assert b'<svg onload="x">' not in raw
 
     malformed = {**base, "surfaces": [{"id": "safe", "role": "view", "href": "javascript:alert(1)"}],
@@ -301,6 +308,7 @@ def test_launchpad_bad_registry_fails_closed_without_partial_links(monkeypatch) 
     assert get_status == 503
     assert int(headers["Content-Length"]) == len(body)
     assert b'class="card external"' not in body
+    assert b"Availability and capability are verified separately." not in body
 
 
 def test_launchpad_template_markers_are_exact_and_fail_closed() -> None:
