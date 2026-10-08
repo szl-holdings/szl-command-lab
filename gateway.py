@@ -14,6 +14,7 @@ import json
 import os
 import stat
 import sys
+from html import escape
 from http.server import ThreadingHTTPServer
 from pathlib import Path
 from typing import Any
@@ -21,6 +22,7 @@ from urllib.parse import urlparse
 
 import server
 import demo_adapters
+import launchpad_views
 import visitor_views
 
 HERE = Path(__file__).resolve().parent
@@ -48,7 +50,7 @@ PUBLIC_ASSET_PATHS = frozenset(PUBLIC_ASSET_SPECS)
 
 def _unavailable_launchpad(reason: str) -> bytes:
     """Return a minimal fail-closed page without inferred destination state."""
-    safe_reason = reason.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+    safe_reason = escape(reason, quote=True)
     return (
         "<!doctype html><html lang='en'><head><meta charset='utf-8'>"
         "<meta name='viewport' content='width=device-width,initial-scale=1'>"
@@ -85,12 +87,24 @@ def _load_launchpad() -> tuple[int, bytes, str]:
                 'data-szl-surface="atlas-launchpad-v1"',
                 "Navigation does not certify availability",
                 "navigation is not runtime proof",
-                'fetch("/api/launchpad"',
             )
             if any(marker not in text for marker in required):
                 failures.append(f"{path.name}:contract-mismatch")
                 continue
-            return 200, raw, "SOURCE_CONTROLLED"
+            try:
+                payload = launchpad_payload()
+            except Exception:
+                # A failed source observation cannot publish inferred destinations.
+                payload = None
+            try:
+                status, rendered, state = launchpad_views.render(text, payload)
+            except ValueError:
+                failures.append(f"{path.name}:template-mismatch")
+                continue
+            if len(rendered) > MAX_LAUNCHPAD_BYTES:
+                failures.append(f"{path.name}:render-size-boundary")
+                continue
+            return status, rendered, state
         except (OSError, UnicodeDecodeError):
             failures.append(f"{path.name}:unavailable")
     reason = ",".join(failures) or "no-candidate"

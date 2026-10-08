@@ -31,6 +31,7 @@ RUN python -m pip install --no-cache-dir --require-hashes --only-binary=:all: -r
 COPY server.py ./server.py
 COPY atlas_energy.py ./atlas_energy.py
 COPY gateway.py ./gateway.py
+COPY launchpad_views.py ./launchpad_views.py
 COPY demo_adapters.py ./demo_adapters.py
 COPY visitor_views.py ./visitor_views.py
 COPY demo_data ./demo_data
