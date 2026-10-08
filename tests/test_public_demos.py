@@ -167,3 +167,27 @@ def test_atlas_entry_and_status_accessibility() -> None:
     assert "alignDemoAnchor" in index
     assert "font: 14px/1.55 var(--sans)" in index
     assert 'href="/demos"' in launchpad
+
+
+def test_demo_deploy_sources_are_in_docker_and_main_sync_filter() -> None:
+    docker = (ROOT / "Dockerfile").read_text(encoding="utf-8")
+    workflow = (ROOT / ".github" / "workflows" / "hf-sync.yml").read_text(encoding="utf-8")
+    copies = {
+        parts[1]: parts[2]
+        for line in docker.splitlines()
+        if (parts := line.split()) and len(parts) == 3 and parts[0] == "COPY"
+    }
+    required = {
+        "demo_adapters.py": "./demo_adapters.py",
+        "visitor_views.py": "./visitor_views.py",
+        "demo_data": "./demo_data",
+        "requirements-public-demos.txt": "./requirements-public-demos.txt",
+    }
+    for source, destination in required.items():
+        assert (ROOT / source).exists()
+        assert copies.get(source) == destination
+    assert "python -m pip install --no-cache-dir --require-hashes --only-binary=:all: -r requirements-public-demos.txt" in docker
+    paths_block = workflow.split("    paths:\n", 1)[1].split("  workflow_dispatch:", 1)[0]
+    paths = {line.strip().removeprefix("- ") for line in paths_block.splitlines() if line.strip()}
+    assert {"demo_adapters.py", "visitor_views.py", "demo_data/**", "requirements-public-demos.txt"} <= paths
+    assert "branches: [main]" in workflow

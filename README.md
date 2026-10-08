@@ -245,8 +245,9 @@ catalog search, and 44px touch targets.
 Screenshots and JSON measurements are retained as a run artifact. This tests
 rendering; it does not certify live provider data or production capability.
 
-To run the same matrix locally, install the repository's Playwright dependency
-and Chromium, start `HOST=127.0.0.1 PORT=7868 python gateway.py`, then run:
+To run the same matrix locally, install the pinned Python demo requirements
+shown below, the repository's Playwright dependency, and Chromium. Start
+`HOST=127.0.0.1 PORT=7868 python gateway.py`, then run:
 
 ```bash
 ATLAS_EVIDENCE_DIR=/tmp/atlas-browser-evidence node --test scripts/atlas-responsive.test.cjs
@@ -255,10 +256,12 @@ ATLAS_EVIDENCE_DIR=/tmp/atlas-browser-evidence node --test scripts/atlas-respons
 `ATLAS_TEST_ORIGIN` may point to another loopback port. The test rejects public
 origins and intercepts provider API requests with explicit fixtures.
 
-Install the test tool used by the repository CI before running the suite:
+Install the test tool and hash-pinned public demo distributions before starting
+the gateway or running the suite:
 
 ```bash
 python -m pip install pytest
+python -m pip install --require-hashes --only-binary=:all: -r requirements-public-demos.txt
 python -m py_compile server.py gateway.py demo_adapters.py visitor_views.py
 python - <<'PY'
 import gateway
