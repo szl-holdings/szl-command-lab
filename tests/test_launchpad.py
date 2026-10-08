@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import io
+import json
 import re
 from pathlib import Path
 
@@ -369,3 +370,33 @@ def test_launchpad_registry_timeout_has_no_partial_cards(monkeypatch) -> None:
     assert head_body == b""
     assert head_headers["Content-Length"] == get_headers["Content-Length"]
     assert "form-action 'none'" in get_headers["Content-Security-Policy"]
+
+
+@pytest.mark.parametrize(
+    "href",
+    (
+        "https://@example.org/",
+        "https://:@example.org/",
+        "https://example.org/a b",
+        "https://example.org\\route",
+        "https://[::",
+    ),
+)
+def test_launchpad_api_and_html_reject_unsafe_source_urls(monkeypatch, href: str) -> None:
+    monkeypatch.setattr(server, "SURFACES", (("unsafe", "view", href, None),))
+    payload = gateway.launchpad_payload()
+    assert payload["schema"] == "szl.atlas.launchpad/v1"
+    assert payload["state"] == "UNAVAILABLE"
+    assert payload["surface_count"] == 0
+    assert payload["surfaces"] == []
+    assert payload["errors"] == ["unsafe-href:unsafe"]
+    assert payload["authorization"] == "NONE"
+
+    api_status, api_headers, api_body = _capture_launchpad("do_GET", "/api/launchpad")
+    html_status, html_headers, html_body = _capture_launchpad("do_GET", "/launchpad")
+    assert (api_status, html_status) == (503, 503)
+    assert json.loads(api_body)["surfaces"] == []
+    assert int(api_headers["Content-Length"]) == len(api_body)
+    assert int(html_headers["Content-Length"]) == len(html_body)
+    assert b'class="card external"' not in html_body
+    assert b"Registry unavailable. No destination state is inferred." in html_body

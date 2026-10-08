@@ -163,8 +163,20 @@ def launchpad_payload() -> dict[str, Any]:
         if not all(isinstance(value, str) and value.strip() for value in (ident, role, href)):
             errors.append("malformed-source-value")
             continue
-        parsed = urlparse(href)
-        if parsed.scheme != "https" or not parsed.hostname or parsed.username or parsed.password:
+        if any(character.isspace() or ord(character) < 32 for character in href) or "\\" in href:
+            errors.append(f"unsafe-href:{ident}")
+            continue
+        try:
+            parsed = urlparse(href)
+        except ValueError:
+            errors.append(f"unsafe-href:{ident}")
+            continue
+        if (
+            parsed.scheme != "https"
+            or not parsed.hostname
+            or parsed.username is not None
+            or parsed.password is not None
+        ):
             errors.append(f"unsafe-href:{ident}")
             continue
         normalized_id = ident.strip()
