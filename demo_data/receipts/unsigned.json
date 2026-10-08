@@ -1,0 +1,22 @@
+[
+  {
+    "envelope": {
+      "_dsse": "DSSEv1",
+      "_pae_sha256": "33eaf6388f6204e5e484fc8a8d2cb079004a4eaaf6a74bf96c516fa5755c3884",
+      "_signed_at": "2026-10-08T04:44:43Z",
+      "honesty": "UNSIGNED-honest: no private key present, so this envelope is NOT signed. The content hash and chain are still verifiable; authenticity is not.",
+      "payload": "eyJhY3Rpb24iOiJndWFyZHJhaWwiLCJjaGFpbl92ZXJpZmllZCI6dHJ1ZSwiZGVjaXNpb24iOiJhbGxvdyIsImRpZ2VzdCI6IjQzZTkyNTY0NWNhM2E5N2Q5MDg2ZDk0MzBiYWE4MTgyN2UyMDhiMTAxYjIwZDdiZjdlMGUzZmMzODdiZmRhNmIiLCJlbmVyZ3kiOnsiZXZpZGVuY2UiOnsicmVhc29uIjoiYSBndWFyZHJhaWwgYWxsb3cvZGVueSBkZWNpc2lvbiBwZXJmb3JtcyBubyBtZXRlcmVkIGluZmVyZW5jZTsgbm8gTlZNTC9lbmVyZ3kgcmVhZGluZyBhcHBsaWVzLiJ9LCJqb3VsZXMiOm51bGwsImxhYmVsIjoiVU5BVkFJTEFCTEUifSwiZ3VhcmRyYWlsIjp7ImNhdGVnb3JpZXMiOltdLCJuYW1lIjoicHVibGljLWZpeHR1cmUtcG9saWN5IiwicmVhc29uIjoiZml4ZWQgYWxsb3cgZml4dHVyZSIsInZlcnNpb24iOiIxIn0sImhvbmVzdF9ibG9ja2VkIjpmYWxzZSwibGFtYmRhIjp7ImxhYmVsIjoizpsgPSBDb25qZWN0dXJlIDEg4oCUIG5ldmVyIGdyZWVuIiwibm90ZSI6ImFkdmlzb3J5LCBub24tY29tcGVuc2F0b3J5OyBuZXZlciBhIHByb29mIG9mIHNhZmV0eS4iLCJzY29yZSI6bnVsbH0sIm5zIjoic3psLWNvbW1hbmQtbGFiLXB1YmxpYy1maXh0dXJlIiwib3JnYW4iOiJwdWJsaWMtZml4dHVyZS1wb2xpY3kiLCJwYXlsb2FkX2RpZ2VzdCI6IjhiNzA4ODFmNGZmODI3YTBlNzUxYmYxNTViMTRmMDVlNjMwM2VmZTYxYjU3NDFlMGZiOGEzOGYzZDZiZjU3M2EiLCJwcmV2IjoiMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMCIsInJlY2VpcHRfc2NoZW1hIjoic3psLmd1YXJkcmFpbC5yZWNlaXB0L3YxIiwic2NoZW1hIjoic3psLmd1YXJkcmFpbC5yZWNvcmQvdjEiLCJzZXEiOjAsInNpZ25hdHVyZSI6IkRTU0VfUExBQ0VIT0xERVIiLCJ0cyI6MTc4MDk2MzIwMC4wLCJ2ZXJpZnkiOnsiYWxnb3JpdGhtIjoiRUNEU0EtUDI1Ni1TSEEyNTYgb3ZlciBEU1NFIFBBRSAoRFNTRXYxKSIsImhvd190b192ZXJpZnkiOiJweXRob24gLW0gc3psX2d1YXJkcmFpbF9yZWNlaXB0IHZlcmlmeSA8ZmlsZT4gIOKAlCBvciB0aGUgZGVwZW5kZW5jeS1mcmVlIGdvdmVybmVkLXJlY2VpcHQtc3BlYy92ZXJpZnkucHkuIiwic3BlYyI6Imh0dHBzOi8vZ2l0aHViLmNvbS9zemwtaG9sZGluZ3MvZ292ZXJuZWQtcmVjZWlwdC1zcGVjIn19",
+      "payloadType": "application/vnd.szl.guardrail-receipt+json",
+      "signatures": [],
+      "signed": false
+    },
+    "ns": "szl-command-lab-public-fixture",
+    "schema": "szl.guardrail.record/v1",
+    "ts": 1780963200.0,
+    "verify": {
+      "algorithm": "ECDSA-P256-SHA256 over DSSE PAE (DSSEv1)",
+      "how_to_verify": "python -m szl_guardrail_receipt verify <file>  — or the dependency-free governed-receipt-spec/verify.py.",
+      "spec": "https://github.com/szl-holdings/governed-receipt-spec"
+    }
+  }
+]

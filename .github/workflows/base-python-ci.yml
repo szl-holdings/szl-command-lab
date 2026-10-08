@@ -48,6 +48,7 @@ jobs:
           if [ -f requirements.txt ]; then python -m pip install -r requirements.txt; fi
           if [ -f requirements-dev.txt ]; then python -m pip install -r requirements-dev.txt; fi
           if [ -f requirements-test.txt ]; then python -m pip install -r requirements-test.txt; fi
+          if [ -f requirements-public-demos.txt ]; then python -m pip install --require-hashes --only-binary=:all: -r requirements-public-demos.txt; fi
 
       # Blocking scope is the classes that indicate real breakage (syntax
       # errors, undefined names, unused imports). The full default ruleset runs

@@ -99,6 +99,10 @@ presents:
 | `GET /api/energy` | RAPL/NVML runtime probe | Joules are reported only when a readable counter exists |
 | `GET /api/yarqa` | Bounded YARQA compartmentalization and receipt replay | Synthetic input verifies integrity/reproducibility, not CFD correctness |
 | `GET /api/build-info` | Source-binding metadata | Missing runtime revision is labeled `REVISION_UNAVAILABLE` |
+| `GET /demos` | Python-rendered entry to fixed retrieval and receipt demonstrations | Read-only public fixtures; authority `NONE` |
+| `GET /demos/retrieval/{id}` | Fixed BM25 lexical query | Named IDs only; no benchmark or model-quality claim |
+| `GET /demos/receipts/{id}` | Fixed offline receipt verification | Integrity, signature, and scientific validity shown separately |
+| `GET /api/demo-adapters` | Versioned adapter artifact registry | Exact pinned distribution, source revision, wheel hash, limits, authority `NONE` |
 
 ### Estate probe evidence
 
@@ -123,6 +127,14 @@ capability. Consumers must use these scopes and must not translate legacy
 `LIVE`/`REACHABLE` labels into stronger claims. The Atlas presents these counts
 without a green readiness indicator. Existing cache bounds remain unchanged;
 the GET does not mint a signed receipt.
+
+## Bounded Python demonstrations
+
+The Atlas has a prominent **Try a demo** entry. Its original `/#loop` anatomy URL remains available and expands reliably from a deep link. The new `/demos` views are rendered deterministically in Python with escaped data; the browser uses HTML/CSS and the existing presentation JavaScript. Fixed links work with the existing `form-action 'none'` CSP.
+
+The retrieval example ranks five original, Apache-2.0 public corpus summaries with `szl-retrieval-bench==0.3.1` BM25. The receipt example calls `szl-guardrail-receipt==0.1.2` over committed intact, tampered, and unsigned synthetic records. Both wheels are SHA-256 pinned in `requirements-public-demos.txt`, and the registry records their exact source tag commits and artifact identities. The core dependency closure is empty for both packages. No signer, model, paid provider, upload, external effect, dynamic import, or visitor URL fetch is used by these adapters.
+
+All receipt fixtures are unsigned. An intact hash and chain can be **PASS** while signature verification is **SKIP**; the package's `verify_records` boolean alone is never displayed as a signature pass. Scientific validity stays `NOT_EVALUATED` and authority stays `NONE`. The corpus and fixture provenance are recorded in `demo_data/README.md`.
 
 ## Governing boundary
 
@@ -154,10 +166,7 @@ signal → proposal → policy → bounded action → receipt → verification
 The Docker Space intentionally uses a compact standard-library Python server.
 `gateway.py` composes the permanent `/launchpad` and `/api/launchpad` routes
 onto the existing `server.Handler`; all other Atlas routes continue through the
-original handler. `Dockerfile` publishes the exact `server.py`, `gateway.py`,
-`space/index.html`, `space/launchpad.html`, and source-bound holographic CSS and
-JavaScript closure and installs YARQA from the exact source revision reported by
-`/api/build-info`.
+original handler. `Dockerfile` publishes the exact `server.py`, `gateway.py`, Python demo adapters and renderer, fixed demo data, `space/index.html`, `space/launchpad.html`, and source-bound holographic CSS and JavaScript closure. It installs YARQA from its pinned source archive and installs the two demo wheels by exact hashes.
 
 Provider mutation is owned by the protected central reusable publisher in
 `szl-holdings/.github`. The thin caller in `.github/workflows/hf-sync.yml` pins
@@ -221,7 +230,7 @@ caption and governance labels have intrinsic dimensions and never depend on
 absolutely positioned text. Container queries use the Space's own available
 width, including an embedded Hugging Face frame and CSS zoom.
 
-The first two paths are **Explore the work** and **Build with SZL**. The bounded
+The first paths are **Explore the work**, **Build with SZL**, and **Try a demo**. The bounded
 demo is disclosed on demand, requires a user click to run, and labels successful
 organ checks as demo results. Model-namespace counts include kernel repositories;
 kernel listings are not additional trained models.
@@ -250,7 +259,7 @@ Install the test tool used by the repository CI before running the suite:
 
 ```bash
 python -m pip install pytest
-python -m py_compile server.py gateway.py
+python -m py_compile server.py gateway.py demo_adapters.py visitor_views.py
 python - <<'PY'
 import gateway
 import server

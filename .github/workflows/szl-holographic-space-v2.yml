@@ -9,6 +9,46 @@ permissions:
   contents: read
 
 jobs:
+  docker-readonly-demo-image:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Build the pinned Python 3.14 runtime without publishing
+        run: docker build --progress=plain -t szl-command-lab:pr .
+      - name: Check local container routes and installed distributions
+        shell: bash
+        run: |
+          set -euo pipefail
+          cid="$(docker run --rm -d -p 127.0.0.1:7869:7860 szl-command-lab:pr)"
+          trap 'docker stop "$cid" > /dev/null 2>&1 || true' EXIT
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:7869/demos > /dev/null; then break; fi
+            sleep 1
+          done
+          python - <<'PY'
+          import json
+          from urllib.request import urlopen
+          root = "http://127.0.0.1:7869"
+          for path in ("/", "/launchpad", "/demos", "/demos/retrieval/inventory",
+                       "/demos/receipts/intact", "/demos/receipts/tampered"):
+              with urlopen(root + path, timeout=5) as response:
+                  assert response.status == 200, path
+                  assert response.read(), path
+          with urlopen(root + "/api/demo-adapters", timeout=5) as response:
+              registry = json.load(response)
+          assert registry["authority"] == "NONE"
+          assert [(row["distribution"], row["version"], row["state"]) for row in registry["adapters"]] == [
+              ("szl-retrieval-bench", "0.3.1", "AVAILABLE"),
+              ("szl-guardrail-receipt", "0.1.2", "AVAILABLE"),
+          ]
+          print("local container routes and pinned adapters: PASS")
+          PY
+
   atlas-responsive-browser:
     runs-on: ubuntu-latest
     timeout-minutes: 12
@@ -31,6 +71,8 @@ jobs:
           set -euo pipefail
           npm install --prefix "$RUNNER_TEMP/atlas-browser" --no-audit --no-fund playwright@1.63.0
           "$RUNNER_TEMP/atlas-browser/node_modules/.bin/playwright" install --with-deps chromium
+      - name: Install pinned read-only demo distributions
+        run: python -m pip install --require-hashes --only-binary=:all: -r requirements-public-demos.txt
       - name: Verify the shipped Atlas with synthetic provider data
         shell: bash
         run: |
@@ -45,6 +87,9 @@ jobs:
           NODE_PATH="$RUNNER_TEMP/atlas-browser/node_modules" \
             ATLAS_EVIDENCE_DIR="$RUNNER_TEMP/atlas-browser-evidence" \
             node --test scripts/atlas-responsive.test.cjs
+          NODE_PATH="$RUNNER_TEMP/atlas-browser/node_modules" \
+            ATLAS_EVIDENCE_DIR="$RUNNER_TEMP/atlas-browser-evidence" \
+            node --test scripts/public-demos.test.cjs
       - name: Retain browser measurements and screenshots
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
