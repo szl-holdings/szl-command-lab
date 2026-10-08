@@ -192,6 +192,7 @@ def render(path: str) -> tuple[int, bytes] | None:
         if len(parts) == 3 and parts[1] == "receipts":
             return 200, _receipt(unquote(parts[2]))
     except adapters.UnknownFixture:
+        # Unknown fixed IDs fall through to the escaped 404 below.
         pass
     except (adapters.DemoUnavailable, TimeoutError, OSError, ValueError, TypeError, KeyError, IndexError):
         return 503, _page("Demo unavailable", '<p class="eyebrow">Unavailable</p><h1>The bounded demo could not complete.</h1><p role="status">No successful result is claimed. <a href="/demos">Return to demos</a>.</p>')
