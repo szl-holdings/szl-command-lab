@@ -30,7 +30,7 @@
     }
 
     * { box-sizing: border-box; }
-    html { min-width: 320px; background: var(--void); scroll-behavior: smooth; }
+    html { min-width: 0; background: var(--void); scroll-behavior: smooth; }
     body {
       margin: 0;
       min-height: 100vh;
@@ -58,7 +58,7 @@
       background: var(--mint);
       font-weight: 800;
     }
-    .skip:focus { top: 1rem; }
+    .skip:focus { top: 5rem; }
 
     header {
       border-bottom: 1px solid var(--line);
@@ -186,6 +186,7 @@
       .section-head p { margin-top: .45rem; }
     }
     @media (max-width: 520px) {
+      .skip:focus { top: 9rem; }
       .bar { align-items: flex-start; padding: .9rem 0; flex-direction: column; }
       .status { width: 100%; justify-content: center; }
       .binding-row { grid-template-columns: 1fr; gap: .2rem; }
@@ -208,9 +209,9 @@
         <span class="mark" aria-hidden="true">SZL</span>
         <span><strong>Atlas Launchpad</strong><small>one governed door</small></span>
       </a>
-      <div class="status" id="registry-status" data-state="CONNECTING" role="status" aria-live="polite">
+      <div class="status" id="registry-status" data-state="__SZL_REGISTRY_STATE__" role="status" aria-live="polite">
         <span class="status-dot" aria-hidden="true"></span>
-        <span id="registry-status-text">Connecting to local registry</span>
+        <span id="registry-status-text">__SZL_REGISTRY_STATUS_TEXT__</span>
       </div>
     </div>
   </header>
@@ -223,10 +224,10 @@
         <p class="lede">A compact navigation layer for the registered SZL public estate. The Launchpad reads its registry from this runtime; it never promotes a link, HTTP response, formula, or signature into production authorization.</p>
       </div>
       <dl class="binding" aria-label="Source-binding state">
-        <div class="binding-row"><dt>State</dt><dd id="binding-state">CONNECTING</dd></div>
-        <div class="binding-row"><dt>Source</dt><dd id="binding-source">szl-holdings/szl-command-lab</dd></div>
-        <div class="binding-row"><dt>Revision</dt><dd id="binding-revision">UNOBSERVED</dd></div>
-        <div class="binding-row"><dt>Registry</dt><dd id="binding-count">UNOBSERVED</dd></div>
+        <div class="binding-row"><dt>State</dt><dd id="binding-state">__SZL_BINDING_STATE__</dd></div>
+        <div class="binding-row"><dt>Source</dt><dd id="binding-source">__SZL_BINDING_SOURCE__</dd></div>
+        <div class="binding-row"><dt>Revision</dt><dd id="binding-revision">__SZL_BINDING_REVISION__</dd></div>
+        <div class="binding-row"><dt>Registry</dt><dd id="binding-count">__SZL_BINDING_COUNT__</dd></div>
       </dl>
     </section>
 
@@ -249,10 +250,10 @@
     <section aria-labelledby="registered-title">
       <div class="section-head">
         <h2 id="registered-title">Registered public surfaces</h2>
-        <p>The list is supplied by <span class="mono">GET /api/launchpad</span>. Registration is navigation metadata; each destination owns its current runtime and capability proof.</p>
+        <p>This list shares the source-controlled registry exposed by <span class="mono">GET /api/launchpad</span>. Registration is navigation metadata; each destination owns its current runtime and capability proof.</p>
       </div>
-      <div class="grid" id="registered-surfaces" aria-live="polite" aria-busy="true">
-        <div class="empty">Waiting for the local, source-controlled registry.</div>
+      <div class="grid" id="registered-surfaces" aria-live="polite" aria-busy="false">
+        <!-- SZL_REGISTERED_SURFACES -->
       </div>
     </section>
 
@@ -264,102 +265,5 @@
 
   <footer>source-bound Atlas surface · fixed-origin local registry · no external effectors · navigation is not runtime proof</footer>
 
-  <script>
-    "use strict";
-
-    const status = document.getElementById("registry-status");
-    const statusText = document.getElementById("registry-status-text");
-    const registry = document.getElementById("registered-surfaces");
-    const bindingState = document.getElementById("binding-state");
-    const bindingSource = document.getElementById("binding-source");
-    const bindingRevision = document.getElementById("binding-revision");
-    const bindingCount = document.getElementById("binding-count");
-
-    function setStatus(state, text) {
-      status.dataset.state = state;
-      statusText.textContent = text;
-      bindingState.textContent = state;
-    }
-
-    function surfaceCard(item) {
-      const link = document.createElement("a");
-      link.className = "card external";
-      link.href = item.href;
-      link.target = "_blank";
-      link.rel = "noopener noreferrer";
-      link.setAttribute("aria-label", `${item.id} — registered public surface, opens in a new tab`);
-
-      const body = document.createElement("span");
-      const tag = document.createElement("span");
-      tag.className = "tag";
-      tag.textContent = item.role;
-      const title = document.createElement("strong");
-      title.textContent = item.id;
-      const copy = document.createElement("small");
-      copy.textContent = "Registered route. Availability and capability are verified separately.";
-      body.append(tag, title, copy);
-
-      const route = document.createElement("span");
-      route.className = "route";
-      route.textContent = item.href.replace(/^https:\/\//, "");
-      link.append(body, route);
-      return link;
-    }
-
-    async function loadRegistry() {
-      const controller = new AbortController();
-      const timeout = window.setTimeout(() => controller.abort(), 8000);
-      try {
-        const response = await fetch("/api/launchpad", {
-          method: "GET",
-          cache: "no-store",
-          credentials: "same-origin",
-          headers: { "Accept": "application/json" },
-          signal: controller.signal
-        });
-        if (!response.ok) throw new Error("registry unavailable");
-        const payload = await response.json();
-        if (payload.schema !== "szl.atlas.launchpad/v1" || !Array.isArray(payload.surfaces)) {
-          throw new Error("registry contract mismatch");
-        }
-
-        registry.replaceChildren();
-        for (const item of payload.surfaces) {
-          if (!item || typeof item.id !== "string" || typeof item.role !== "string" || typeof item.href !== "string") {
-            throw new Error("registry item contract mismatch");
-          }
-          const parsed = new URL(item.href);
-          if (parsed.protocol !== "https:") throw new Error("non-HTTPS registry target");
-          registry.append(surfaceCard(item));
-        }
-        if (payload.surfaces.length === 0) {
-          const empty = document.createElement("div");
-          empty.className = "empty";
-          empty.textContent = "The source-controlled registry is empty; no routes are inferred.";
-          registry.append(empty);
-        }
-
-        bindingSource.textContent = payload.source_repository || "UNAVAILABLE";
-        bindingRevision.textContent = payload.source_revision || "REVISION_UNAVAILABLE";
-        bindingCount.textContent = `${payload.surfaces.length} registered surfaces`;
-        registry.setAttribute("aria-busy", "false");
-        setStatus(payload.state, "Registry observed");
-      } catch (_error) {
-        registry.replaceChildren();
-        const empty = document.createElement("div");
-        empty.className = "empty";
-        empty.textContent = "Registry unavailable. No destination state is inferred.";
-        registry.append(empty);
-        registry.setAttribute("aria-busy", "false");
-        bindingRevision.textContent = "UNAVAILABLE";
-        bindingCount.textContent = "UNAVAILABLE";
-        setStatus("UNAVAILABLE", "Registry unavailable");
-      } finally {
-        window.clearTimeout(timeout);
-      }
-    }
-
-    loadRegistry();
-  </script>
 </body>
 </html>

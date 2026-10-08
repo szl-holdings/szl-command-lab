@@ -1,9 +1,14 @@
 from __future__ import annotations
 
+import io
+import json
 import re
 from pathlib import Path
 
+import pytest
+
 import gateway
+import launchpad_views
 import server
 
 ROOT = Path(__file__).parents[1]
@@ -72,10 +77,10 @@ def test_launchpad_html_is_accessible_and_evidence_honest() -> None:
         "prefers-reduced-motion: reduce",
         "forced-colors: active",
         'aria-live="polite"',
-        'fetch("/api/launchpad"',
+        "<!-- SZL_REGISTERED_SURFACES -->",
+        "GET /api/launchpad",
         "Navigation does not certify availability",
         "navigation is not runtime proof",
-        "Availability and capability are verified separately.",
         "Conjecture 1 — OPEN",
     ):
         assert marker in text
@@ -91,9 +96,9 @@ def test_launchpad_html_is_accessible_and_evidence_honest() -> None:
     ):
         assert forbidden not in text
 
-    assert 'link.rel = "noopener noreferrer"' in text
-    assert "replaceChildren" in text
-    assert "textContent" in text
+    assert "<script" not in text
+    assert 'fetch("/api/launchpad"' not in text
+    assert "html { min-width: 0;" in text
 
 
 def test_gateway_preserves_existing_atlas_handler_and_routes() -> None:
@@ -208,3 +213,190 @@ def test_one_surface_list_governs_every_published_space_link() -> None:
     slugs = re.findall(r'slug: "([^"]+)"', block)
     assert slugs
     assert set(slugs) <= set(ids)
+
+
+def _capture_launchpad(method: str, path: str) -> tuple[int, dict[str, str], bytes]:
+    handler = object.__new__(gateway.Handler)
+    handler.path = path
+    handler.wfile = io.BytesIO()
+    statuses: list[int] = []
+    headers: dict[str, str] = {}
+    handler.send_response = statuses.append
+    handler.send_header = lambda key, value: headers.__setitem__(key, value)
+    handler.end_headers = lambda: None
+    getattr(handler, method)()
+    return statuses[0], headers, handler.wfile.getvalue()
+
+
+def test_launchpad_renders_registered_cards_and_source_status_without_script() -> None:
+    status, raw, state = gateway._load_launchpad()
+    text = raw.decode("utf-8")
+    payload = gateway.launchpad_payload()
+
+    assert (status, state) == (200, "SOURCE_CONTROLLED")
+    assert 'data-state="REGISTERED_NAVIGATION"' in text
+    assert '<span id="registry-status-text">Registry observed</span>' in text
+    assert f'{len(server.SURFACES)} registered surfaces' in text
+    assert 'aria-busy="false"' in text
+    assert "GET /api/launchpad" in text
+    assert "<script" not in text
+    assert not any(marker in text for marker in launchpad_views.MARKERS)
+    assert text.count('class="card external"') == payload["surface_count"]
+    for row in payload["surfaces"]:
+        assert f'href="{row["href"]}" target="_blank" rel="noopener noreferrer"' in text
+        assert f'<strong>{row["id"]}</strong>' in text
+    assert "Navigation does not certify availability" in text
+    assert "navigation is not runtime proof" in text
+
+
+def test_launchpad_escapes_all_registry_text_and_url_attributes() -> None:
+    payload = gateway.launchpad_payload()
+    payload["source_repository"] = '<repo title="unsafe">'
+    payload["source_revision"] = '<script>alert("revision")</script>'
+    payload["surfaces"] = [{
+        "id": '<img src=x onerror="x">',
+        "role": '<b onclick="x">role</b>',
+        "href": 'https://example.org/?next="<script>&x=1',
+    }]
+    payload["surface_count"] = 1
+    status, raw, _state = launchpad_views.render(LAUNCHPAD.read_text(encoding="utf-8"), payload)
+    text = raw.decode("utf-8")
+
+    assert status == 200
+    assert '<img src=x' not in text
+    assert '<script>alert("revision")</script>' not in text
+    assert '&lt;repo title=&quot;unsafe&quot;&gt;' in text
+    assert '&lt;script&gt;alert(&quot;revision&quot;)&lt;/script&gt;' in text
+    assert '&lt;b onclick=&quot;x&quot;&gt;role&lt;/b&gt;' in text
+    assert 'href="https://example.org/?next=&quot;&lt;script&gt;&amp;x=1"' in text
+    assert '&lt;img src=x onerror=&quot;x&quot;&gt;' in text
+
+
+def test_launchpad_bad_registry_fails_closed_without_partial_links(monkeypatch) -> None:
+    base = gateway.launchpad_payload()
+    bad_cases = (
+        {"schema": "unknown"},
+        {"state": '<svg onload="x">'},
+        {"authorization": "LIVE"},
+        {"surface_count": base["surface_count"] + 1},
+        {"surfaces": "not a list"},
+        {"errors": ["malformed-source-row"]},
+    )
+    template = LAUNCHPAD.read_text(encoding="utf-8")
+    for changes in bad_cases:
+        payload = {**base, **changes}
+        status, raw, state = launchpad_views.render(template, payload)
+        assert (status, state) == (503, "UNAVAILABLE")
+        assert b"Registry unavailable. No destination state is inferred." in raw
+        assert b'class="card external"' not in raw
+        assert b'<svg onload="x">' not in raw
+
+    malformed = {**base, "surfaces": [{"id": "safe", "role": "view", "href": "javascript:alert(1)"}],
+                 "surface_count": 1}
+    status, raw, _state = launchpad_views.render(template, malformed)
+    assert status == 503
+    assert b"javascript:alert" not in raw
+    monkeypatch.setattr(gateway, "launchpad_payload", lambda: malformed)
+    get_status, headers, body = _capture_launchpad("do_GET", "/launchpad")
+    assert get_status == 503
+    assert int(headers["Content-Length"]) == len(body)
+    assert b'class="card external"' not in body
+
+
+def test_launchpad_template_markers_are_exact_and_fail_closed() -> None:
+    template = LAUNCHPAD.read_text(encoding="utf-8")
+    payload = gateway.launchpad_payload()
+    for marker in launchpad_views.MARKERS:
+        with pytest.raises(ValueError):
+            launchpad_views.render(template.replace(marker, "", 1), payload)
+        with pytest.raises(ValueError):
+            launchpad_views.render(template + marker, payload)
+
+
+def test_launchpad_get_head_routes_and_csp_remain_equivalent() -> None:
+    for path in ("/launchpad", "/launchpad.html", "/launchpad/", "/launchpad.html?view=1"):
+        get_status, get_headers, body = _capture_launchpad("do_GET", path)
+        head_status, head_headers, head_body = _capture_launchpad("do_HEAD", path)
+        assert (get_status, head_status) == (200, 200)
+        assert body.startswith(b"<!doctype html>")
+        assert head_body == b""
+        assert int(get_headers["Content-Length"]) == len(body)
+        assert head_headers["Content-Length"] == get_headers["Content-Length"]
+        assert get_headers["Cache-Control"] == "no-store"
+        assert "form-action 'none'" in get_headers["Content-Security-Policy"]
+        assert b"<form" not in body
+        assert b'href="/"' in body
+    assert _capture_launchpad("do_GET", "/api/launchpad")[0] == 200
+
+
+def test_launchpad_render_module_is_shipped_and_triggers_sync() -> None:
+    docker = DOCKERFILE.read_text(encoding="utf-8")
+    workflow = DEPLOY_WORKFLOW.read_text(encoding="utf-8")
+    assert "COPY launchpad_views.py ./launchpad_views.py" in docker
+    assert "      - launchpad_views.py\n" in workflow
+
+
+def test_launchpad_invalid_unicode_fails_closed() -> None:
+    payload = gateway.launchpad_payload()
+    payload["source_revision"] = "\ud800"
+    status, raw, state = launchpad_views.render(LAUNCHPAD.read_text(encoding="utf-8"), payload)
+    assert (status, state) == (503, "UNAVAILABLE")
+    assert b'class="card external"' not in raw
+    assert b"Registry unavailable" in raw
+
+
+def test_launchpad_rejects_empty_url_userinfo() -> None:
+    payload = gateway.launchpad_payload()
+    template = LAUNCHPAD.read_text(encoding="utf-8")
+    for href in ("https://@example.org/", "https://:@example.org/"):
+        payload["surfaces"] = [{"id": "surface", "role": "view", "href": href}]
+        payload["surface_count"] = 1
+        status, raw, state = launchpad_views.render(template, payload)
+        assert (status, state) == (503, "UNAVAILABLE")
+        assert b'class="card external"' not in raw
+        assert href.encode("utf-8") not in raw
+
+
+def test_launchpad_registry_timeout_has_no_partial_cards(monkeypatch) -> None:
+    def timed_out() -> None:
+        raise TimeoutError("registry observation timed out")
+
+    monkeypatch.setattr(gateway, "launchpad_payload", timed_out)
+    get_status, get_headers, body = _capture_launchpad("do_GET", "/launchpad")
+    head_status, head_headers, head_body = _capture_launchpad("do_HEAD", "/launchpad.html")
+    assert (get_status, head_status) == (503, 503)
+    assert b"Registry unavailable. No destination state is inferred." in body
+    assert b'class="card external"' not in body
+    assert head_body == b""
+    assert head_headers["Content-Length"] == get_headers["Content-Length"]
+    assert "form-action 'none'" in get_headers["Content-Security-Policy"]
+
+
+@pytest.mark.parametrize(
+    "href",
+    (
+        "https://@example.org/",
+        "https://:@example.org/",
+        "https://example.org/a b",
+        "https://example.org\\route",
+        "https://[::",
+    ),
+)
+def test_launchpad_api_and_html_reject_unsafe_source_urls(monkeypatch, href: str) -> None:
+    monkeypatch.setattr(server, "SURFACES", (("unsafe", "view", href, None),))
+    payload = gateway.launchpad_payload()
+    assert payload["schema"] == "szl.atlas.launchpad/v1"
+    assert payload["state"] == "UNAVAILABLE"
+    assert payload["surface_count"] == 0
+    assert payload["surfaces"] == []
+    assert payload["errors"] == ["unsafe-href:unsafe"]
+    assert payload["authorization"] == "NONE"
+
+    api_status, api_headers, api_body = _capture_launchpad("do_GET", "/api/launchpad")
+    html_status, html_headers, html_body = _capture_launchpad("do_GET", "/launchpad")
+    assert (api_status, html_status) == (503, 503)
+    assert json.loads(api_body)["surfaces"] == []
+    assert int(api_headers["Content-Length"]) == len(api_body)
+    assert int(html_headers["Content-Length"]) == len(html_body)
+    assert b'class="card external"' not in html_body
+    assert b"Registry unavailable. No destination state is inferred." in html_body
