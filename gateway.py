@@ -20,6 +20,8 @@ from typing import Any
 from urllib.parse import urlparse
 
 import server
+import demo_adapters
+import visitor_views
 
 HERE = Path(__file__).resolve().parent
 RUNTIME_LAUNCHPAD_PATH = HERE / "launchpad.html"
@@ -27,6 +29,7 @@ SOURCE_LAUNCHPAD_PATH = HERE / "space" / "launchpad.html"
 MAX_LAUNCHPAD_BYTES = 512 * 1024
 LAUNCHPAD_HTML_PATHS = frozenset({"/launchpad", "/launchpad.html"})
 LAUNCHPAD_API_PATH = "/api/launchpad"
+DEMO_ADAPTER_API_PATH = "/api/demo-adapters"
 MAX_PUBLIC_ASSET_BYTES = 512 * 1024
 PUBLIC_ASSET_SPECS: dict[str, tuple[tuple[Path, ...], str, tuple[str, ...]]] = {
     "/szl-holo-v2.css": (
@@ -205,10 +208,46 @@ class Handler(server.Handler):
         if include_body:
             self.wfile.write(raw)
 
+    def _send_demo_html(self, path: str, *, include_body: bool) -> None:
+        result = visitor_views.render(path)
+        assert result is not None
+        status, raw = result
+        self.send_response(status)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Length", str(len(raw)))
+        self.send_header("Cache-Control", "no-store")
+        self._common_headers()
+        self.end_headers()
+        if include_body:
+            self.wfile.write(raw)
+
+    def _send_demo_registry(self, *, include_body: bool) -> None:
+        try:
+            payload = demo_adapters.registry_payload()
+            status = 200
+        except demo_adapters.DemoUnavailable:
+            payload = {"schema": "szl.atlas.adapters/v1", "state": "UNAVAILABLE", "authority": "NONE", "adapters": []}
+            status = 503
+        raw = (json.dumps(payload, indent=2, sort_keys=True) + "\n").encode("utf-8")
+        self.send_response(status)
+        self.send_header("Content-Type", "application/json; charset=utf-8")
+        self.send_header("Content-Length", str(len(raw)))
+        self.send_header("Cache-Control", "no-store")
+        self._common_headers()
+        self.end_headers()
+        if include_body:
+            self.wfile.write(raw)
+
     def do_HEAD(self) -> None:  # noqa: N802
         path = urlparse(self.path).path.rstrip("/") or "/"
         if path in PUBLIC_ASSET_PATHS:
             self._send_public_asset(path, include_body=False)
+            return
+        if path == "/demos" or path.startswith("/demos/"):
+            self._send_demo_html(path, include_body=False)
+            return
+        if path == DEMO_ADAPTER_API_PATH:
+            self._send_demo_registry(include_body=False)
             return
         if path in LAUNCHPAD_HTML_PATHS:
             status, raw, _state = _load_launchpad()
@@ -237,6 +276,12 @@ class Handler(server.Handler):
         path = urlparse(self.path).path.rstrip("/") or "/"
         if path in PUBLIC_ASSET_PATHS:
             self._send_public_asset(path, include_body=True)
+            return
+        if path == "/demos" or path.startswith("/demos/"):
+            self._send_demo_html(path, include_body=True)
+            return
+        if path == DEMO_ADAPTER_API_PATH:
+            self._send_demo_registry(include_body=True)
             return
         if path in LAUNCHPAD_HTML_PATHS:
             status, raw, _state = _load_launchpad()

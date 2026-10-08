@@ -1,0 +1,51 @@
+{
+  "schema": "szl.atlas.public-corpus/v1",
+  "license": "Apache-2.0",
+  "source_revision": "54716b32f9515c99e15f3b677618a919202216e5",
+  "documents": [
+    {
+      "id": "atlas",
+      "title": "Public Atlas inventory",
+      "text": "The Atlas lists public Hugging Face models, kernels, datasets, and Spaces. A listing does not establish readiness or model quality.",
+      "source": "https://github.com/szl-holdings/szl-command-lab/blob/54716b32f9515c99e15f3b677618a919202216e5/README.md"
+    },
+    {
+      "id": "launchpad",
+      "title": "Source-bound Launchpad",
+      "text": "The Launchpad registers navigation links from server.SURFACES. Registration does not certify availability, capability, or authorization.",
+      "source": "https://github.com/szl-holdings/szl-command-lab/blob/54716b32f9515c99e15f3b677618a919202216e5/README.md"
+    },
+    {
+      "id": "a11oy",
+      "title": "Governed product runtime",
+      "text": "A11oy is the governed product runtime at a-11-oy.com. Command Lab offers a visitor path into the product without granting action authority.",
+      "source": "https://a-11-oy.com"
+    },
+    {
+      "id": "proof-registry",
+      "title": "Independent proof registry",
+      "text": "a11oy.net is the independent static proof registry. Inspect proof artifacts separately from the product runtime and catalog links.",
+      "source": "https://a11oy.net"
+    },
+    {
+      "id": "anatomy",
+      "title": "Advisory anatomy demonstration",
+      "text": "The five-organ cycle uses synthetic inputs. Healthy checks remain advisory, energy may be unavailable, and Lambda uniqueness is Conjecture 1.",
+      "source": "https://github.com/szl-holdings/szl-command-lab/blob/54716b32f9515c99e15f3b677618a919202216e5/README.md"
+    }
+  ],
+  "queries": [
+    {
+      "id": "inventory",
+      "text": "Where can I browse public models and datasets?"
+    },
+    {
+      "id": "product",
+      "text": "Where is the governed product runtime?"
+    },
+    {
+      "id": "proof",
+      "text": "Where can I inspect the independent proof registry?"
+    }
+  ]
+}

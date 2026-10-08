@@ -24,9 +24,16 @@ RUN python -m pip install --no-cache-dir \
       "https://github.com/szl-holdings/yarqa/archive/${YARQA_REVISION}.tar.gz#sha256=${YARQA_ARCHIVE_SHA256}" \
     && python -I -c "import yarqa; assert yarqa.__version__ == '0.5.0'"
 
+COPY requirements-public-demos.txt ./requirements-public-demos.txt
+RUN python -m pip install --no-cache-dir --require-hashes --only-binary=:all: -r requirements-public-demos.txt \
+    && python -I -c "from importlib.metadata import version; assert version('szl-retrieval-bench') == '0.3.1'; assert version('szl-guardrail-receipt') == '0.1.2'"
+
 COPY server.py ./server.py
 COPY atlas_energy.py ./atlas_energy.py
 COPY gateway.py ./gateway.py
+COPY demo_adapters.py ./demo_adapters.py
+COPY visitor_views.py ./visitor_views.py
+COPY demo_data ./demo_data
 COPY space/index.html ./index.html
 COPY space/launchpad.html ./launchpad.html
 COPY space/szl-holo-v2.css ./szl-holo-v2.css

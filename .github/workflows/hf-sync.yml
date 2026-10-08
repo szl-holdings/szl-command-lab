@@ -8,6 +8,10 @@ name: Sync canonical SZL Atlas to Hugging Face Space
       - server.py
       - atlas_energy.py
       - gateway.py
+      - demo_adapters.py
+      - visitor_views.py
+      - demo_data/**
+      - requirements-public-demos.txt
       - space/**
       - README.md
       - .github/workflows/hf-sync.yml
