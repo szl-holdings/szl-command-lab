@@ -44,6 +44,38 @@ PUBLIC_ASSET_SPECS: dict[str, tuple[tuple[Path, ...], str, tuple[str, ...]]] = {
         "text/javascript; charset=utf-8",
         ("__SZL_PUBLIC_EXPERIENCE_V3__", "szlPublicExperienceV3"),
     ),
+    "/atlas.css": (
+        (HERE / "atlas.css", HERE / "space" / "atlas.css"),
+        "text/css; charset=utf-8", ("SZL Atlas native components", "--font-body"),
+    ),
+    "/launchpad.css": (
+        (HERE / "launchpad.css", HERE / "space" / "launchpad.css"),
+        "text/css; charset=utf-8", ("SZL Atlas native components", ".binding"),
+    ),
+    "/atlas-demos.css": (
+        (HERE / "atlas-demos.css", HERE / "space" / "atlas-demos.css"),
+        "text/css; charset=utf-8", ("SZL Atlas native components", ".result"),
+    ),
+    "/szl-tokens.css": (
+        (HERE / "szl-tokens.css", HERE / "space" / "szl-tokens.css"),
+        "text/css; charset=utf-8", ("KANCHAY tokens v1.3.0", "--action-press-bg"),
+    ),
+    "/szl-orbit-icon.svg": (
+        (HERE / "szl-orbit-icon.svg", HERE / "space" / "szl-orbit-icon.svg"),
+        "image/svg+xml", ("<svg", "szl-icon-32-title"),
+    ),
+    "/szl-orbit-holo.svg": (
+        (HERE / "szl-orbit-holo.svg", HERE / "space" / "szl-orbit-holo.svg"),
+        "image/svg+xml", ("<svg", "szl-orbit-holo-title"),
+    ),
+    "/szl-brand-SOURCE.json": (
+        (HERE / "szl-brand-SOURCE.json", HERE / "space" / "szl-brand-SOURCE.json"),
+        "application/json; charset=utf-8", ('"name": "szl-kanchay"', '"source_commit"'),
+    ),
+    "/szl-brand-PROJECTION.json": (
+        (HERE / "szl-brand-PROJECTION.json", HERE / "space" / "szl-brand-PROJECTION.json"),
+        "application/json; charset=utf-8", ('"schema": "szl.native-frontend-projection/v1"', '"installed"'),
+    ),
 }
 PUBLIC_ASSET_PATHS = frozenset(PUBLIC_ASSET_SPECS)
 

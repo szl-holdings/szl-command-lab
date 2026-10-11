@@ -16,66 +16,22 @@ def _e(value: object) -> str:
 def _page(title: str, content: str) -> bytes:
     # content is assembled only by the renderers below; every interpolated value is escaped.
     return f"""<!doctype html>
-<html lang="en" data-szl-surface="atlas-demo-v1" data-szl-holo-disabled="native-atlas">
+<html lang="en" data-szl-surface="atlas-demo-v1" data-surface="dark" data-szl-holo-disabled="native-atlas">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="color-scheme" content="dark">
   <title>{_e(title)} · SZL Atlas</title>
   <link rel="stylesheet" href="/szl-holo-v2.css">
-  <style>
-    :root {{ --void:#05070b; --panel:#0c121a; --line:rgba(190,207,222,.22);
-      --bone:#f5f2e9; --muted:#aab7c4; --mint:#63e6c5; --rose:#ec8b91;
-      --serif:Iowan Old Style,Baskerville,"Times New Roman",serif;
-      --sans:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }}
-    * {{ box-sizing:border-box; }}
-    html {{ scroll-behavior:smooth; }}
-    body {{ margin:0; min-width:280px; color:var(--bone); background:
-      radial-gradient(760px 540px at 86% 0%,rgba(91,188,255,.11),transparent 70%),var(--void);
-      font:16px/1.55 var(--sans); }}
-    a {{ color:var(--mint); }}
-    a:focus-visible {{ outline:2px solid var(--mint); outline-offset:4px; }}
-    .skip {{ position:absolute; top:-80px; left:16px; padding:12px; background:var(--bone); color:var(--void); }}
-    .skip:focus {{ top:12px; }}
-    .shell {{ width:min(calc(100% - 32px),1060px); margin-inline:auto; }}
-    header {{ border-bottom:1px solid var(--line); background:rgba(5,7,11,.93); }}
-    .nav {{ min-height:76px; display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }}
-    .brand {{ color:var(--bone); font-weight:750; text-decoration:none; letter-spacing:.04em; }}
-    .nav-links {{ display:flex; flex-wrap:wrap; gap:8px 20px; }}
-    .nav-links a {{ min-height:44px; display:inline-flex; align-items:center; text-decoration:none; }}
-    main {{ padding-block:clamp(40px,7vw,86px) 80px; }}
-    .eyebrow {{ color:var(--mint); font:700 12px/1.3 Consolas,monospace; letter-spacing:.14em; text-transform:uppercase; }}
-    h1 {{ max-width:850px; margin:12px 0 18px; font:500 clamp(2.5rem,6vw,4.5rem)/1.08 var(--serif); }}
-    h2 {{ margin:0 0 10px; font-size:1.45rem; }}
-    p {{ max-width:76ch; }}
-    .lede {{ color:var(--muted); font-size:1.1rem; }}
-    .grid {{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; margin-block:32px; }}
-    .card,.result {{ min-width:0; padding:clamp(20px,3vw,30px); border:1px solid var(--line); border-radius:20px; background:var(--panel); }}
-    .card p,.result p {{ color:var(--muted); }}
-    .card a,.choice {{ min-height:44px; display:inline-flex; align-items:center; font-weight:700; }}
-    .choices {{ display:flex; flex-wrap:wrap; gap:10px; margin-block:24px; }}
-    .choice {{ padding:10px 15px; border:1px solid var(--line); border-radius:12px; text-decoration:none; }}
-    .choice:hover,.choice:focus-visible {{ border-color:var(--mint); }}
-    .result {{ margin-block:12px; overflow-wrap:anywhere; }}
-    .result a {{ overflow-wrap:anywhere; }}
-    .status {{ padding:16px 18px; border-left:4px solid var(--mint); background:var(--panel); font-size:1rem; }}
-    .status.fail {{ border-color:var(--rose); }}
-    .fine {{ color:var(--muted); font-size:.92rem; }}
-    dl {{ display:grid; grid-template-columns:auto 1fr; gap:8px 16px; }}
-    dt {{ color:var(--muted); }}
-    dd {{ margin:0; font-weight:700; }}
-    details {{ margin-top:28px; }}
-    summary {{ min-height:44px; cursor:pointer; }}
-    .report {{ white-space:pre-wrap; overflow-wrap:anywhere; font:13px/1.55 Consolas,monospace; }}
-    footer {{ padding:25px 0 45px; border-top:1px solid var(--line); color:var(--muted); font-size:.9rem; }}
-    @media(max-width:680px) {{ .grid {{ grid-template-columns:1fr; }} .nav {{ padding-block:12px; }} }}
-    @media(prefers-reduced-motion:reduce) {{ html {{ scroll-behavior:auto; }} }}
-  </style>
+  <link rel="stylesheet" href="/szl-tokens.css?v=81f7c9baeef0">
+  <link rel="stylesheet" href="/atlas-demos.css?v=58fdd39d56eb">
+  <link rel="icon" type="image/svg+xml" href="/szl-orbit-icon.svg">
+
 </head>
 <body>
   <a class="skip" href="#main">Skip to demos</a>
   <header><div class="shell nav">
-    <a class="brand" href="/">SZL Atlas</a>
+    <a class="brand" href="/"><img class="native-mark" src="/szl-orbit-icon.svg" alt="" width="40" height="40">SZL Atlas</a>
     <nav class="nav-links" aria-label="Demo navigation">
       <a href="/#loop">Anatomy demo</a><a href="/demos">Demo index</a>
       <a href="/launchpad">Launchpad</a><a href="https://a-11-oy.com">Enter A11oy ↗</a>

@@ -171,7 +171,8 @@ def test_index_contains_accessible_atlas_contract() -> None:
     text = index.read_text(encoding="utf-8")
     assert 'data-szl-surface="atlas-v1"' in text
     assert "Every listed artifact. One search." in text
-    assert "prefers-reduced-motion" in text
+    assert 'href="/atlas.css?v=' in text
+    assert "prefers-reduced-motion" in (index.parent / "atlas.css").read_text(encoding="utf-8")
     assert "/api/catalog" in text
     assert "Skip to content" in text
 
