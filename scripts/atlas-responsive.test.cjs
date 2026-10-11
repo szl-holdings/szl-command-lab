@@ -251,6 +251,14 @@ test('Native Atlas, Launchpad and demo frames retain readable controls and sourc
           return route.continue();
         });
         await page.goto(origin+path,{waitUntil:'load'});
+        if(path==='/'&&spec.js===false){
+          const startup=await page.evaluate(()=>({
+            activeAnimations:document.getAnimations().filter(a=>a.playState==='running').length,
+            durations:[...document.querySelectorAll('.button.primary,.hero-visual')].map(el=>getComputedStyle(el).transitionDuration),
+          }));
+          assert.equal(startup.activeAnimations,0,'reduced motion does not animate the first native layout');
+          assert.ok(startup.durations.every(value=>value==='0s'),'static elements must not acquire positive transition durations');
+        }
         if(path==='/'&&spec.js!==false){await page.locator('#asset-list .asset-row').first().waitFor();await page.locator('.demo-disclosure > summary').click();}
         const geometry=await inspectNative(page,{contrast:!spec.forced});
         checked.push({path,...spec,...geometry,errors,writes,external});
