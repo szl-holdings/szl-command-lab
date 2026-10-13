@@ -37,6 +37,11 @@ updates:
       # once a typescript-eslint release widens that range.
       - dependency-name: "typescript"
         versions: [">=6.1"]
+      # better-auth 1.7 removed genericOAuthClient and auth.api.signInWithOAuth2,
+      # which src/lib/auth uses for the federated OAuth broker (PR #62
+      # typecheck: TS2305/TS2339). Hold 1.6.x until that code is migrated.
+      - dependency-name: "better-auth"
+        versions: [">=1.7"]
 
   - package-ecosystem: "docker"
     directory: "/"
