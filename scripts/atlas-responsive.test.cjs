@@ -190,3 +190,90 @@ test('Atlas reflows in narrow frames, desktop widths, and 200–400% zoom', asyn
   }
   assert.deepEqual(results.filter(row => row.failures.length).map(row => ({ name: row.name, failures: row.failures, hero: row.hero, overflow: row.overflow.slice(0, 8), smallTargets: row.smallTargets, zoomTier: row.zoomTier, experience: row.experience, bodyWidth: row.bodyWidth })), []);
 });
+
+async function inspectNative(page, {contrast = true, targets = true} = {}) {
+  return page.evaluate(({contrast,targets}) => {
+    const viewport = innerWidth;
+    const overflowingText = [], contrastFailures = [], targetFailures = [];
+    const context = document.createElement('canvas').getContext('2d', {willReadFrequently:true});
+    context.canvas.width=1; context.canvas.height=1;
+    const colorCache=new Map(),groundCache=new WeakMap(),styleCache=new WeakMap();
+    function style(el) {if(!styleCache.has(el))styleCache.set(el,getComputedStyle(el));return styleCache.get(el);}
+    function rgba(color) {if(!colorCache.has(color)){context.clearRect(0,0,1,1);context.fillStyle=color;context.fillRect(0,0,1,1);colorCache.set(color,[...context.getImageData(0,0,1,1).data].map((x,i)=>i===3?x/255:x));}return colorCache.get(color);}
+    function over(f,b) { const a=f[3]+b[3]*(1-f[3]);return [0,1,2].map(i=>a?(f[i]*f[3]+b[i]*b[3]*(1-f[3]))/a:0).concat(a); }
+    function ground(el) {if(!groundCache.has(el))groundCache.set(el,over(rgba(style(el).backgroundColor),el.parentElement?ground(el.parentElement):[255,255,255,1]));return groundCache.get(el);}
+    function luminance(c) {return c.slice(0,3).map(v=>v/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4).reduce((sum,v,i)=>sum+v*[.2126,.7152,.0722][i],0);}
+    function visible(el) {return el.checkVisibility({checkOpacity:true,checkVisibilityCSS:true}) && !el.closest('[hidden],[aria-hidden="true"]');}
+    const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let node;let lowestContrast=Infinity,textNodes=0;
+    while((node=walker.nextNode())) {
+      const el=node.parentElement;
+      if(!node.textContent.trim() || !el || el.closest('script,style,svg,.skip-link,.skip,.sr-only') || !visible(el))continue;
+      const range=document.createRange();range.selectNodeContents(node);
+      const rect=range.getBoundingClientRect();if(!rect.width||!rect.height)continue;
+      textNodes++;
+      if(rect.left < -2 || rect.right > viewport+2)overflowingText.push({text:node.textContent.trim().slice(0,90),class:el.className,box:rect.toJSON()});
+      if(contrast) {
+        const s=style(el), b=ground(el), f=over(rgba(s.color),b);
+        const [a,z]=[luminance(f),luminance(b)].sort((a,b)=>b-a),ratio=(a+.05)/(z+.05);
+        const large=parseFloat(s.fontSize)>=24 || (parseFloat(s.fontSize)>=18.666 && parseFloat(s.fontWeight)>=700);
+        lowestContrast=Math.min(lowestContrast,ratio);
+        if(ratio+.005 < (large?3:4.5))contrastFailures.push({text:node.textContent.trim().slice(0,100),class:el.className,ratio,threshold:large?3:4.5,color:s.color,background:b,computedBackground:s.backgroundColor,parsedBackground:rgba(s.backgroundColor)});
+      }
+    }
+    if(targets)for(const el of document.querySelectorAll('a,button,summary')) {
+      if(!visible(el)||el.closest('.skip-link,.skip'))continue;
+      const b=el.getBoundingClientRect();
+      if(b.width<43.9||b.height<43.9)targetFailures.push({text:el.textContent.trim().slice(0,90),width:b.width,height:b.height});
+    }
+    return {viewport,scrollWidth:document.documentElement.scrollWidth,bodyOverflow:getComputedStyle(document.body).overflowX,
+      overflowingText,contrastFailures,targetFailures,lowestContrast:Number.isFinite(lowestContrast)?lowestContrast:null,textNodes};
+  },{contrast,targets});
+}
+
+
+test('Native Atlas, Launchpad and demo frames retain readable controls and source states', async () => {
+  const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH, headless: true });
+  const checked = [];
+  try {
+    for (const path of ['/', '/launchpad', '/demos', '/demos/receipts/tampered']) {
+      for (const spec of [{width:375},{width:1440},{width:375,forced:true},{width:320,js:false}]) {
+        const page = await browser.newPage({viewport:{width:spec.width,height:1000}, reducedMotion:'reduce', forcedColors:spec.forced?'active':'none', javaScriptEnabled:spec.js!==false});
+        const writes=[],external=[],errors=[];
+        page.on('pageerror',e=>errors.push(e.message));
+        await page.route('**/*',route=>{
+          const req=route.request(),url=new URL(req.url());
+          if(url.origin!==origin){external.push(url.origin+url.pathname);return route.abort();}
+          if(!['GET','HEAD'].includes(req.method())){writes.push(req.method+' '+url.pathname);return route.abort();}
+          if(url.pathname.startsWith('/api/')){
+            const payload=url.pathname==='/api/catalog'?fixture:url.pathname==='/api/estate'?{surfaces:[],captured_at:fixture.captured_at}:url.pathname==='/api/build-info'?{state:'REVISION_UNAVAILABLE',source_revision:null}:{state:'UNAVAILABLE'};
+            return route.fulfill({contentType:'application/json',body:JSON.stringify(payload)});
+          }
+          return route.continue();
+        });
+        await page.goto(origin+path,{waitUntil:'load'});
+        if(path==='/'&&spec.js===false){
+          const startup=await page.evaluate(()=>({
+            activeAnimations:document.getAnimations().filter(a=>a.playState==='running').length,
+            durations:[...document.querySelectorAll('.button.primary,.hero-visual')].map(el=>getComputedStyle(el).transitionDuration),
+          }));
+          assert.equal(startup.activeAnimations,0,'reduced motion does not animate the first native layout');
+          assert.ok(startup.durations.every(value=>value==='0s'),'static elements must not acquire positive transition durations');
+        }
+        if(path==='/'&&spec.js!==false){await page.locator('#asset-list .asset-row').first().waitFor();await page.locator('.demo-disclosure > summary').click();}
+        const geometry=await inspectNative(page,{contrast:!spec.forced});
+        checked.push({path,...spec,...geometry,errors,writes,external});
+        if(evidenceDir){mkdirSync(evidenceDir,{recursive:true});if(spec.width===1440||spec.js===false)await page.screenshot({path:resolve(evidenceDir,`native-${path.replace(/[^a-z0-9]/g,'_')}-${spec.width}.png`)});}
+        if(path==='/'&&spec.js===false){
+          assert.equal(await page.locator('#nav-list a').count(),6);
+          assert.equal(await page.locator('#nav-list a').first().isVisible(),true);
+          assert.equal(await page.locator('#menu-button').isVisible(),false);
+          assert.match(await page.locator('noscript').innerText(),/unavailable without JavaScript/);
+        }
+        await page.close();
+      }
+    }
+  } finally { await browser.close(); }
+  if(evidenceDir)writeFileSync(resolve(evidenceDir,'native-style-results.json'),JSON.stringify({scope:'LOCAL_SOURCE_AND_FIXED_FIXTURES',limits:['Chromium only','Computed text pairs; excludes native SVG and gradient-pixel conformance','No deployed runtime verdict'],checked},null,2)+'\n');
+  const failed=checked.filter(x=>x.scrollWidth>x.viewport+2||x.overflowingText.length||x.contrastFailures.length||x.targetFailures.length||x.errors.length||x.writes.length||x.external.length);
+  assert.equal(failed.length,0,JSON.stringify(failed.map(({path,width,js,overflowingText,contrastFailures,targetFailures,scrollWidth})=>({path,width,js,overflowingText,contrastFailures,targetFailures,scrollWidth})),null,2));
+});

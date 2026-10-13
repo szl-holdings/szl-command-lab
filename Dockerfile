@@ -39,6 +39,14 @@ COPY space/index.html ./index.html
 COPY space/launchpad.html ./launchpad.html
 COPY space/szl-holo-v2.css ./szl-holo-v2.css
 COPY space/szl-holo-v2.js ./szl-holo-v2.js
+COPY space/atlas.css ./atlas.css
+COPY space/launchpad.css ./launchpad.css
+COPY space/atlas-demos.css ./atlas-demos.css
+COPY space/szl-tokens.css ./szl-tokens.css
+COPY space/szl-orbit-icon.svg ./szl-orbit-icon.svg
+COPY space/szl-orbit-holo.svg ./szl-orbit-holo.svg
+COPY space/szl-brand-SOURCE.json ./szl-brand-SOURCE.json
+COPY space/szl-brand-PROJECTION.json ./szl-brand-PROJECTION.json
 
 EXPOSE 7860
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=5 \

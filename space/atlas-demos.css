@@ -1,0 +1,72 @@
+/* SZL Atlas native components. Canonical KANCHAY tokens load first.
+ * Owns presentation only; catalog, demo and source-state contracts are unchanged.
+ * SPDX-License-Identifier: Apache-2.0 */
+:root {
+  --void: var(--bg); --ink: var(--bg); --panel: var(--surface); --panel-2: var(--surface-alt);
+  --bone: var(--text); --paper: var(--text-sub); --muted: var(--text-sub); --faint: var(--text-ghost);
+  --line: var(--border); --line-bright: var(--control-edge);
+  --mint: var(--link); --blue: var(--holo-teal); --violet: var(--holo-silver); --gold: var(--premium);
+  --rose: var(--chip-bad); --allow: var(--chip-ok); --hold: var(--chip-warn); --deny: var(--chip-bad);
+  --shadow: var(--shadow-lg); --radius: 18px; --max: 1240px;
+  --serif: var(--font-display); --sans: var(--font-body); --mono: var(--font-mono);
+}
+* { box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { margin:0; min-width:280px; color:var(--bone); background:
+  radial-gradient(760px 540px at 86% 0%,color-mix(in srgb, var(--holo-teal) 11%, transparent),transparent 70%),var(--void);
+  font:16px/1.55 var(--sans); }
+a { color:var(--mint); }
+a:focus-visible { outline:2px solid var(--mint); outline-offset:4px; }
+.skip { position:absolute; top:-80px; left:16px; padding:12px; background:var(--bone); color:var(--void); }
+.skip:focus { top:12px; }
+.shell { width:min(calc(100% - 32px),1060px); margin-inline:auto; }
+header { border-bottom:1px solid var(--line); background:color-mix(in srgb, var(--bg-deep) 93%, transparent); }
+.nav { min-height:76px; display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+.brand { color:var(--bone); font-weight:750; text-decoration:none; letter-spacing:.04em; }
+.nav-links { display:flex; flex-wrap:wrap; gap:8px 20px; }
+.nav-links a { min-height:44px; display:inline-flex; align-items:center; text-decoration:none; }
+main { padding-block:clamp(40px,7vw,86px) 80px; }
+.eyebrow { color:var(--mint); font:700 12px/1.3 Consolas,monospace; letter-spacing:.14em; text-transform:uppercase; }
+h1 { max-width:850px; margin:12px 0 18px; font:500 clamp(2.5rem,6vw,4.5rem)/1.08 var(--serif); }
+h2 { margin:0 0 10px; font-size:1.45rem; }
+p { max-width:76ch; }
+.lede { color:var(--muted); font-size:1.1rem; }
+.grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; margin-block:32px; }
+.card,.result { min-width:0; padding:clamp(20px,3vw,30px); border:1px solid var(--line); border-radius:20px; background:var(--panel); }
+.card p,.result p { color:var(--muted); }
+.card a,.choice { min-height:44px; display:inline-flex; align-items:center; font-weight:700; }
+.choices { display:flex; flex-wrap:wrap; gap:10px; margin-block:24px; }
+.choice { padding:10px 15px; border:1px solid var(--line); border-radius:12px; text-decoration:none; }
+.choice:hover,.choice:focus-visible { border-color:var(--mint); }
+.result { margin-block:12px; overflow-wrap:anywhere; }
+.result a { overflow-wrap:anywhere; }
+.status { padding:16px 18px; border-left:4px solid var(--mint); background:var(--panel); font-size:1rem; }
+.status.fail { border-color:var(--rose); }
+.fine { color:var(--muted); font-size:.92rem; }
+dl { display:grid; grid-template-columns:auto 1fr; gap:8px 16px; }
+dt { color:var(--muted); }
+dd { margin:0; font-weight:700; }
+details { margin-top:28px; }
+summary { min-height:44px; cursor:pointer; }
+.report { white-space:pre-wrap; overflow-wrap:anywhere; font:13px/1.55 Consolas,monospace; }
+footer { padding:25px 0 45px; border-top:1px solid var(--line); color:var(--muted); font-size:.9rem; }
+@media(max-width:680px) { .grid { grid-template-columns:1fr; } .nav { padding-block:12px; } }
+@media(prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } }
+
+body { min-width: 0; min-height: 100dvh; background: radial-gradient(ellipse at 90% 0%, var(--hero-atmosphere), transparent 44rem), var(--bg); }
+header { background: var(--bg); }
+.brand { display: inline-flex; gap: 12px; align-items: center; min-height: 60px; }
+.native-mark { display: block; width: 40px; height: 40px; flex: 0 0 40px; }
+h1 { font-family: var(--font-display); font-weight: 520; letter-spacing: -.04em; }
+.card, .result { border-radius: var(--radius-xl); box-shadow: var(--shadow-card); }
+.report { font-family: var(--font-mono); }
+a { text-underline-offset: .2em; }
+main a, footer a { display: inline-flex; align-items: center; min-height: 44px; min-width: 44px; overflow-wrap: anywhere; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 4px; }
+.choice { border-color: var(--control-edge); }
+.status { border-radius: 0 var(--radius-lg) var(--radius-lg) 0; }
+.skip { z-index: 100; }
+@media (max-width: 680px) { dl { grid-template-columns: 1fr; } dd { margin-bottom: .75rem; overflow-wrap: anywhere; } }
+@media (prefers-contrast: more) { :root { --line: var(--control-edge); --muted: var(--text); } }
+@media (forced-colors: active) { .card, .result, .choice { border-color: CanvasText; } .native-mark { forced-color-adjust: none; } :focus-visible { outline-color: Highlight; } }
+@media print { body, header, .card, .result { background: white; color: black; box-shadow: none; } .skip, .nav-links { display: none; } .card, .result { break-inside: avoid; } }
