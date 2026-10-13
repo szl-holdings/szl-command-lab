@@ -165,7 +165,8 @@ def test_atlas_entry_and_status_accessibility() -> None:
     assert '<a class="nav-link" href="#loop">Try a demo</a>' in index
     assert 'id="loop-result" role="status" aria-live="polite" aria-atomic="true"' in index
     assert "alignDemoAnchor" in index
-    assert "font: 14px/1.55 var(--sans)" in index
+    assert 'href="/atlas.css?v=' in index
+    assert "font: 14px/1.55 var(--sans)" in (ROOT / "space" / "atlas.css").read_text(encoding="utf-8")
     assert 'href="/demos"' in launchpad
 
 

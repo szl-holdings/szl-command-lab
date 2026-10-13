@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-szl-surface="atlas-launchpad-v1">
+<html lang="en" data-szl-surface="atlas-launchpad-v1" data-surface="dark">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -7,206 +7,17 @@
   <meta name="color-scheme" content="dark">
   <meta name="description" content="A source-bound navigation layer for the governed SZL Atlas estate.">
   <title>SZL Atlas Launchpad — Source-Bound Navigation</title>
-  <style>
-    :root {
-      --void: #05070b;
-      --panel: #0c121a;
-      --panel-2: #111a24;
-      --line: rgba(190, 207, 222, .18);
-      --line-bright: rgba(190, 207, 222, .36);
-      --text: #f5f2e9;
-      --paper: #d7d3c9;
-      --muted: #9aa8b6;
-      --faint: #677585;
-      --mint: #63e6c5;
-      --blue: #5bbcff;
-      --gold: #e3bd72;
-      --rose: #ec8b91;
-      --radius: 18px;
-      --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-      --sans: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color-scheme: dark;
-      font-family: var(--sans);
-    }
+  <link rel="stylesheet" href="/szl-tokens.css?v=81f7c9baeef0">
+  <link rel="stylesheet" href="/launchpad.css?v=32ff4a0301ca">
+  <link rel="icon" type="image/svg+xml" href="/szl-orbit-icon.svg">
 
-    * { box-sizing: border-box; }
-    html { min-width: 0; background: var(--void); scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      color: var(--text);
-      background:
-        radial-gradient(820px 520px at 88% -10%, rgba(91, 188, 255, .12), transparent 72%),
-        radial-gradient(720px 480px at 4% 8%, rgba(99, 230, 197, .08), transparent 74%),
-        var(--void);
-      font: 15px/1.55 var(--sans);
-      -webkit-font-smoothing: antialiased;
-    }
-
-    a { color: inherit; }
-    button, a { -webkit-tap-highlight-color: transparent; }
-    :focus-visible { outline: 3px solid var(--mint); outline-offset: 3px; }
-    .mono { font-family: var(--mono); }
-    .skip {
-      position: fixed;
-      left: 1rem;
-      top: -5rem;
-      z-index: 100;
-      padding: .75rem 1rem;
-      border-radius: 10px;
-      color: #03100d;
-      background: var(--mint);
-      font-weight: 800;
-    }
-    .skip:focus { top: 5rem; }
-
-    header {
-      border-bottom: 1px solid var(--line);
-      background: rgba(5, 7, 11, .86);
-      backdrop-filter: blur(18px);
-    }
-    .bar {
-      width: min(calc(100% - 32px), 1220px);
-      min-height: 74px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-    }
-    .brand { min-height: 44px; display: flex; align-items: center; gap: .75rem; text-decoration: none; }
-    .mark {
-      width: 38px;
-      height: 38px;
-      display: grid;
-      place-items: center;
-      border: 1px solid var(--line-bright);
-      border-radius: 11px;
-      color: var(--mint);
-      background: linear-gradient(145deg, rgba(99, 230, 197, .1), rgba(91, 188, 255, .06));
-      font: 800 12px/1 var(--mono);
-    }
-    .brand strong { display: block; font-size: 1rem; }
-    .brand small { display: block; color: var(--faint); font: 10px/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; }
-    .status {
-      min-height: 44px;
-      display: inline-flex;
-      align-items: center;
-      gap: .55rem;
-      padding: .45rem .72rem;
-      border: 1px solid var(--line-bright);
-      border-radius: 999px;
-      color: var(--gold);
-      background: rgba(227, 189, 114, .06);
-      font: 700 10px/1.2 var(--mono);
-      letter-spacing: .08em;
-      text-transform: uppercase;
-    }
-    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
-    .status[data-state="REGISTERED_NAVIGATION"] { color: var(--mint); }
-    .status[data-state="UNAVAILABLE"] { color: var(--rose); }
-
-    main { width: min(calc(100% - 32px), 1220px); margin: 0 auto; padding: clamp(2.25rem, 7vw, 5.5rem) 0 4rem; }
-    .hero {
-      display: grid;
-      grid-template-columns: minmax(0, 1.2fr) minmax(300px, .8fr);
-      align-items: end;
-      gap: clamp(2rem, 7vw, 6rem);
-      padding-bottom: clamp(2rem, 6vw, 4.5rem);
-      border-bottom: 1px solid var(--line);
-    }
-    .eyebrow { margin: 0 0 1rem; color: var(--mint); font: 800 10px/1.3 var(--mono); letter-spacing: .17em; text-transform: uppercase; }
-    h1 { max-width: 760px; margin: 0; font-size: clamp(2.7rem, 8vw, 7.4rem); line-height: .9; letter-spacing: -.06em; font-weight: 600; }
-    h1 span { color: transparent; background: linear-gradient(100deg, var(--text), var(--mint) 46%, var(--blue)); -webkit-background-clip: text; background-clip: text; }
-    .lede { max-width: 68ch; margin: 1.5rem 0 0; color: var(--paper); font-size: clamp(1rem, 1.7vw, 1.25rem); }
-    .binding {
-      padding: 1rem;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: rgba(12, 18, 26, .82);
-      box-shadow: 0 28px 80px rgba(0, 0, 0, .24);
-    }
-    .binding-row { display: grid; grid-template-columns: 7rem minmax(0, 1fr); gap: .75rem; padding: .65rem 0; border-bottom: 1px solid var(--line); }
-    .binding-row:last-child { border-bottom: 0; }
-    .binding dt { color: var(--faint); font: 700 10px/1.4 var(--mono); text-transform: uppercase; letter-spacing: .08em; }
-    .binding dd { margin: 0; color: var(--paper); font: 11px/1.5 var(--mono); overflow-wrap: anywhere; }
-
-    section { padding-top: clamp(2.25rem, 6vw, 4rem); }
-    .section-head { display: flex; justify-content: space-between; align-items: end; gap: 1rem; margin-bottom: 1rem; }
-    h2 { margin: 0; font-size: clamp(1.25rem, 3vw, 1.75rem); letter-spacing: -.025em; }
-    .section-head p { max-width: 62ch; margin: 0; color: var(--muted); font-size: .88rem; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 245px), 1fr)); gap: .75rem; }
-    .card {
-      min-height: 132px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      padding: 1rem;
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      color: var(--text);
-      background: var(--panel);
-      text-decoration: none;
-      overflow-wrap: anywhere;
-      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
-    }
-    a.card:hover { transform: translateY(-2px); border-color: rgba(99, 230, 197, .58); background: var(--panel-2); }
-    .card.external { border-left: 3px solid var(--blue); }
-    .tag { color: var(--gold); font: 800 9px/1.3 var(--mono); letter-spacing: .1em; text-transform: uppercase; }
-    .card strong { display: block; margin-top: .3rem; font-size: .98rem; }
-    .card small { display: block; margin-top: .45rem; color: var(--muted); font-size: .74rem; line-height: 1.45; }
-    .route { margin-top: .75rem; color: var(--faint); font: 10px/1.45 var(--mono); }
-    .empty {
-      grid-column: 1 / -1;
-      min-height: 120px;
-      display: grid;
-      place-items: center;
-      padding: 1rem;
-      border: 1px dashed var(--line-bright);
-      border-radius: 14px;
-      color: var(--muted);
-      text-align: center;
-    }
-    .boundary {
-      margin-top: clamp(2.25rem, 6vw, 4rem);
-      padding: 1.1rem 1.2rem;
-      border: 1px solid rgba(227, 189, 114, .42);
-      border-radius: var(--radius);
-      background: rgba(227, 189, 114, .055);
-    }
-    .boundary strong { color: var(--gold); }
-    .boundary p { margin: .35rem 0 0; color: var(--muted); }
-
-    footer { border-top: 1px solid var(--line); padding: 1.25rem 1rem; color: var(--faint); text-align: center; font: 10px/1.5 var(--mono); }
-
-    @media (max-width: 800px) {
-      .hero { grid-template-columns: 1fr; align-items: start; }
-      .binding { max-width: 680px; }
-      .section-head { display: block; }
-      .section-head p { margin-top: .45rem; }
-    }
-    @media (max-width: 520px) {
-      .skip:focus { top: 9rem; }
-      .bar { align-items: flex-start; padding: .9rem 0; flex-direction: column; }
-      .status { width: 100%; justify-content: center; }
-      .binding-row { grid-template-columns: 1fr; gap: .2rem; }
-      .card { min-height: 116px; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
-      *, *::before, *::after { animation: none !important; transition: none !important; }
-    }
-    @media (forced-colors: active) {
-      .mark, .status, .binding, .card, .boundary { border: 1px solid CanvasText; }
-    }
-  </style>
 </head>
 <body>
   <a class="skip" href="#content">Skip to Launchpad</a>
   <header>
     <div class="bar">
       <a class="brand" href="/" aria-label="Return to SZL Atlas">
-        <span class="mark" aria-hidden="true">SZL</span>
+        <img class="native-mark" src="/szl-orbit-icon.svg" alt="" width="40" height="40">
         <span><strong>Atlas Launchpad</strong><small>one governed door</small></span>
       </a>
       <div class="status" id="registry-status" data-state="__SZL_REGISTRY_STATE__" role="status" aria-live="polite">

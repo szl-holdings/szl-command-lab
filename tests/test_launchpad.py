@@ -67,6 +67,8 @@ def test_launchpad_file_load_is_bounded_and_contract_checked() -> None:
 
 def test_launchpad_html_is_accessible_and_evidence_honest() -> None:
     text = LAUNCHPAD.read_text(encoding="utf-8")
+    style = (LAUNCHPAD.parent / "launchpad.css").read_text(encoding="utf-8")
+    assert 'href="/launchpad.css?v=' in text
     status, raw, _state = gateway._load_launchpad()
     assert status == 200
     rendered = raw.decode("utf-8")
@@ -75,10 +77,6 @@ def test_launchpad_html_is_accessible_and_evidence_honest() -> None:
         'lang="en"',
         'name="viewport"',
         "Skip to Launchpad",
-        ":focus-visible",
-        "min-height: 44px",
-        "prefers-reduced-motion: reduce",
-        "forced-colors: active",
         'aria-live="polite"',
         "<!-- SZL_REGISTERED_SURFACES -->",
         "GET /api/launchpad",
@@ -87,6 +85,9 @@ def test_launchpad_html_is_accessible_and_evidence_honest() -> None:
         "Conjecture 1 — OPEN",
     ):
         assert marker in text
+
+    for marker in (":focus-visible", "min-height: 44px", "prefers-reduced-motion: reduce", "forced-colors: active"):
+        assert marker in style
 
     for forbidden in (
         "fonts.googleapis.com",
@@ -102,7 +103,7 @@ def test_launchpad_html_is_accessible_and_evidence_honest() -> None:
 
     assert "<script" not in text
     assert 'fetch("/api/launchpad"' not in text
-    assert "html { min-width: 0;" in text
+    assert "html { min-width: 0;" in style
 
 
 def test_gateway_preserves_existing_atlas_handler_and_routes() -> None:
@@ -116,7 +117,11 @@ def test_holographic_assets_are_source_bound_and_runtime_served() -> None:
     assert 'href="/szl-holo-v2.css"' in index
     assert 'src="/szl-holo-v2.js"' in index
     assert gateway.PUBLIC_ASSET_PATHS == frozenset(
-        {"/szl-holo-v2.css", "/szl-holo-v2.js"}
+        {
+            "/szl-holo-v2.css", "/szl-holo-v2.js", "/atlas.css", "/launchpad.css",
+            "/atlas-demos.css", "/szl-tokens.css", "/szl-orbit-icon.svg",
+            "/szl-orbit-holo.svg", "/szl-brand-SOURCE.json", "/szl-brand-PROJECTION.json",
+        }
     )
 
     for path, expected_type in (
