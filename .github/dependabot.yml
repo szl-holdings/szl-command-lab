@@ -29,6 +29,19 @@ updates:
       npm:
         patterns:
           - "*"
+    ignore:
+      # TypeScript is held on 6.0.x until typescript-eslint's peer range admits
+      # a newer line. Every typescript-eslint release through 8.71.2 (and canary
+      # 8.71.3-alpha.3) declares peer typescript ">=4.8.4 <6.1.0", so a 6.1+/7.x
+      # bump makes `npm ci` fail with ERESOLVE (see PR #62). Remove this entry
+      # once a typescript-eslint release widens that range.
+      - dependency-name: "typescript"
+        versions: [">=6.1"]
+      # better-auth 1.7 removed genericOAuthClient and auth.api.signInWithOAuth2,
+      # which src/lib/auth uses for the federated OAuth broker (PR #62
+      # typecheck: TS2305/TS2339). Hold 1.6.x until that code is migrated.
+      - dependency-name: "better-auth"
+        versions: [">=1.7"]
 
   - package-ecosystem: "docker"
     directory: "/"
