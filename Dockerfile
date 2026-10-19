@@ -4,7 +4,7 @@
 # Digest-pinned OCI index for python:3.14-slim (3.14.7-slim-trixie, linux/amd64 included),
 # identical on mirror.gcr.io and registry-1.docker.io when resolved 2026-09-29.
 # Dependabot (docker ecosystem, directory "/") keeps the tag and digest moving together.
-FROM mirror.gcr.io/library/python:3.14-slim@sha256:a2b82f3c48559aa0a8446d9af49826b6e2b2016f4cd2afabfe6013ec53729170
+FROM mirror.gcr.io/library/python:3.15-slim@sha256:2da676046630d7bf14c6764ae1143dc7fa0377a53f94bf5a642f0b214aca5bce
 
 WORKDIR /app
 ENV HOST=0.0.0.0
