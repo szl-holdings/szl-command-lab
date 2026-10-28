@@ -1,0 +1,85 @@
+{
+  "canonical": {
+    "commit": "b6011a6b50438b71af3590e87b8b5e10d2e48e96",
+    "repo": "szl-holdings/a11oy-factory"
+  },
+  "files": {
+    "scripts/app-env-plugin.mjs": {
+      "sha256": "92962d2361a98413c0cef80b31266d49b063cf4ecf6421bb99f57f6eef4ed7b6"
+    },
+    "scripts/brand-check.mjs": {
+      "sha256": "318f33ce7b29b55c386cc8847084068777880f795a5082043229bb06686be035"
+    },
+    "scripts/brand-check.test.mjs": {
+      "sha256": "3dada9e907cf63d4127588268f38987e72108639e65a2694aebf4ee35aa9f309"
+    },
+    "scripts/browser-guard.mjs": {
+      "sha256": "c6fb865defe5a37bd94e3805b00311d4e8267daf92812e39f62b1213d947265e"
+    },
+    "scripts/browser-smoke-verdict.mjs": {
+      "sha256": "5699614f7fa62515e25ba9cca6397db2770cf6feb9b973f3c19f2915874c53de"
+    },
+    "scripts/browser-smoke-verdict.test.mjs": {
+      "sha256": "ea832e925e4f91eeea9d431d48cf1ffd76a64a051ce96203041e9127f196640c"
+    },
+    "scripts/browser-smoke.mjs": {
+      "sha256": "64ffb79d12743ec02ecf30b7c1dda18596947b3445abdeb5846f91e817b820e1"
+    },
+    "scripts/check-auth-invariant.mjs": {
+      "sha256": "d712203c4bc92c197c342e5c91660fc5a141a31171f22f35c505a0bff45f98ee"
+    },
+    "scripts/grok-pwa-plugin.mjs": {
+      "sha256": "36331d0bc0664debb5068bd6869d3089dc41555b7770c9ccb577d8845958835c"
+    },
+    "scripts/grok-pwa-plugin.test.mjs": {
+      "sha256": "8f5e99cbb50b21bee4c2539527ff55af7d1005d909c24f30f11d17f76e181b9b"
+    },
+    "scripts/grok-pwa-shared.mjs": {
+      "sha256": "860da7df5e0e5698ccc0ed9def2eb981c2f396831c5523368d031ec740b88b9c"
+    },
+    "scripts/migrate.mjs": {
+      "sha256": "e1a31c8046a099df37b4bcbcafa4f4f7d7d18b1f1f0dc6d79676d41c4be976be"
+    },
+    "scripts/migration-plan.mjs": {
+      "sha256": "9305d8cfe8cdad73671065d675c89d0f20075d18c756f9aba5043b72e7c19a0d"
+    },
+    "scripts/migration-plan.test.mjs": {
+      "sha256": "9787b5f5f1a7057db94f0a5a8c89abf6ec569fd22d26f99be1c248a2a9f0c082"
+    },
+    "scripts/preview-thumbnail.mjs": {
+      "sha256": "fd7263a1dd76f788c2b51e9381e1f1de1a58993fd94e01040285556cd38c0c40"
+    },
+    "scripts/preview.mjs": {
+      "sha256": "b366b1c28844cda81d21e36a88af5f548bdec6a5a4b3000aac12be3ec99cf605"
+    },
+    "scripts/preview.test.mjs": {
+      "sha256": "0105fe41d056ecc22c586a191a9cbd7d0e838b7c878d6993c8c9573c7ea708b1"
+    },
+    "scripts/sign-out-plan.mjs": {
+      "sha256": "32ae072de23b5138bf849c344caf72ab2dab6cb4617ab9915db4e4f5b9c7e2f0"
+    },
+    "scripts/sign-out-plan.test.mjs": {
+      "sha256": "1942e32f4b6a9d8b62733338b0f0e1a7d84ed278b4e6c4f24fa7616a3abc694e"
+    },
+    "scripts/with-app-env.mjs": {
+      "sha256": "a846b68bd3645299c23eef965d9ef226df3a500d345d7576c23f7a2b2ff643c7"
+    },
+    "scripts/write-atomic.mjs": {
+      "sha256": "37157c2e8381eed40bc9761c671eb267bbd7654d9901b6666066d20839b81cf6"
+    },
+    "scripts/write-atomic.test.mjs": {
+      "sha256": "9809ac3eb1ba16d1a8e87a47f4b3847690f019b425b2567403305d7f025c729d"
+    }
+  },
+  "local_extensions": {
+    "scripts/check-auth-invariant.test.mjs": {
+      "reason": "test file diverged from the template with repo-local cases; intent not yet reviewed",
+      "sha256": "75a58f44dffb2fc77eb47473638646f607dba26a68a6900156031c7b6227cf3c"
+    },
+    "scripts/with-app-env.test.mjs": {
+      "reason": "test file diverged from the template with repo-local cases; intent not yet reviewed",
+      "sha256": "384ea7d0d20f980f733ee38d8f48b0bedd8a4ad39c80ca4792b9aeebcb275851"
+    }
+  },
+  "schema": "szl.template-lock/v1"
+}
