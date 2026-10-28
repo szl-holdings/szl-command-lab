@@ -200,7 +200,7 @@ def test_runtime_base_image_is_digest_pinned() -> None:
 
     assert len(from_lines) == 1
     assert re.fullmatch(
-        r"FROM mirror\.gcr\.io/library/python:3\.14-slim@sha256:[0-9a-f]{64}",
+        r"FROM mirror\.gcr\.io/library/python:3\.15-slim@sha256:[0-9a-f]{64}",
         from_lines[0],
     )
 
