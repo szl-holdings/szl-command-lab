@@ -105,6 +105,9 @@ export async function signIn(
   // (including signOut). Awaiting first drops user-gesture privilege in some
   // browsers when the opener is a cross-origin live-preview iframe.
   const popup = inLivePreview() ? openSignInPopup(providerId) : null;
+  // Listen before sign-out yields: a fast callback may post and close while
+  // the old session is still being cleared. Keep its result until that finishes.
+  const popupToken = popup ? waitForPopupToken(popup) : null;
 
   // Clear any prior session so switching providers actually switches identity.
   // Bounded because the popup is already open — a request that never settles
@@ -120,7 +123,7 @@ export async function signIn(
 
   if (inLivePreview()) {
     if (!popup) throw new Error("Pop-up blocked — allow pop-ups for sign-in");
-    const token = await waitForPopupToken(popup);
+    const token = await popupToken;
     if (!token) throw new Error("Sign-in was cancelled or failed");
     setBearerToken(token);
     // Refresh the client session store with the bearer attached (onRequest).
@@ -185,9 +188,10 @@ function waitForPopupToken(popup: Window): Promise<string | null> {
       resolve(token);
     };
     const onMessage = (event: MessageEvent) => {
-      if (event.origin !== origin) return;
+      if (event.origin !== origin || event.source !== popup) return;
       const data = event.data as PopupMessage | undefined;
       if (!data || data.source !== "grok-auth-popup") return;
+      if (data.token !== null && typeof data.token !== "string") return;
       settle(data.token ?? null);
     };
     // Fallback when the user dismisses the popup. Grace period lets the
