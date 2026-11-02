@@ -4,7 +4,8 @@
   "sideEffects": false,
   "type": "module",
   "overrides": {
-    "nf3": "0.3.17"
+    "nf3": "0.3.17",
+    "minimatch@10": "11.0.3"
   },
   "scripts": {
     "dev": "node scripts/with-app-env.mjs vite dev --host 0.0.0.0 --port 8080",
@@ -16,10 +17,10 @@
     "preview:stop": "node scripts/preview.mjs stop",
     "typecheck": "tsc --noEmit",
     "check:auth": "node scripts/check-auth-invariant.mjs",
-    "test": "node --test 'scripts/**/*.test.mjs' && node --experimental-strip-types --test src/lib/app-data/app-data.test.ts src/lib/auth/gate-identity.test.ts src/lib/auth/federation.test.ts tests/oauth-popup.test.mjs",
+    "test": "node --test 'scripts/**/*.test.mjs' && node --experimental-strip-types --test src/lib/app-data/app-data.test.ts src/lib/auth/gate-identity.test.ts src/lib/auth/federation.test.ts tests/oauth-popup.test.mjs tests/minimatch-consumers.test.mjs",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "test:ts": "node --experimental-strip-types --test src/lib/app-data/app-data.test.ts src/lib/auth/gate-identity.test.ts src/lib/auth/federation.test.ts tests/oauth-popup.test.mjs"
+    "test:ts": "node --experimental-strip-types --test src/lib/app-data/app-data.test.ts src/lib/auth/gate-identity.test.ts src/lib/auth/federation.test.ts tests/oauth-popup.test.mjs tests/minimatch-consumers.test.mjs"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.11",
