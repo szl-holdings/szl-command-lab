@@ -1,14 +1,14 @@
 import assert from "node:assert/strict";
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import test from "node:test";
+import test, { after } from "node:test";
 import {
   appNameFromHost,
-  createHeadInjector,
+  createHeadInjector as createWorkspaceHeadInjector,
   grokXCreatorHeadTags,
-  injectGrokPwaHead,
+  injectGrokPwaHead as injectWorkspaceHead,
   isDocumentPath,
   isInstallQuery,
   publicAppHost,
@@ -20,6 +20,46 @@ import {
 import { renderInstallPage } from "./grok-pwa-plugin.mjs";
 
 const TEMPLATE_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
+
+// These unit cases describe empty or explicitly supplied workspaces, not this
+// product's site identity or public/og.jpg. Keep the real production functions
+// and all assertions, but make their filesystem input explicit.
+const EMPTY_WORKSPACE = mkdtempSync(join(tmpdir(), "grok-pwa-unit-"));
+after(() => rmSync(EMPTY_WORKSPACE, { recursive: true, force: true }));
+
+function injectGrokPwaHead(html, ctx = {}) {
+  return injectWorkspaceHead(html, { cwd: EMPTY_WORKSPACE, ...ctx });
+}
+
+function createHeadInjector(ctx = {}) {
+  return createWorkspaceHeadInjector({ cwd: EMPTY_WORKSPACE, ...ctx });
+}
+
+for (const [name, render] of [
+  ["direct", injectGrokPwaHead],
+  ["streaming", (html, ctx) => {
+    const injector = createHeadInjector(ctx);
+    return Buffer.concat([...injector.push(html), ...injector.flush()]).toString("utf8");
+  }],
+]) {
+  test(`${name} injection isolates absent identity and honors an explicit workspace`, (t) => {
+    const root = mkdtempSync(join(tmpdir(), "grok-pwa-identity-"));
+    t.after(() => rmSync(root, { recursive: true, force: true }));
+    mkdirSync(join(root, "src/lib/og"), { recursive: true });
+    mkdirSync(join(root, "public"));
+    writeFileSync(join(root, "src/lib/og/site.json"), JSON.stringify({ title: "Fixture Identity" }));
+    writeFileSync(join(root, "public/og.jpg"), "synthetic card fixture");
+    const html = "<html><head><title>Document Name</title></head></html>";
+    const selected = render(html, { cwd: root, host: "wild-race.grok.me" });
+    assert.match(selected, /property="og:title" content="Fixture Identity"/);
+    assert.match(selected, /property="og:image" content="https:\/\/wild-race\.grok\.me\/og\.jpg"/);
+
+    const isolated = render(html, { host: "wild-race.grok.me" });
+    assert.match(isolated, /property="og:title" content="Document Name"/);
+    assert.match(isolated, /property="og:image" content="https:\/\/og\.grok\.me\/v1\/card\.png/);
+    assert.doesNotMatch(isolated, /Fixture Identity|wild-race\.grok\.me\/og\.jpg/);
+  });
+}
 
 test("injects before </head>", () => {
   const out = injectGrokPwaHead("<html><head><title>x</title></head><body></body></html>");
