@@ -3,7 +3,15 @@ node_modules
 .output
 .nitro
 .tanstack
-.grok
+.grok/*
+!.grok/skills/
+.grok/skills/*
+!.grok/skills/og/
+.grok/skills/og/*
+!.grok/skills/og/SKILL.md
+!.grok/skills/og/references/
+.grok/skills/og/references/*
+!.grok/skills/og/references/asset-handover.md
 dist
 *.log
 .env
