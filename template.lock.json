@@ -31,9 +31,6 @@
     "scripts/grok-pwa-plugin.mjs": {
       "sha256": "36331d0bc0664debb5068bd6869d3089dc41555b7770c9ccb577d8845958835c"
     },
-    "scripts/grok-pwa-plugin.test.mjs": {
-      "sha256": "8f5e99cbb50b21bee4c2539527ff55af7d1005d909c24f30f11d17f76e181b9b"
-    },
     "scripts/grok-pwa-shared.mjs": {
       "sha256": "860da7df5e0e5698ccc0ed9def2eb981c2f396831c5523368d031ec740b88b9c"
     },
@@ -73,12 +70,16 @@
   },
   "local_extensions": {
     "scripts/check-auth-invariant.test.mjs": {
-      "reason": "test file diverged from the template with repo-local cases; intent not yet reviewed",
-      "sha256": "75a58f44dffb2fc77eb47473638646f607dba26a68a6900156031c7b6227cf3c"
+      "reason": "Product-local workspace fixtures preserve explicit auth opt-out and environment precedence while asserting missing or malformed flags keep auth enabled.",
+      "sha256": "d75916095aedf2e42fe2f08188e22089aaf8c5e9c8787029812e0d0f6480b08b"
+    },
+    "scripts/grok-pwa-plugin.test.mjs": {
+      "reason": "Reviewed product-local PWA workspace isolation preserves all 47 original test bodies and unchanged production identity resolution.",
+      "sha256": "6d3d59022d0c068bdcce15b5f074fbd0e2ed6703feb9836fca6c16645acb6d9c"
     },
     "scripts/with-app-env.test.mjs": {
-      "reason": "test file diverged from the template with repo-local cases; intent not yet reviewed",
-      "sha256": "384ea7d0d20f980f733ee38d8f48b0bedd8a4ad39c80ca4792b9aeebcb275851"
+      "reason": "Product-local CLI fixtures execute an exact production-source copy, test module-root versus cwd isolation, preserve explicit override and symlink guards, and leave absent auth flags unset.",
+      "sha256": "55e46d82c81cdc650ca6e4ce7608bfa02957656b47954ec2a8dbd3abbd3ff4e6"
     }
   },
   "schema": "szl.template-lock/v1"
