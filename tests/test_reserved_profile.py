@@ -78,6 +78,36 @@ def test_404_is_observed_absence_and_adds_no_record(monkeypatch):
     assert result["reserved_profile"]["http_status"] == 404
 
 
+def test_anonymous_401_is_observed_non_public_and_adds_no_record(monkeypatch):
+    # The Hub answers an unauthenticated read of a private or missing repository
+    # with 401, not 404. This client sends no credentials, so a 401 from the
+    # exact endpoint is the same "no public record" observation as a 404.
+    catalog_fixture(monkeypatch)
+    def hidden(url, **_kwargs):
+        raise HTTPError(url, 401, "Unauthorized", {}, io.BytesIO())
+    monkeypatch.setattr(server, "_request_bytes", hidden)
+    result = server.recapture_catalog(force=True)
+    assert result["state"] == "VERIFIED_PUBLIC_LISTING"
+    assert result["errors"] == {}
+    assert result["counts"]["spaces"] == 1
+    assert result["family_observations"]["spaces"]["state"] == "FRESH"
+    assert result["reserved_profile"]["state"] == "NOT_PUBLICLY_OBSERVABLE"
+    assert result["reserved_profile"]["http_status"] == 401
+    assert not any(row["id"] == PROFILE["id"] for row in result["assets"])
+
+
+@pytest.mark.parametrize("status", [401, 404])
+def test_absence_status_from_another_url_is_not_an_observation(monkeypatch, status):
+    catalog_fixture(monkeypatch)
+    def redirected(_url, **_kwargs):
+        raise HTTPError("https://huggingface.co/login", status, "Elsewhere", {}, io.BytesIO())
+    monkeypatch.setattr(server, "_request_bytes", redirected)
+    result = server.recapture_catalog(force=True)
+    assert result["state"] == "PARTIAL"
+    assert set(result["errors"]) == {"reserved_profile"}
+    assert result["reserved_profile"]["state"] == "UNAVAILABLE"
+
+
 def test_explicit_private_profile_is_excluded(monkeypatch):
     catalog_fixture(monkeypatch)
     profile_response(monkeypatch, {**PROFILE, "private": True})

@@ -13,14 +13,18 @@ repository ID, and explicitly declare `private: false`. The catalog retains
 the response hash and includes the record once. The explorer labels it
 **Organization profile**, and this role is searchable.
 
-A 404 or explicit private response adds no public record. An unavailable or
-inconsistent response keeps the other observed records and marks the catalog
-PARTIAL; it never adds a fixed offset to the count. Records are keyed by
+A 404, an explicit private response, or a 401 adds no public record. The
+catalog sends no credentials, and the Hub answers an anonymous read of a private
+or missing repository with 401 rather than 404; a 401 or 404 counts only when it
+comes from the exact endpoint, and is recorded as `NOT_PUBLICLY_OBSERVABLE`
+with its status. Any other status, such as 403 or 503, is unavailable. An
+unavailable or inconsistent response keeps the other observed records and marks
+the catalog PARTIAL; it never adds a fixed offset to the count. Records are keyed by
 `(type, id)`, so native kernel/model overlap remains visible without duplicating
 an entry inside one namespace. Counts are repository records, not unique
 projects or trained models.
 
-`tests/test_reserved_profile.py` covers presence, absence, duplication, private
+`tests/test_reserved_profile.py` covers presence, absence (404 and anonymous 401), duplication, private
 and ambiguous visibility, failure, source mismatch, and cross-namespace overlap.
 The existing hosted browser comparison includes a synthetic profile record and
 checks that users can find it by its role. Fixtures are not deployment evidence.
