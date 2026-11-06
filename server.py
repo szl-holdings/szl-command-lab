@@ -366,9 +366,13 @@ def _reserved_profile() -> tuple[dict[str, Any] | None, dict[str, Any]]:
     try:
         raw = _request_bytes(RESERVED_PROFILE_URL, max_bytes=MAX_INDEX_BYTES, exact_url=True)
     except HTTPError as exc:
-        if exc.code != 404 or exc.geturl() != RESERVED_PROFILE_URL:
+        # This request carries no credentials. The Hub answers an anonymous read
+        # of a private or missing repository with 401 (not 404), so both mean
+        # "no public record" when they come from the exact endpoint. Any other
+        # status, or a response from another URL, stays unavailable.
+        if exc.code not in (401, 404) or exc.geturl() != RESERVED_PROFILE_URL:
             raise
-        return None, {**evidence, "state": "NOT_PUBLICLY_OBSERVABLE", "http_status": 404}
+        return None, {**evidence, "state": "NOT_PUBLICLY_OBSERVABLE", "http_status": exc.code}
     row = json.loads(raw)
     if not isinstance(row, dict) or row.get("id") != RESERVED_PROFILE_ID:
         raise ValueError("invalid reserved profile identity")
