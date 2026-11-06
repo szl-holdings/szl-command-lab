@@ -157,9 +157,11 @@ def run_yarqa_demo() -> dict[str, Any]:
         }
 
 
-# Prefer the source-bound substrate modules installed by the Dockerfile. The
-# fallback keeps this Space auditable and operational if an older flattened
-# publication omits those modules.
+# A top-level `kernel` module takes precedence when one is importable (for
+# example with python/ or space/ on sys.path, beside their kernel.py). The
+# published image ships no such module: the Dockerfile's szl-substrate archive
+# installs only the `szl_substrate` package, so the Space runs the embedded,
+# fail-closed five-organ fallback below.
 try:
     from kernel import evaluate_anatomy, selftest  # type: ignore
 except ImportError:
