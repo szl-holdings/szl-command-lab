@@ -59,7 +59,7 @@ Explore SZL systems, models, kernels and datasets in one searchable place. Follo
 
 <p align="center">
   <a href="https://huggingface.co/spaces/SZLHOLDINGS/szl-command-lab">
-    <img src="https://huggingface.co/spaces/SZLHOLDINGS/README/resolve/main/assets/estate-command-system.svg"
+    <img src="https://raw.githubusercontent.com/szl-holdings/.github/35141f18ddd8c1b99e8980d726ab3d2012d7e3c7/profile/assets/estate-command-system.svg"
          alt="SZL governed AI command fabric"
          width="100%" />
   </a>
