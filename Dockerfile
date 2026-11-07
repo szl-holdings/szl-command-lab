@@ -4,7 +4,7 @@
 # Digest-pinned OCI index for python:3.15-slim (3.15.1-slim-trixie, linux/amd64 included),
 # read from mirror.gcr.io on 2026-10-28; its patchlevel.h declares PY_RELEASE_LEVEL_FINAL.
 # Dependabot (docker ecosystem, directory "/") keeps the tag and digest moving together.
-FROM mirror.gcr.io/library/python:3.15-slim@sha256:8c13a3f37a6a5b71498228e902c4b9f51c1f7900d49fabf71f9a650c6120e0d0
+FROM mirror.gcr.io/library/python:3.15-slim@sha256:e97b88e416c3c01eb427b21fd8cd3ebf006e6ee38afcfcc3cae1c54ee2ab0a75
 
 WORKDIR /app
 ENV HOST=0.0.0.0
@@ -13,13 +13,16 @@ ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 
 # Shared source-of-truth for the second brain, Anatomy, formula wiring, receipts,
-# consensus, restraint and governance modules. Exact Git SHAs are intentionally pinned.
+# consensus, restraint and governance modules. Exact Git SHAs are intentionally pinned,
+# and each source archive is also verified by its SHA-256 before installation.
+ARG SUBSTRATE_REVISION=ad2e04374717ef79dbf7dbb91aea5a8480ed10c3
+ARG SUBSTRATE_ARCHIVE_SHA256=bbecf44c25f63047fc4a725ec1bf9aa6f2fe833d1e65d522eb1dbc0716370f07
 ARG YARQA_REVISION=a5e74026ee0c24f45a0b0405ee849720ca520302
 ARG YARQA_ARCHIVE_SHA256=8aa133830078eb519d0806ce197ec45d62f19fe363ac5d1d968a65705c315483
 ARG NUMPY_VERSION=2.5.2
 ENV SZL_YARQA_SHA=${YARQA_REVISION}
 RUN python -m pip install --no-cache-dir \
-      "https://github.com/szl-holdings/szl-substrate/archive/ad2e04374717ef79dbf7dbb91aea5a8480ed10c3.tar.gz" \
+      "https://github.com/szl-holdings/szl-substrate/archive/${SUBSTRATE_REVISION}.tar.gz#sha256=${SUBSTRATE_ARCHIVE_SHA256}" \
       "numpy==${NUMPY_VERSION}" \
       "https://github.com/szl-holdings/yarqa/archive/${YARQA_REVISION}.tar.gz#sha256=${YARQA_ARCHIVE_SHA256}" \
     && python -I -c "import yarqa; assert yarqa.__version__ == '0.5.0'"

@@ -160,6 +160,10 @@ def test_yarqa_source_and_deployment_contract_are_exact() -> None:
     assert revision in dockerfile
     assert "YARQA_ARCHIVE_SHA256=8aa133830078eb519d0806ce197ec45d62f19fe363ac5d1d968a65705c315483" in dockerfile
     assert "NUMPY_VERSION=2.5.2" in dockerfile
+    # The five-organ kernel substrate is commit-pinned and content-verified like YARQA.
+    assert "SUBSTRATE_REVISION=ad2e04374717ef79dbf7dbb91aea5a8480ed10c3" in dockerfile
+    assert "SUBSTRATE_ARCHIVE_SHA256=bbecf44c25f63047fc4a725ec1bf9aa6f2fe833d1e65d522eb1dbc0716370f07" in dockerfile
+    assert "archive/${SUBSTRATE_REVISION}.tar.gz#sha256=${SUBSTRATE_ARCHIVE_SHA256}" in dockerfile
     assert "SZLHOLDINGS/szl-command-lab" in workflow
     assert "/api/yarqa" in workflow
     assert "require-default-branch-tip: true" in workflow

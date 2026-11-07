@@ -59,7 +59,7 @@ Explore SZL systems, models, kernels and datasets in one searchable place. Follo
 
 <p align="center">
   <a href="https://huggingface.co/spaces/SZLHOLDINGS/szl-command-lab">
-    <img src="https://huggingface.co/spaces/SZLHOLDINGS/README/resolve/main/assets/estate-command-system.svg"
+    <img src="https://raw.githubusercontent.com/szl-holdings/.github/35141f18ddd8c1b99e8980d726ab3d2012d7e3c7/profile/assets/estate-command-system.svg"
          alt="SZL governed AI command fabric"
          width="100%" />
   </a>
@@ -106,6 +106,7 @@ presents:
 | `GET /` | Responsive public Atlas | Presentation is navigation, not proof of readiness |
 | `GET /launchpad` | Source-bound Atlas navigation registry | A registered destination is not a liveness or capability certificate |
 | `GET /healthz` | Runtime and organ health | Reachability does not establish capability or authorization |
+| `GET /readyz` | Readiness: the bounded YARQA replay must pass | Returns 503 when the pinned YARQA runtime is missing or its source binding differs; readiness is not capability or authorization |
 | `GET /api/catalog` | Live public Hub catalog | Private assets are excluded; unavailable provider data is not inferred |
 | `GET /api/estate` | Bounded probes of selected public Spaces | HTTP 200 proves reachability only |
 | `GET /api/launchpad` | Source-controlled registered route metadata | Registration is not availability, freshness, or production readiness |
@@ -180,7 +181,7 @@ signal → proposal → policy → bounded action → receipt → verification
 The Docker Space intentionally uses a compact standard-library Python server.
 `gateway.py` composes the permanent `/launchpad` and `/api/launchpad` routes
 onto the existing `server.Handler`; all other Atlas routes continue through the
-original handler. `Dockerfile` publishes the exact `server.py`, `gateway.py`, Python demo adapters and renderer, fixed demo data, `space/index.html`, `space/launchpad.html`, and source-bound holographic CSS and JavaScript closure. It installs YARQA from its pinned source archive and installs the two demo wheels by exact hashes.
+original handler. `Dockerfile` publishes the exact `server.py`, `gateway.py`, `atlas_energy.py`, `launchpad_views.py`, Python demo adapters and renderer, fixed demo data, `space/index.html`, `space/launchpad.html`, and source-bound holographic CSS and JavaScript closure. It installs YARQA and `szl-substrate` from commit-pinned source archives verified by SHA-256, `numpy==2.5.2`, and the two demo wheels by exact hashes. The image ships no top-level `kernel` module, so the five-organ demonstration runs the embedded fail-closed kernel in `server.py`.
 
 Provider mutation is owned by the protected central reusable publisher in
 `szl-holdings/.github`. The thin caller in `.github/workflows/hf-sync.yml` pins
@@ -205,6 +206,16 @@ Optional environment variables:
 HOST=0.0.0.0
 PORT=7860
 SZL_GIT_SHA=<exact-40-character-source-revision>
+```
+
+Without the pinned YARQA runtime, `/readyz` and `/api/yarqa` return 503 and
+`/api/build-info` reports the YARQA binding as `UNBOUND_OR_MISMATCHED`; every
+other route still works. To reproduce the image's YARQA binding locally:
+
+```bash
+python -m pip install "numpy==2.5.2" \
+  "https://github.com/szl-holdings/yarqa/archive/a5e74026ee0c24f45a0b0405ee849720ca520302.tar.gz#sha256=8aa133830078eb519d0806ce197ec45d62f19fe363ac5d1d968a65705c315483"
+SZL_YARQA_SHA=a5e74026ee0c24f45a0b0405ee849720ca520302 python gateway.py
 ```
 
 ## Verification
@@ -249,9 +260,10 @@ demo is disclosed on demand, requires a user click to run, and labels successful
 organ checks as demo results. Model-namespace counts include kernel repositories;
 kernel listings are not additional trained models.
 
-The `atlas-responsive-browser` PR job starts the shipped Python gateway and runs
-`scripts/atlas-responsive.test.cjs` in Chromium with synthetic provider data.
-It checks 320, 375, 744, 768, 1024, 1440 and 1920px widths, 200% and 400% CSS zoom,
+The `atlas-responsive-browser` job (pull requests and pushes to `main`) starts
+the shipped Python gateway and runs `scripts/atlas-responsive.test.cjs` and
+`scripts/public-demos.test.cjs` in Chromium with synthetic provider data.
+The responsive test checks 320, 375, 744, 768, 1024, 1440 and 1920px widths, 200% and 400% CSS zoom,
 and 320/744px frames inside a 1440px host, plus a 375px coarse-touch case.
 It verifies that requested CSS zoom was applied, measures the hero box and every
 visible content boundary with the demo open, then exercises navigation, Escape,
@@ -265,10 +277,13 @@ shown below, the repository's Playwright dependency, and Chromium. Start
 
 ```bash
 ATLAS_EVIDENCE_DIR=/tmp/atlas-browser-evidence node --test scripts/atlas-responsive.test.cjs
+ATLAS_EVIDENCE_DIR=/tmp/atlas-browser-evidence node --test scripts/public-demos.test.cjs
 ```
 
 `ATLAS_TEST_ORIGIN` may point to another loopback port. The test rejects public
 origins and intercepts provider API requests with explicit fixtures.
+`CHROME_PATH` may name an installed Chrome or Chromium executable instead of a
+Playwright-downloaded browser.
 
 Install the test tool and hash-pinned public demo distributions before starting
 the gateway or running the suite:
