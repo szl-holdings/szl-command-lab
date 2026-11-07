@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+message: If you use this software, please cite it using the metadata from this file.
+type: software
+title: szl-holdings/szl-command-lab — Holographic command body
+version: 0.1.0
+date-released: '2026-11-04'
+license: Apache-2.0
+url: https://huggingface.co/spaces/SZLHOLDINGS/szl-command-lab
+repository-code: https://github.com/szl-holdings/szl-command-lab
+authors:
+- family-names: Lutar
+  given-names: Stephen P.
+  name-suffix: Jr.
+  orcid: https://orcid.org/0009-0001-0110-4173
+  affiliation: SZL Holdings
+keywords:
+- apache-2-0
+- governed-ai
+- holographic
+- huggingface
+- lambda-gate
+- receipts
+- spaces
+- szl-holdings
+identifiers:
+- type: doi
+  value: 10.5281/zenodo.19944926
+  description: Concept DOI for the canonical Ouroboros Thesis (always resolves to the latest version)
