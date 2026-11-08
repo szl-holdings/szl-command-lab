@@ -330,3 +330,5 @@ Apache-2.0 · Control before action · Evidence after
 <!-- szl:preserved-source-body:end -->
 
 </details>
+
+Estate on Hugging Face: models, datasets and Spaces are published under the [SZLHOLDINGS](https://huggingface.co/SZLHOLDINGS) org.
