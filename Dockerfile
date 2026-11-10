@@ -4,7 +4,7 @@
 # Digest-pinned OCI index for python:3.15-slim (3.15.1-slim-trixie, linux/amd64 included),
 # read from mirror.gcr.io on 2026-10-28; its patchlevel.h declares PY_RELEASE_LEVEL_FINAL.
 # Dependabot (docker ecosystem, directory "/") keeps the tag and digest moving together.
-FROM mirror.gcr.io/library/python:3.15-slim@sha256:e97b88e416c3c01eb427b21fd8cd3ebf006e6ee38afcfcc3cae1c54ee2ab0a75
+FROM mirror.gcr.io/library/python:3.15-slim@sha256:65a65fc7b30b06cb6df4930fd4650697cb23f4c2698ab81fc87e4b031bc36928
 
 WORKDIR /app
 ENV HOST=0.0.0.0
