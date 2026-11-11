@@ -192,3 +192,12 @@ def test_demo_deploy_sources_are_in_docker_and_main_sync_filter() -> None:
     paths = {line.strip().removeprefix("- ") for line in paths_block.splitlines() if line.strip()}
     assert {"demo_adapters.py", "visitor_views.py", "demo_data/**", "requirements-public-demos.txt"} <= paths
     assert "branches: [main]" in workflow
+    # Publishing can succeed only after every advertised fixed demo route is
+    # reachable, including the deliberately failing-integrity tampered fixture.
+    smoke_line = next(line for line in workflow.splitlines() if line.strip().startswith("smoke-paths:"))
+    smoke_paths = json.loads(smoke_line.split(":", 1)[1].strip().strip("'"))
+    assert {
+        "/demos", "/demos/retrieval", "/demos/receipts", "/api/demo-adapters",
+        *(f"/demos/retrieval/{ident}" for ident in demo_adapters.QUERY_IDS),
+        *(f"/demos/receipts/{ident}" for ident in demo_adapters.RECEIPT_IDS),
+    } <= set(smoke_paths)
