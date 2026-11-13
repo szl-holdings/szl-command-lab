@@ -46,12 +46,12 @@ const CLIENT_SECRET_KEY = "GROK_AUTH_CLIENT_SECRET";
 
 /**
  * Decide the broker client from the environment. `previewClient` is the shared
- * live-preview registration (`./preview`); it is returned only in `preview`
- * mode with no per-app pair present.
+ * live-preview registration (`./preview`). It is no longer used as a
+ * baked-in secret fallback; preview mode requires the env pair.
  */
 export function resolveFederation(
   env: EnvReader,
-  previewClient: BrokerClient,
+  _previewClient?: BrokerClient,
 ): FederationConfig {
   const read = (key: string): string | undefined => {
     const value = env(key)?.trim();
@@ -94,7 +94,13 @@ export function resolveFederation(
         `client: set both ${CLIENT_ID_KEY} and ${CLIENT_SECRET_KEY}, or neither.`,
     };
   }
-  return { mode: "preview", client: "shared-preview", ...previewClient };
+  return {
+    mode: "refused",
+    reason:
+      `${CLIENT_SECRET_KEY} is not set, so federated sign-in is unavailable. ` +
+      "The shared preview client secret is no longer baked into the source; set " +
+      `both ${CLIENT_ID_KEY} and ${CLIENT_SECRET_KEY} in the environment.`,
+  };
 }
 
 /**
