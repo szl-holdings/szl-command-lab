@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
-import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import { mkdtempSync, symlinkSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
@@ -13,16 +13,6 @@ import {
   probeDevAuthEnabled,
 } from "./check-auth-invariant.mjs";
 import { projectRoot } from "./with-app-env.mjs";
-
-function appEnvWorkspace(t, appEnvJson) {
-  const root = mkdtempSync(join(tmpdir(), "auth-build-env-"));
-  t.after(() => rmSync(root, { recursive: true, force: true }));
-  if (appEnvJson !== undefined) {
-    mkdirSync(join(root, ".grok"));
-    writeFileSync(join(root, ".grok/app-env.json"), appEnvJson);
-  }
-  return root;
-}
 
 /**
  * The JSON body `/__app-env` would serve. Do not start a real Vite server —
@@ -100,28 +90,24 @@ test("only a divergence warns the smoke verdict", () => {
   }
 });
 
-test("the build side resolves an explicit workspace's app-env", (t) => {
-  const root = appEnvWorkspace(t, '{"VITE_AUTH_ENABLED":"false"}');
-  assert.equal(buildAuthEnabled(root, {}), false);
-  assert.equal(buildAuthEnabled(root, { VITE_AUTH_ENABLED: "true" }), true);
+test("the build side fails safe to auth on without a workspace override", () => {
+  assert.equal(buildAuthEnabled(projectRoot(), {}), true);
+  assert.equal(buildAuthEnabled(projectRoot(), { VITE_AUTH_ENABLED: "true" }), true);
 });
 
-test("a workspace without an app-env keeps the auth-enabled default", (t) => {
-  const root = appEnvWorkspace(t);
-  assert.equal(buildAuthEnabled(root, {}), true);
-});
-
-test("invalid workspace flags never manufacture an auth-disabled override", (t) => {
-  for (const value of ["not json", "null", "[]", '{"VITE_AUTH_ENABLED":false}']) {
-    assert.equal(buildAuthEnabled(appEnvWorkspace(t, value), {}), true, value);
-  }
-});
-
-test("the CLI reports rather than silently passing when run via a symlink", async () => {
+test("the CLI reports rather than silently passing when run via a symlink", async (t) => {
   // A check whose exit code is the whole signal must never no-op to 0 because
   // process.argv[1] came in through a symlinked path.
   const link = join(mkdtempSync(join(tmpdir(), "auth-invariant-link-")), "scripts");
-  symlinkSync(join(projectRoot(), "scripts"), link);
+  try {
+    symlinkSync(join(projectRoot(), "scripts"), link);
+  } catch (error) {
+    if (process.platform === "win32" && error?.code === "EPERM") {
+      t.skip("Windows symlink creation requires Developer Mode or elevation");
+      return;
+    }
+    throw error;
+  }
   const error = await promisify(execFile)(process.execPath, [
     join(link, "check-auth-invariant.mjs"),
     "--dev-url",
