@@ -167,7 +167,7 @@ def test_hugging_face_deploy_uses_the_central_exact_source_publisher() -> None:
         "source-revision-probe-path: /api/build-info",
         "wait-running: 1200",
         "prune: true",
-        'smoke-paths: \'["/","/launchpad","/api/build-info","/api/launchpad","/healthz","/readyz","/api/yarqa"]\'',
+        'smoke-paths: \'["/","/launchpad","/api/build-info","/api/launchpad","/healthz","/readyz","/api/yarqa","/demos","/demos/retrieval","/demos/retrieval/inventory","/demos/retrieval/product","/demos/retrieval/proof","/demos/receipts","/demos/receipts/intact","/demos/receipts/tampered","/demos/receipts/unsigned","/api/demo-adapters"]\'',
         HF_PUBLISHER_SECRET_EXPRESSION,
     ):
         assert marker in text
