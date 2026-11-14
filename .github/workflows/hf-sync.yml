@@ -31,7 +31,7 @@ permissions:
 jobs:
   deploy:
     name: Deploy, source-bind, and attest exact Atlas
-    uses: szl-holdings/.github/.github/workflows/reusable-hf-deploy.yml@7ddbbc5e8a90df78607b770c2119aa2058419b7c
+    uses: szl-holdings/.github/.github/workflows/reusable-hf-deploy.yml@03ba0b06157d37104a54e7d3f10207dc90dc64c5
     with:
       hf-repo: SZLHOLDINGS/szl-command-lab
       ref: ${{ github.sha }}
