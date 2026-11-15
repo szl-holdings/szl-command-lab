@@ -29,7 +29,7 @@
       "revision": "17d3993eb106618af506659147a3a5fa17fe7584",
       "risks": [],
       "tags": [
-        "doi:10.5281/zenodo.19944926",
+        "doi:10.5281/zenodo.24239896",
         "ed25519",
         "governance",
         "invariants",
@@ -154,7 +154,7 @@
       "tags": [
         "compatibility",
         "deprecated",
-        "doi:10.5281/zenodo.19944926",
+        "doi:10.5281/zenodo.24239896",
         "governance",
         "kernel",
         "kernels",
@@ -203,7 +203,7 @@
       "revision": "e33458fd0f8b85545ed352dc25495ecd00973b60",
       "risks": [],
       "tags": [
-        "doi:10.5281/zenodo.19944926",
+        "doi:10.5281/zenodo.24239896",
         "gate",
         "governance",
         "kernel",
@@ -340,7 +340,7 @@
         "LOADABLE_METADATA_WITHOUT_WEIGHTS"
       ],
       "tags": [
-        "doi:10.5281/zenodo.19944926",
+        "doi:10.5281/zenodo.24239896",
         "embeddings",
         "feature-extraction",
         "governance",
@@ -391,7 +391,7 @@
       "tags": [
         "annex-iv",
         "compliance",
-        "doi:10.5281/zenodo.19944926",
+        "doi:10.5281/zenodo.24239896",
         "eu-ai-act",
         "governance",
         "kernel",
@@ -434,7 +434,7 @@
       "risks": [],
       "tags": [
         "attestation",
-        "doi:10.5281/zenodo.19944926",
+        "doi:10.5281/zenodo.24239896",
         "dsse",
         "governance",
         "in-toto",
@@ -478,7 +478,7 @@
       "revision": "ad9594e6bb7d9f5d64f82b693e768679d4d404b5",
       "risks": [],
       "tags": [
-        "doi:10.5281/zenodo.19944926",
+        "doi:10.5281/zenodo.24239896",
         "governance",
         "in-toto",
         "kernel",
@@ -557,7 +557,7 @@
       "revision": "febd9edce74af6d362661c50d3a9577274374e13",
       "risks": [],
       "tags": [
-        "doi:10.5281/zenodo.19944926",
+        "doi:10.5281/zenodo.24239896",
         "governance",
         "kernel",
         "kernels",
@@ -600,7 +600,7 @@
       "revision": "0b1d48be398e8b1041c8975f9b2f7f70211183a6",
       "risks": [],
       "tags": [
-        "doi:10.5281/zenodo.19944926",
+        "doi:10.5281/zenodo.24239896",
         "formulas",
         "governance",
         "kernel",
