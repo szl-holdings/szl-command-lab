@@ -93,7 +93,7 @@ export const SCENARIOS: Scenario[] = [
 ];
 
 export function evaluatePolicy(action: ProposedAction): PolicyResult {
-  const tool = action.tool;
+  const tool = action.tool.trim().toLowerCase();
   const resource = action.resource.toLowerCase();
   const fields = JSON.stringify(action.args).toLowerCase();
 
