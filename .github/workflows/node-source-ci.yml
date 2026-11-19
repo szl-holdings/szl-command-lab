@@ -38,7 +38,7 @@ jobs:
       - name: Test app data and fail-closed identity
         run: npm run test:ts
       - name: Test receipt integrity with offline synthetic inputs
-        run: node --experimental-strip-types --test src/lib/receipt.test.ts
+        run: node --experimental-strip-types --test src/lib/receipt.test.ts src/lib/admission.test.ts
       - name: Test migration and sign-out contracts
         run: node --test scripts/migration-plan.test.mjs scripts/sign-out-plan.test.mjs
       - name: Build the app

@@ -189,6 +189,49 @@ export async function verifyReceipt(receipt: Receipt): Promise<VerifyResult> {
     failures, recomputed_digest };
 }
 
+export type ChainResult = {
+  ok: boolean;
+  per_index: VerifyResult[];
+  link_failures: { index: number; reason: string }[];
+  head: string | null;
+};
+
+/**
+ * Read-only linkage check. The demo HMAC key is public, so this detects a
+ * removed, reordered or spliced knot, not a re-minted forgery.
+ */
+export async function verifyChain(receipts: Receipt[]): Promise<ChainResult> {
+  const per_index: VerifyResult[] = [];
+  const link_failures: { index: number; reason: string }[] = [];
+  const seen = new Set<string>();
+  for (let i = 0; i < receipts.length; i++) {
+    const receipt = receipts[i];
+    per_index.push(await verifyReceipt(receipt));
+    const id = receipt?.id;
+    if (typeof id === "string" && seen.has(id)) {
+      link_failures.push({ index: i, reason: "duplicate receipt id" });
+    }
+    if (typeof id === "string") seen.add(id);
+    if (i === 0) {
+      if (receipt?.prev_sha256 !== null) {
+        link_failures.push({ index: i, reason: "genesis prev must be null" });
+      }
+    } else if (receipt?.prev_sha256 !== receipts[i - 1]?.digest) {
+      link_failures.push({
+        index: i,
+        reason: "prev_sha256 != prior digest (knot removed, reordered or spliced)",
+      });
+    }
+  }
+  const ok = per_index.every((r) => r.ok) && link_failures.length === 0;
+  return {
+    ok,
+    per_index,
+    link_failures,
+    head: ok && receipts.length ? receipts[receipts.length - 1].digest : null,
+  };
+}
+
 export function tamperReceipt(receipt: Receipt, field: keyof ReceiptBody, value: unknown): Receipt {
   return { ...receipt, [field]: value } as Receipt;
 }

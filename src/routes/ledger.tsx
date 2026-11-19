@@ -5,7 +5,7 @@ import { PageHeader } from "@/components/page-header";
 import { ReceiptCard } from "@/components/receipt-card";
 import { Button } from "@/components/ui/button";
 import { useLedger } from "@/lib/ledger-store";
-import { verifyReceipt, type VerifyResult } from "@/lib/receipt";
+import { verifyChain, type ChainResult, type VerifyResult } from "@/lib/receipt";
 import { formatWhen, shortSha } from "@/lib/utils";
 
 export const Route = createFileRoute("/ledger")({ component: Ledger });
@@ -15,14 +15,19 @@ export function Ledger() {
   const clear = useLedger((s) => s.clear);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [results, setResults] = useState<Record<string, VerifyResult>>({});
+  const [checked, setChecked] = useState<{ receipts: typeof receipts; result: ChainResult } | null>(null);
+  const chain = checked?.receipts === receipts ? checked.result : null;
   const selected = receipts.find((r) => r.id === selectedId) ?? receipts[receipts.length - 1] ?? null;
 
   async function checkAll() {
+    const result = await verifyChain(receipts);
     const next: Record<string, VerifyResult> = {};
-    for (const receipt of receipts) {
-      next[receipt.id] = await verifyReceipt(receipt);
-    }
+    receipts.forEach((receipt, i) => {
+      const prior = next[receipt.id];
+      next[receipt.id] = prior && !prior.ok ? prior : result.per_index[i];
+    });
     setResults(next);
+    setChecked({ receipts, result });
   }
 
   return (
@@ -30,7 +35,7 @@ export function Ledger() {
       <PageHeader
         kicker="Session ledger · local only"
         title="Knots stay on this machine."
-        lede="The chain is prev_sha256 of the prior digest. Clearing the ledger is a local rollback, not an estate mutation. Nothing here is written to GitHub or Hugging Face."
+        lede="The chain is prev_sha256 of the prior digest. Verify chain checks each knot and its prev_sha256 link. DEMO HMAC key is public: this detects deletion or reorder, not forgery. Clearing the ledger is a local rollback, not an estate mutation. Nothing here is written to GitHub or Hugging Face."
         claims={["DEMO"]}
       />
 
@@ -38,13 +43,26 @@ export function Ledger() {
         <Button variant="secondary" disabled={!receipts.length} onClick={() => void checkAll()}>
           Verify chain
         </Button>
-        <Button variant="deny" disabled={!receipts.length} onClick={() => { clear(); setResults({}); setSelectedId(null); }}>
+        <Button variant="deny" disabled={!receipts.length} onClick={() => { clear(); setResults({}); setChecked(null); setSelectedId(null); }}>
           Clear this machine
         </Button>
         <Button asChild variant="ghost">
           <Link to="/command">Mint another</Link>
         </Button>
       </div>
+
+      {chain && (
+        <p className="mt-4 font-mono text-[11px]">
+          {chain.ok ? (
+            <span className="text-allow">Chain PASS · {receipts.length} knots linked</span>
+          ) : (
+            <span className="text-deny">
+              Chain FAIL
+              {chain.link_failures.map((f) => ` · knot ${f.index + 1}: ${f.reason}`).join("")}
+            </span>
+          )}
+        </p>
+      )}
 
       <div className="mt-8 grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
         <KhipuLedger receipts={receipts} selectedId={selected?.id} onSelect={setSelectedId} />
@@ -70,8 +88,9 @@ export function Ledger() {
               </tr>
             </thead>
             <tbody>
-              {receipts.map((receipt) => {
-                const verify = results[receipt.id];
+              {receipts.map((receipt, i) => {
+                const verify = chain?.per_index[i];
+                const linkBroken = chain?.link_failures.some((f) => f.index === i) ?? false;
                 return (
                   <tr
                     key={receipt.id}
@@ -88,7 +107,7 @@ export function Ledger() {
                     </td>
                     <td className="px-4 py-3 font-mono text-[11px] text-steel">{shortSha(receipt.digest, 6)}</td>
                     <td className="px-4 py-3 font-mono text-[11px]">
-                      {verify ? (verify.ok ? <span className="text-allow">PASS</span> : <span className="text-deny">FAIL</span>) : "—"}
+                      {verify ? (verify.ok && !linkBroken ? <span className="text-allow">PASS</span> : <span className="text-deny">FAIL</span>) : "—"}
                     </td>
                   </tr>
                 );

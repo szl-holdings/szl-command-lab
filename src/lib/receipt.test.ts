@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { canonicalJson, mintReceipt, verifyReceipt } from "./receipt.ts";
+import { canonicalJson, mintReceipt, verifyChain, verifyReceipt } from "./receipt.ts";
 import type { Receipt, ReceiptBody } from "./receipt.ts";
 
 function body(args: Record<string, unknown> = { value: null }): Omit<ReceiptBody,
@@ -89,4 +89,67 @@ test("ordinary receipt tampering fails and valid roundtrips verify", async () =>
   assert.equal((await verifyReceipt(JSON.parse(JSON.stringify(receipt)))).ok, true);
   receipt.resource = "changed";
   assert.equal((await verifyReceipt(receipt)).ok, false);
+});
+
+async function mintChain(n: number): Promise<Receipt[]> {
+  const chain: Receipt[] = [];
+  for (let i = 0; i < n; i++) {
+    const prev = chain.length ? chain[chain.length - 1].digest : null;
+    chain.push(await mintReceipt({ ...body({ i }), prev_sha256: prev }));
+  }
+  return chain;
+}
+
+test("an intact chain verifies and reports its head", async () => {
+  const [r1, r2, r3] = await mintChain(3);
+  const result = await verifyChain([r1, r2, r3]);
+  assert.equal(result.ok, true);
+  assert.deepEqual(result.link_failures, []);
+  assert.equal(result.head, r3.digest);
+  assert.equal(result.per_index.length, 3);
+});
+
+test("dropping a middle knot breaks the chain even though each knot verifies", async () => {
+  const [r1, , r3] = await mintChain(3);
+  assert.equal((await verifyReceipt(r1)).ok, true);
+  assert.equal((await verifyReceipt(r3)).ok, true);
+  const result = await verifyChain([r1, r3]);
+  assert.equal(result.ok, false);
+  assert.equal(result.head, null);
+  assert.ok(result.link_failures.some((f) => f.index === 1));
+});
+
+test("a reordered chain fails at genesis and at the links", async () => {
+  const [r1, r2, r3] = await mintChain(3);
+  const result = await verifyChain([r2, r1, r3]);
+  assert.equal(result.ok, false);
+  assert.ok(result.link_failures.some((f) => f.index === 0 && /genesis/.test(f.reason)));
+  assert.ok(result.link_failures.some((f) => f.index === 1));
+});
+
+test("a chain starting from a non-genesis knot fails", async () => {
+  const [, r2] = await mintChain(2);
+  const result = await verifyChain([r2]);
+  assert.equal(result.ok, false);
+  assert.deepEqual(result.link_failures.map((f) => f.reason), ["genesis prev must be null"]);
+});
+
+test("a duplicated knot fails", async () => {
+  const [r1] = await mintChain(1);
+  const result = await verifyChain([r1, r1]);
+  assert.equal(result.ok, false);
+  assert.ok(result.link_failures.some((f) => f.index === 1));
+});
+
+test("a tampered knot fails the chain through its own verify result", async () => {
+  const [r1, r2, r3] = await mintChain(3);
+  const result = await verifyChain([r1, { ...r2, policy_reason: "rewritten" }, r3]);
+  assert.equal(result.ok, false);
+  assert.equal(result.per_index[1].ok, false);
+});
+
+test("an empty chain verifies with no head", async () => {
+  const result = await verifyChain([]);
+  assert.equal(result.ok, true);
+  assert.equal(result.head, null);
 });
