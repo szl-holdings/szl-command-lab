@@ -18,6 +18,22 @@ export function Ledger() {
   const [checked, setChecked] = useState<{ receipts: typeof receipts; result: ChainResult } | null>(null);
   const chain = checked?.receipts === receipts ? checked.result : null;
   const selected = receipts.find((r) => r.id === selectedId) ?? receipts[receipts.length - 1] ?? null;
+  const selectedIndex = selected ? receipts.findIndex((r) => r.id === selected.id) : -1;
+  const selectedLinkFailures =
+    chain && selectedIndex >= 0 ? chain.link_failures.filter((f) => f.index === selectedIndex) : [];
+  const selectedVerify = selected ? (results[selected.id] ?? null) : null;
+  const cardVerify: VerifyResult | null = selectedVerify
+    ? selectedLinkFailures.length === 0
+      ? selectedVerify
+      : {
+          ...selectedVerify,
+          ok: false,
+          failures: [
+            ...selectedLinkFailures.map((f) => `chain link FAIL (knot ${f.index + 1}): ${f.reason}`),
+            ...selectedVerify.failures,
+          ],
+        }
+    : null;
 
   async function checkAll() {
     const result = await verifyChain(receipts);
@@ -67,7 +83,7 @@ export function Ledger() {
       <div className="mt-8 grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
         <KhipuLedger receipts={receipts} selectedId={selected?.id} onSelect={setSelectedId} />
         {selected ? (
-          <ReceiptCard receipt={selected} verify={results[selected.id] ?? null} />
+          <ReceiptCard receipt={selected} verify={cardVerify} />
         ) : (
           <div className="rounded-xl border border-dashed border-line p-5 text-sm text-mute">
             Empty cord. Bind a receipt in Command or Killinchu.
