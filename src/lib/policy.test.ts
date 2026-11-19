@@ -73,3 +73,18 @@ test("a resource naming szl-evidence is HARD_DENY whatever the tool", () => {
     assert.equal(result.human_can_approve, false, tool);
   }
 });
+
+for (const tool of [" Query_Ledger ", "QUERY_LEDGER"]) {
+  test(`read-bound variant ${JSON.stringify(tool)} is not ALLOW and fails closed`, () => {
+    const result = evaluatePolicy(action(tool, "receipts.chain"));
+    assert.notEqual(result.verdict, "ALLOW");
+    assert.equal(result.verdict, "REQUIRE_HUMAN");
+    assert.equal(result.policy_id, "pol.default-fail-closed-v1");
+  });
+}
+
+test("the exact read-bound tool query_ledger is ALLOW", () => {
+  const result = evaluatePolicy(action("query_ledger", "receipts.chain"));
+  assert.equal(result.verdict, "ALLOW");
+  assert.equal(result.policy_id, "pol.read-bound-v1");
+});
