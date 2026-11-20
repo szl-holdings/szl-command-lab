@@ -62,6 +62,7 @@ export function Killinchu() {
   }, []);
 
   async function bind(decision: "ALLOW" | "DENY") {
+    if (decision === "ALLOW" && !policy.human_can_approve) return;
     const receipt = await mintReceipt({
       actor: "human.operator",
       tool: action.tool,
@@ -70,8 +71,8 @@ export function Killinchu() {
       policy_id: policy.policy_id,
       policy_reason: policy.reason,
       decision,
-      authority: "HUMAN",
-      effector_class: "ADVISORY",
+      authority: policy.verdict === "HARD_DENY" ? "POLICY" : "HUMAN",
+      effector_class: policy.effector_class,
       prev_sha256: chainHead(receipts),
     });
     append(receipt);

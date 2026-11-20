@@ -1,6 +1,6 @@
 import type { Receipt } from "./receipt";
 
-export type ReleaseVerdict = "NO_CASES" | "RELEASE_BLOCKED";
+export type ReleaseVerdict = "NO_CASES" | "RELEASE_BLOCKED" | "CHAIN_UNVERIFIED";
 
 export type AdmissionCase = {
   id: string;
@@ -35,8 +35,22 @@ export function admissionCases(receipts: Receipt[]): AdmissionCase[] {
     }));
 }
 
-export function evaluateRelease(receipts: Receipt[]): ReleaseEvaluation {
+export function evaluateRelease(
+  receipts: Receipt[],
+  chain?: { ok: boolean } | null,
+): ReleaseEvaluation {
   const cases = admissionCases(receipts);
+  if (!chain || chain.ok !== true) {
+    return {
+      verdict: "CHAIN_UNVERIFIED",
+      evidence_class: "DEMO",
+      meaning:
+        "Ledger chain does not verify (or is still being checked). Deny count cannot be trusted. Release stays closed.",
+      cases,
+      knots: receipts.length,
+      deny_knots: cases.length,
+    };
+  }
   if (cases.length === 0) {
     return {
       verdict: "NO_CASES",

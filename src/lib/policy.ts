@@ -93,7 +93,7 @@ export const SCENARIOS: Scenario[] = [
 ];
 
 export function evaluatePolicy(action: ProposedAction): PolicyResult {
-  const tool = action.tool;
+  const tool = action.tool.trim().toLowerCase();
   const resource = action.resource.toLowerCase();
   const fields = JSON.stringify(action.args).toLowerCase();
 
@@ -137,7 +137,9 @@ export function evaluatePolicy(action: ProposedAction): PolicyResult {
     };
   }
 
-  if (tool === "query_ledger" || tool === "page_oncall" || tool === "read_status") {
+  // Normalization may only tighten: ALLOW needs the raw tool name to match exactly.
+  const rawTool = action.tool;
+  if (rawTool === "query_ledger" || rawTool === "page_oncall" || rawTool === "read_status") {
     return {
       verdict: "ALLOW",
       policy_id: "pol.read-bound-v1",

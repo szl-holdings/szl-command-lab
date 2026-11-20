@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { PageHeader } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,12 +11,26 @@ import {
 } from "@/lib/bakeoff";
 import { bindLegs, evaluateBind } from "@/lib/identity-bind";
 import { useLedger } from "@/lib/ledger-store";
+import { verifyChain, type ChainResult } from "@/lib/receipt";
 
 export const Route = createFileRoute("/frontier")({ component: Frontier });
 
 export function Frontier() {
   const receipts = useLedger((s) => s.receipts);
-  const evaluation = useMemo(() => evaluateRelease(receipts), [receipts]);
+  const [chain, setChain] = useState<{ receipts: typeof receipts; result: ChainResult } | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    void verifyChain(receipts).then((result) => {
+      if (!cancelled) setChain({ receipts, result });
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [receipts]);
+  const evaluation = useMemo(
+    () => evaluateRelease(receipts, chain?.receipts === receipts ? chain.result : null),
+    [receipts, chain],
+  );
   const [attempted, setAttempted] = useState(false);
   const [picked, setPicked] = useState<BakeoffCandidate>(BAKEOFF.candidates[2]);
   const [putAttempted, setPutAttempted] = useState(false);
@@ -44,7 +58,11 @@ export function Frontier() {
         <article className="rounded-xl border border-line bg-ink-2 p-5">
           <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-mute">Attempt a DEMO release</p>
           <h2 className="mt-2 font-display text-2xl">
-            {evaluation.verdict === "RELEASE_BLOCKED" ? "Blocked. Keep the failure." : "No cases yet."}
+            {evaluation.verdict === "RELEASE_BLOCKED"
+              ? "Blocked. Keep the failure."
+              : evaluation.verdict === "CHAIN_UNVERIFIED"
+                ? "Blocked. Chain does not verify."
+                : "No cases yet."}
           </h2>
           <p className="mt-3 text-sm leading-relaxed text-mute">{evaluation.meaning}</p>
           <div className="mt-6 flex flex-wrap gap-3">
@@ -63,7 +81,9 @@ export function Frontier() {
             <p className="mt-4 text-sm text-deny">
               {evaluation.verdict === "RELEASE_BLOCKED"
                 ? "Release refused. The admission set is the evaluation. Train loss is not."
-                : "Empty set is not a pass. Bind a deny on Command, then retry."}
+                : evaluation.verdict === "CHAIN_UNVERIFIED"
+                  ? "Release refused. Blocked. Chain does not verify, so the deny count cannot be trusted."
+                  : "Empty set is not a pass. Bind a deny on Command, then retry."}
             </p>
           )}
         </article>
