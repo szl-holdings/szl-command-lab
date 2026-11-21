@@ -169,7 +169,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--smoke", action="store_true", required=True,
                         help="Use only the bundled public synthetic prompt")
-    args = parser.parse_args()
+    parser.parse_args()
     try:
         report = run_council()
     except CouncilError as exc:
