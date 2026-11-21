@@ -30,6 +30,8 @@ class CouncilTests(unittest.TestCase):
         self.assertEqual(2, len(result["seats"]))
         self.assertTrue(all(x["status"] == "ADVISORY_ONLY" and x["authority"] == "NONE" for x in result["seats"]))
         self.assertFalse(result["actual_source_audited"])
+        self.assertFalse(result["inference_execution_host_verified"])
+        self.assertEqual("loopback_endpoint_may_be_forwarded", result["endpoint_transport"])
         self.assertFalse(result["huggingface_runtime_verified"])
         self.assertEqual("NONE", result["deployment_authority"])
 
