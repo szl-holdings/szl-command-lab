@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import hashlib
-import json
 import unittest
 
 from python.local_agent_council import (
