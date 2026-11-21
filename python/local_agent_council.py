@@ -153,6 +153,8 @@ def run_council(call: Callable[..., dict[str, Any]] = _api_json) -> dict[str, An
         decisions.append(entry)
     return {
         "schema": "szl.local-council-readonly/v1",
+        "inference_execution_host_verified": False,
+        "endpoint_transport": "loopback_endpoint_may_be_forwarded",
         "source": "public_synthetic_fixed_prompt",
         "public_brief_sha256": hashlib.sha256(PUBLIC_BRIEF.encode("utf-8")).hexdigest(),
         "actual_source_audited": False,
