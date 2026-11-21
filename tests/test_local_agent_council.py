@@ -1,23 +1,24 @@
 """Network-free synthetic regressions for the local council."""
 from __future__ import annotations
 
-import hashlib
 import unittest
 
 from python.local_agent_council import (
-    CouncilError, EXTERNAL_ROLES, PUBLIC_BRIEF, ROLES, SYSTEM_POLICY,
-    _api_json, ask_local, listed_digests, run_council,
+    CouncilError, EXTERNAL_ROLES, EXPECTED_DIGESTS, PUBLIC_BRIEF, ROLES,
+    SYSTEM_POLICY, _api_json, ask_local, listed_digests, run_council,
 )
 
 
 def fake(method, path, payload=None):
     if (method, path) == ("GET", "/api/tags"):
-        return {"models": [{"name": model, "digest": hashlib.sha256(model.encode()).hexdigest()}
+        return {"models": [{"name": model, "digest": EXPECTED_DIGESTS[model]}
                            for _, model, _ in ROLES]}
     if (method, path) == ("POST", "/api/chat"):
         assert payload["model"] in [x[1] for x in ROLES]
         assert payload["options"]["num_ctx"] <= 1024
         assert payload["options"]["num_predict"] <= 96
+        assert payload["options"]["num_gpu"] == 0
+        assert payload["keep_alive"] == 0
         assert "RUNNING" in payload["messages"][1]["content"]
         assert "authoritative" in payload["messages"][1]["content"]
         return {"message": {"content": "CPU-only synthetic check: reject mismatched revision."}}
@@ -67,6 +68,16 @@ class CouncilTests(unittest.TestCase):
         result = listed_digests(lambda method, path: {
             "models": [{"name": ROLES[0][1], "digest": "not-a-digest"}]})
         self.assertEqual({}, result)
+
+    def test_mismatched_digest_is_a_hold(self):
+        wrong = "0" * 64
+        def changed(method, path, payload=None):
+            if method == "GET":
+                return {"models": [{"name": ROLES[0][1], "digest": wrong}]}
+            raise AssertionError("mismatched model must not be queried")
+        result = run_council(changed)
+        self.assertEqual("MODEL_DIGEST_MISMATCH", result["seats"][0]["reason"])
+        self.assertEqual("UNAVAILABLE", result["seats"][0]["status"])
 
     def test_blank_model_reply_fails_closed(self):
         def blank(method, path, payload=None):

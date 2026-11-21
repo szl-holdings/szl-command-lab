@@ -35,6 +35,13 @@ ROLES = (
     ("kimi_reviewer", "hf.co/ggml-org/Kimi-VL-A3B-Thinking-2506-GGUF:Q4_K_M",
      "Challenge unsupported readiness claims and propose negative controls."),
 )
+
+# Immutable digests observed from the authorized Ollama tags readback on 2026-11-21.
+# A retagged or otherwise changed weight is unavailable until this map is reviewed.
+EXPECTED_DIGESTS = {
+    "ministral-3:3b": "f04aa1c738f64e13c625b82ae92504fc0260fa6723b509ed1ece0fa188179b1d",
+    "hf.co/ggml-org/Kimi-VL-A3B-Thinking-2506-GGUF:Q4_K_M": "e447dad4acfcb8f16c7021fedde7620feec8c1d5c878815771df28ad8a4cdc2d",
+}
 EXTERNAL_ROLES = {"claude": "UNAVAILABLE", "astra": "UNAVAILABLE",
                   "perplexity": "UNAVAILABLE"}
 
@@ -115,8 +122,10 @@ def ask_local(model: str, role_instruction: str,
             {"role": "system", "content": SYSTEM_POLICY + " " + role_instruction},
             {"role": "user", "content": PUBLIC_BRIEF},
         ],
-        "options": {"temperature": 0, "num_ctx": 1024, "num_predict": MAX_TOKENS},
-        "keep_alive": "2m",
+        # This lane is explicitly CPU-only and unloads each seat before the next one.
+        "options": {"temperature": 0, "num_ctx": 1024, "num_predict": MAX_TOKENS,
+                     "num_gpu": 0},
+        "keep_alive": 0,
     })
     message = reply.get("message")
     if not isinstance(message, dict) or not isinstance(message.get("content"), str):
@@ -141,6 +150,10 @@ def run_council(call: Callable[..., dict[str, Any]] = _api_json) -> dict[str, An
             decisions.append(entry)
             continue
         entry["model_digest"] = digest
+        if digest != EXPECTED_DIGESTS[model]:
+            entry["reason"] = "MODEL_DIGEST_MISMATCH"
+            decisions.append(entry)
+            continue
         start = time.monotonic()
         try:
             advice = ask_local(model, instruction, call)
