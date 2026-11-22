@@ -162,6 +162,63 @@ class CouncilTests(unittest.TestCase):
         self.assertTrue(all(x["reason"] == "OLLAMA_THINKING_TEXT" for x in result["seats"]))
         self.assertTrue(all("advice" not in x for x in result["seats"]))
 
+    def test_terminal_kimi_can_only_publish_complete_final_text(self):
+        def terminal(method, path, payload=None):
+            if method == "GET":
+                return fake(method, path)
+            if payload["model"] != ROLES[1][1]:
+                return fake(method, path, payload)
+            return {
+                "done": True, "done_reason": "stop", "model": payload["model"],
+                "message": {"role": "assistant",
+                            "content": "◁think▷private scratch reasoning◁/think▷"
+                                       "Check exact Hub bytes and readiness JSON."},
+            }
+
+        result = run_council(terminal)
+        kimi = result["seats"][1]
+        self.assertEqual("ADVISORY_ONLY", kimi["status"])
+        self.assertEqual("Check exact Hub bytes and readiness JSON.", kimi["advice"])
+        self.assertNotIn("scratch", str(result))
+        self.assertEqual("NONE", kimi["authority"])
+
+    def test_kimi_malformed_or_partial_thinking_never_becomes_advice(self):
+        variants = (
+            "◁think▷unclosed private reasoning",
+            "◁think▷private◁/think▷",
+            "◁think▷a◁think▷b◁/think▷final",
+            "◁think▷a◁/think▷final◁/think▷",
+            "◁think▷a◁/think▷final◁think▷",
+            "◁think▷a◁/think▷final<think>hidden</think>",
+        )
+        for content in variants:
+            with self.subTest(content_kind=len(content)):
+                def malformed(method, path, payload=None):
+                    if method == "GET":
+                        return fake(method, path)
+                    if payload["model"] != ROLES[1][1]:
+                        return fake(method, path, payload)
+                    return {
+                        "done": True, "done_reason": "stop", "model": payload["model"],
+                        "message": {"role": "assistant", "content": content},
+                    }
+                item = run_council(malformed)["seats"][1]
+                self.assertEqual("UNAVAILABLE", item["status"])
+                self.assertNotIn("advice", item)
+
+    def test_truncated_kimi_final_remains_hold(self):
+        def truncated(method, path, payload=None):
+            if method == "GET":
+                return fake(method, path)
+            if payload["model"] != ROLES[1][1]:
+                return fake(method, path, payload)
+            return {"done": True, "done_reason": "length", "model": payload["model"],
+                    "message": {"role": "assistant",
+                                "content": "◁think▷private◁/think▷looks complete"}}
+        item = run_council(truncated)["seats"][1]
+        self.assertEqual("UNAVAILABLE", item["status"])
+        self.assertEqual("OLLAMA_REPLY_NOT_STOPPED", item["reason"])
+
     def test_thinking_delimiters_are_never_advisory(self):
         for marker in ("◁think▷", "<think>", "</think>", "[think]"):
             with self.subTest(marker=marker):
