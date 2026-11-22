@@ -24,7 +24,9 @@ HOST = "127.0.0.1"
 PORT = 11434
 MAX_REPLY_BYTES = 64_000
 MAX_REPLY_CHARS = 1800
-MAX_TOKENS = 96
+# Direct Ubuntu/Ollama canary: Ministral hit length at 96, stopped at 256.
+# Kimi Thinking may still refuse; never turn its incomplete reasoning into advice.
+MAX_TOKENS = 256
 TIMEOUT_SECONDS = 180
 HEX64 = re.compile(r"^[a-f0-9]{64}$")
 
@@ -126,6 +128,9 @@ def ask_local(model: str, role_instruction: str,
         "options": {"temperature": 0, "num_ctx": 1024, "num_predict": MAX_TOKENS,
                      "num_gpu": 0},
         "keep_alive": 0,
+        # Ollama's documented API control; unsupported thinking models may
+        # ignore this and are still refused by completion/marker checks.
+        "think": False,
     })
     if reply.get("done") is not True:
         raise CouncilError("OLLAMA_REPLY_NOT_FINAL")
@@ -134,6 +139,8 @@ def ask_local(model: str, role_instruction: str,
     message = reply.get("message")
     if isinstance(message, dict) and message.get("tool_calls"):
         raise CouncilError("OLLAMA_TOOL_CALL_REFUSED")
+    if isinstance(message, dict) and message.get("thinking"):
+        raise CouncilError("OLLAMA_THINKING_TEXT")
     if not isinstance(message, dict) or not isinstance(message.get("content"), str):
         raise CouncilError("NO_TEXT_FROM_MODEL")
     result = message["content"].strip()
