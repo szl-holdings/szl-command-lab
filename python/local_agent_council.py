@@ -18,6 +18,7 @@ import http.client
 import json
 import re
 import time
+import unicodedata
 from typing import Any, Callable
 
 HOST = "127.0.0.1"
@@ -159,13 +160,15 @@ def ask_local(model: str, role_instruction: str,
         # Refuse nested alternative thinking tags even inside the discarded
         # prefix: otherwise an attacker can conceal malformed tag structure.
         other_tags = ("<think>", "</think>", "[think]", "[/think]")
+        normalized_raw = unicodedata.normalize("NFKC", raw.casefold())
         if (raw.count(open_tag) != 1 or raw.count(close_tag) != 1
-                or any(marker in raw.casefold() for marker in other_tags)):
+                or any(marker in normalized_raw for marker in other_tags)):
             raise CouncilError("OLLAMA_THINKING_TEXT")
         result = raw.split(close_tag, 1)[1].strip()
         if not result:
             raise CouncilError("EMPTY_MODEL_TEXT")
-    if any(marker in result.casefold() for marker in
+    normalized_final = unicodedata.normalize("NFKC", result.casefold())
+    if any(marker in normalized_final for marker in
            (open_tag, close_tag, "<think>", "</think>", "[think]", "[/think]")):
         raise CouncilError("OLLAMA_THINKING_TEXT")
     if len(result) > MAX_REPLY_CHARS:
