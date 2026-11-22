@@ -139,7 +139,13 @@ def ask_local(model: str, role_instruction: str,
     result = message["content"].strip()
     if not result:
         raise CouncilError("EMPTY_MODEL_TEXT")
-    return result[:MAX_REPLY_CHARS]
+    if reply.get("done_reason") != "stop":
+        raise CouncilError("OLLAMA_REPLY_NOT_STOPPED")
+    if any(marker in result.casefold() for marker in ("◁think▷", "<think>", "</think>", "[think]")):
+        raise CouncilError("OLLAMA_THINKING_TEXT")
+    if len(result) > MAX_REPLY_CHARS:
+        raise CouncilError("OLLAMA_REPLY_TOO_LONG")
+    return result
 
 
 def run_council(call: Callable[..., dict[str, Any]] = _api_json) -> dict[str, Any]:
