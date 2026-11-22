@@ -143,12 +143,26 @@ def ask_local(model: str, role_instruction: str,
         raise CouncilError("OLLAMA_THINKING_TEXT")
     if not isinstance(message, dict) or not isinstance(message.get("content"), str):
         raise CouncilError("NO_TEXT_FROM_MODEL")
-    result = message["content"].strip()
-    if not result:
+    raw = message["content"].strip()
+    if not raw:
         raise CouncilError("EMPTY_MODEL_TEXT")
     if reply.get("done_reason") != "stop":
         raise CouncilError("OLLAMA_REPLY_NOT_STOPPED")
-    if any(marker in result.casefold() for marker in ("◁think▷", "<think>", "</think>", "[think]")):
+
+    # Moonshot's Kimi-VL Thinking format may put reasoning and a final answer
+    # in one content field despite think=False. Extract only a COMPLETE final
+    # segment after exactly one closed pair; never surface the reasoning text.
+    # Incomplete generations or ambiguous/nested delimiters remain unavailable.
+    open_tag, close_tag = "◁think▷", "◁/think▷"
+    result = raw
+    if model == ROLES[1][1] and raw.startswith(open_tag):
+        if raw.count(open_tag) != 1 or raw.count(close_tag) != 1:
+            raise CouncilError("OLLAMA_THINKING_TEXT")
+        result = raw.split(close_tag, 1)[1].strip()
+        if not result:
+            raise CouncilError("EMPTY_MODEL_TEXT")
+    if any(marker in result.casefold() for marker in
+           (open_tag, close_tag, "<think>", "</think>", "[think]", "[/think]")):
         raise CouncilError("OLLAMA_THINKING_TEXT")
     if len(result) > MAX_REPLY_CHARS:
         raise CouncilError("OLLAMA_REPLY_TOO_LONG")
