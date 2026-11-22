@@ -127,7 +127,13 @@ def ask_local(model: str, role_instruction: str,
                      "num_gpu": 0},
         "keep_alive": 0,
     })
+    if reply.get("done") is not True:
+        raise CouncilError("OLLAMA_REPLY_NOT_FINAL")
+    if reply.get("model") != model:
+        raise CouncilError("OLLAMA_MODEL_IDENTITY_MISMATCH")
     message = reply.get("message")
+    if isinstance(message, dict) and message.get("tool_calls"):
+        raise CouncilError("OLLAMA_TOOL_CALL_REFUSED")
     if not isinstance(message, dict) or not isinstance(message.get("content"), str):
         raise CouncilError("NO_TEXT_FROM_MODEL")
     result = message["content"].strip()

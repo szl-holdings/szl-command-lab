@@ -21,7 +21,8 @@ def fake(method, path, payload=None):
         assert payload["keep_alive"] == 0
         assert "RUNNING" in payload["messages"][1]["content"]
         assert "authoritative" in payload["messages"][1]["content"]
-        return {"message": {"content": "CPU-only synthetic check: reject mismatched revision."}}
+        return {"done": True, "model": payload["model"],
+                "message": {"role": "assistant", "content": "CPU-only synthetic check: reject mismatched revision."}}
     raise AssertionError("unexpected network call")
 
 
@@ -83,7 +84,7 @@ class CouncilTests(unittest.TestCase):
         def blank(method, path, payload=None):
             if method == "GET":
                 return fake(method, path)
-            return {"message": {"content": " "}}
+            return {"done": True, "model": payload["model"], "message": {"role": "assistant", "content": " "}}
         self.assertTrue(all(item["status"] == "UNAVAILABLE" for item in run_council(blank)["seats"]))
 
     def test_only_loopback_ollama_paths_allowlisted(self):
@@ -96,10 +97,41 @@ class CouncilTests(unittest.TestCase):
         def long_response(method, path, payload=None):
             if method == "GET":
                 return fake(method, path)
-            return {"message": {"content": "do not execute" * 1000}}
+            return {"done": True, "model": payload["model"], "message": {"role": "assistant", "content": "do not execute" * 1000}}
         result = run_council(long_response)
         self.assertEqual(1800, len(result["seats"][0]["advice"]))
         self.assertEqual("NONE", result["seats"][0]["authority"])
+
+
+    def test_nonterminal_response_is_not_admitted_as_advice(self):
+        def partial(method, path, payload=None):
+            if method == "GET":
+                return fake(method, path)
+            return {"done": False, "model": payload["model"],
+                    "message": {"role": "assistant", "content": "partial text"}}
+        result = run_council(partial)
+        self.assertTrue(all(x["status"] == "UNAVAILABLE" for x in result["seats"]))
+        self.assertTrue(all(x["reason"] == "OLLAMA_REPLY_NOT_FINAL" for x in result["seats"]))
+
+    def test_other_model_identity_cannot_be_misattributed(self):
+        def wrong_model(method, path, payload=None):
+            if method == "GET":
+                return fake(method, path)
+            return {"done": True, "model": "untrusted:other",
+                    "message": {"role": "assistant", "content": "candidate advice"}}
+        result = run_council(wrong_model)
+        self.assertTrue(all(x["reason"] == "OLLAMA_MODEL_IDENTITY_MISMATCH" for x in result["seats"]))
+
+    def test_unrequested_tool_calls_are_never_advisory_success(self):
+        def tool_request(method, path, payload=None):
+            if method == "GET":
+                return fake(method, path)
+            return {"done": True, "model": payload["model"],
+                    "message": {"role": "assistant", "content": "run this",
+                                "tool_calls": [{"function": {"name": "shell", "arguments": {}}}]}}
+        result = run_council(tool_request)
+        self.assertTrue(all(x["reason"] == "OLLAMA_TOOL_CALL_REFUSED" for x in result["seats"]))
+
 
 
 if __name__ == "__main__":
