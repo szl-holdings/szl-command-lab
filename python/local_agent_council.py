@@ -156,7 +156,11 @@ def ask_local(model: str, role_instruction: str,
     open_tag, close_tag = "◁think▷", "◁/think▷"
     result = raw
     if model == ROLES[1][1] and raw.startswith(open_tag):
-        if raw.count(open_tag) != 1 or raw.count(close_tag) != 1:
+        # Refuse nested alternative thinking tags even inside the discarded
+        # prefix: otherwise an attacker can conceal malformed tag structure.
+        other_tags = ("<think>", "</think>", "[think]", "[/think]")
+        if (raw.count(open_tag) != 1 or raw.count(close_tag) != 1
+                or any(marker in raw.casefold() for marker in other_tags)):
             raise CouncilError("OLLAMA_THINKING_TEXT")
         result = raw.split(close_tag, 1)[1].strip()
         if not result:
