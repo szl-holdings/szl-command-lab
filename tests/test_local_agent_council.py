@@ -21,7 +21,7 @@ def fake(method, path, payload=None):
         assert payload["keep_alive"] == 0
         assert "RUNNING" in payload["messages"][1]["content"]
         assert "authoritative" in payload["messages"][1]["content"]
-        return {"done": True, "model": payload["model"],
+        return {"done": True, "done_reason": "stop", "model": payload["model"],
                 "message": {"role": "assistant", "content": "CPU-only synthetic check: reject mismatched revision."}}
     raise AssertionError("unexpected network call")
 
@@ -97,9 +97,12 @@ class CouncilTests(unittest.TestCase):
         def long_response(method, path, payload=None):
             if method == "GET":
                 return fake(method, path)
-            return {"done": True, "model": payload["model"], "message": {"role": "assistant", "content": "do not execute" * 1000}}
+            return {"done": True, "done_reason": "stop", "model": payload["model"],
+                    "message": {"role": "assistant", "content": "do not execute" * 1000}}
         result = run_council(long_response)
-        self.assertEqual(1800, len(result["seats"][0]["advice"]))
+        self.assertTrue(all(item["status"] == "UNAVAILABLE" for item in result["seats"]))
+        self.assertTrue(all(item["reason"] == "OLLAMA_REPLY_TOO_LONG" for item in result["seats"]))
+        self.assertTrue(all("advice" not in item for item in result["seats"]))
         self.assertEqual("NONE", result["seats"][0]["authority"])
 
 
@@ -131,6 +134,33 @@ class CouncilTests(unittest.TestCase):
                                 "tool_calls": [{"function": {"name": "shell", "arguments": {}}}]}}
         result = run_council(tool_request)
         self.assertTrue(all(x["reason"] == "OLLAMA_TOOL_CALL_REFUSED" for x in result["seats"]))
+
+
+    def test_cutoff_or_missing_done_reason_is_not_advisory(self):
+        for reason in ("length", None, "load"):
+            with self.subTest(reason=reason):
+                def cut(method, path, payload=None):
+                    if method == "GET":
+                        return fake(method, path)
+                    return {"done": True, "done_reason": reason, "model": payload["model"],
+                            "message": {"role": "assistant", "content": "looks plausible"}}
+                result = run_council(cut)
+                self.assertTrue(all(x["status"] == "UNAVAILABLE" for x in result["seats"]))
+                self.assertTrue(all(x["reason"] == "OLLAMA_REPLY_NOT_STOPPED" for x in result["seats"]))
+                self.assertTrue(all("advice" not in x for x in result["seats"]))
+
+    def test_thinking_delimiters_are_never_advisory(self):
+        for marker in ("◁think▷", "<think>", "</think>", "[think]"):
+            with self.subTest(marker=marker):
+                def thinking(method, path, payload=None):
+                    if method == "GET":
+                        return fake(method, path)
+                    return {"done": True, "done_reason": "stop", "model": payload["model"],
+                            "message": {"role": "assistant", "content": marker + "private reasoning"}}
+                result = run_council(thinking)
+                self.assertTrue(all(x["status"] == "UNAVAILABLE" for x in result["seats"]))
+                self.assertTrue(all(x["reason"] == "OLLAMA_THINKING_TEXT" for x in result["seats"]))
+                self.assertTrue(all("advice" not in x for x in result["seats"]))
 
 
 
