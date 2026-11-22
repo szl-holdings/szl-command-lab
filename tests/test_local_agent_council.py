@@ -190,6 +190,9 @@ class CouncilTests(unittest.TestCase):
             "◁think▷a◁/think▷final◁/think▷",
             "◁think▷a◁/think▷final◁think▷",
             "◁think▷a◁/think▷final<think>hidden</think>",
+            "◁think▷scratch<think>◁/think▷still reasoning",
+            "◁think▷scratch</think>◁/think▷still reasoning",
+            "◁think▷scratch[think]◁/think▷still reasoning",
         )
         for content in variants:
             with self.subTest(content_kind=len(content)):
