@@ -16,7 +16,8 @@ def fake(method, path, payload=None):
     if (method, path) == ("POST", "/api/chat"):
         assert payload["model"] in [x[1] for x in ROLES]
         assert payload["options"]["num_ctx"] <= 1024
-        assert payload["options"]["num_predict"] <= 96
+        assert payload["options"]["num_predict"] == 256
+        assert payload["think"] is False
         assert payload["options"]["num_gpu"] == 0
         assert payload["keep_alive"] == 0
         assert "RUNNING" in payload["messages"][1]["content"]
@@ -148,6 +149,18 @@ class CouncilTests(unittest.TestCase):
                 self.assertTrue(all(x["status"] == "UNAVAILABLE" for x in result["seats"]))
                 self.assertTrue(all(x["reason"] == "OLLAMA_REPLY_NOT_STOPPED" for x in result["seats"]))
                 self.assertTrue(all("advice" not in x for x in result["seats"]))
+
+    def test_separate_thinking_channel_is_never_advisory(self):
+        def separate(method, path, payload=None):
+            if method == "GET":
+                return fake(method, path)
+            return {"done": True, "done_reason": "stop", "model": payload["model"],
+                    "message": {"role": "assistant", "content": "seemingly final",
+                                "thinking": "untrusted hidden reasoning"}}
+        result = run_council(separate)
+        self.assertTrue(all(x["status"] == "UNAVAILABLE" for x in result["seats"]))
+        self.assertTrue(all(x["reason"] == "OLLAMA_THINKING_TEXT" for x in result["seats"]))
+        self.assertTrue(all("advice" not in x for x in result["seats"]))
 
     def test_thinking_delimiters_are_never_advisory(self):
         for marker in ("◁think▷", "<think>", "</think>", "[think]"):
