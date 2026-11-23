@@ -105,11 +105,22 @@ def listed_digests(call: Callable[..., dict[str, Any]] = _api_json) -> dict[str,
     if not isinstance(models, list):
         raise CouncilError("OLLAMA_MODEL_LIST_UNKNOWN")
     result: dict[str, str] = {}
+    observed: set[str] = set()
+    ambiguous: set[str] = set()
     for item in models:
         if not isinstance(item, dict):
             continue
         name, digest = item.get("name"), item.get("digest")
-        if isinstance(name, str) and isinstance(digest, str) and HEX64.fullmatch(digest):
+        if not isinstance(name, str):
+            continue
+        # Model identity must be unambiguous regardless of result row order.
+        # A duplicated tag cannot overwrite an earlier conflicting digest.
+        if name in observed:
+            ambiguous.add(name)
+            result.pop(name, None)
+            continue
+        observed.add(name)
+        if isinstance(digest, str) and HEX64.fullmatch(digest):
             result[name] = digest
     return result
 

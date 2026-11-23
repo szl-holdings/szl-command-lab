@@ -265,6 +265,39 @@ class CouncilTests(unittest.TestCase):
                 self.assertTrue(all("advice" not in x for x in result["seats"]))
 
 
+    def test_duplicate_model_tags_never_admit_ambiguous_digest(self):
+        """Even a later matching tag must not erase a contradictory identity."""
+        model = ROLES[0][1]
+        for rows in (
+            [{"name": model, "digest": "0" * 64},
+             {"name": model, "digest": EXPECTED_DIGESTS[model]}],
+            [{"name": model, "digest": EXPECTED_DIGESTS[model]},
+             {"name": model, "digest": "0" * 64}],
+            [{"name": model, "digest": "invalid"},
+             {"name": model, "digest": EXPECTED_DIGESTS[model]}],
+        ):
+            with self.subTest(first=rows[0]["digest"][:9]):
+                calls = []
+
+                def duplicated(method, path, payload=None):
+                    if (method, path) == ("GET", "/api/tags"):
+                        return {"models": rows + [
+                            {"name": ROLES[1][1], "digest": EXPECTED_DIGESTS[ROLES[1][1]]},
+                        ]}
+                    if (method, path) == ("POST", "/api/chat"):
+                        calls.append(payload["model"])
+                        if payload["model"] == model:
+                            raise AssertionError("ambiguous identity must not reach inference")
+                        return fake(method, path, payload)
+                    raise AssertionError("unapproved endpoint")
+
+                result = run_council(duplicated)
+                first, second = result["seats"]
+                self.assertEqual("UNAVAILABLE", first["status"])
+                self.assertNotIn("advice", first)
+                self.assertEqual("ADVISORY_ONLY", second["status"])
+                self.assertEqual([ROLES[1][1]], calls)
+
 
 if __name__ == "__main__":
     unittest.main()
