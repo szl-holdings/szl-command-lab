@@ -226,6 +226,31 @@ class CouncilTests(unittest.TestCase):
         self.assertEqual("UNAVAILABLE", item["status"])
         self.assertEqual("OLLAMA_REPLY_NOT_STOPPED", item["reason"])
 
+    def test_invalid_utf8_output_is_an_individual_seat_hold(self):
+        invalid = chr(0xD800)
+        cases = (
+            (ROLES[0][1], invalid),
+            (ROLES[1][1], invalid),
+            (ROLES[1][1], "◁think▷private◁/think▷" + invalid),
+        )
+        for target, content in cases:
+            with self.subTest(model=target, tagged=content.startswith("◁think▷")):
+                def malformed(method, path, payload=None):
+                    if method == "GET":
+                        return fake(method, path)
+                    if payload["model"] != target:
+                        return fake(method, path, payload)
+                    return {
+                        "done": True, "done_reason": "stop", "model": target,
+                        "message": {"role": "assistant", "content": content},
+                    }
+                report = run_council(malformed)
+                seat = next(item for item in report["seats"] if item["model"] == target)
+                self.assertEqual("UNAVAILABLE", seat["status"])
+                self.assertEqual("OLLAMA_TEXT_NOT_UTF8", seat["reason"])
+                self.assertNotIn("advice", seat)
+                self.assertEqual("NONE", report["deployment_authority"])
+
     def test_thinking_delimiters_are_never_advisory(self):
         for marker in ("◁think▷", "<think>", "</think>", "[think]"):
             with self.subTest(marker=marker):
