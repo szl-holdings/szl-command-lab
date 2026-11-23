@@ -29,15 +29,62 @@ def fake(method, path, payload=None):
 
 
 class CouncilTests(unittest.TestCase):
-    def test_both_local_seats_are_advisory_not_deployers(self):
+    def test_all_five_local_seats_are_advisory_not_deployers(self):
         result = run_council(fake)
-        self.assertEqual(2, len(result["seats"]))
+        self.assertEqual(5, len(result["seats"]))
         self.assertTrue(all(x["status"] == "ADVISORY_ONLY" and x["authority"] == "NONE" for x in result["seats"]))
         self.assertFalse(result["actual_source_audited"])
         self.assertFalse(result["inference_execution_host_verified"])
         self.assertEqual("loopback_endpoint_may_be_forwarded", result["endpoint_transport"])
         self.assertFalse(result["huggingface_runtime_verified"])
         self.assertEqual("NONE", result["deployment_authority"])
+
+    def test_szl_a11oy_khipu_and_qwen_have_exact_pinned_ollama_identity(self):
+        required = {
+            "a11oy_mini_proposer": (
+                "hf.co/SZLHOLDINGS/A11OY-MINI:a11oy-mini-r2-Q4_K_M.gguf",
+                "7b3557f752203a4e7ad894998c7a6bc210fda038f2adb0ddfbd6579bec7c3fb6",
+            ),
+            "khipu_proof_critic": (
+                "hf.co/SZLHOLDINGS/SZL-Khipu-1.5B-GGUF:Q4_K_M",
+                "8d5778860cd624c0b9255833a4f5dbd70c54b2f4cd80384a834e323860724fde",
+            ),
+            "qwen_fast_sanity": (
+                "qwen3.5:0.8b",
+                "de63045f29755d4721c09d54c9b45c2dadb644f4fd7d604d4cac90d96049971c",
+            ),
+        }
+        roles = {name: model for name, model, _ in ROLES}
+        self.assertEqual(5, len(roles))
+        for role, (tag, digest) in required.items():
+            self.assertEqual(tag, roles[role])
+            self.assertEqual(digest, EXPECTED_DIGESTS[tag])
+        report = run_council(fake)
+        for role in required:
+            seat = next(row for row in report["seats"] if row["seat"] == role)
+            self.assertEqual("ADVISORY_ONLY", seat["status"])
+            self.assertEqual("NONE", seat["authority"])
+            self.assertEqual(required[role][1], seat["model_digest"])
+
+    def test_unavailable_new_model_does_not_impersonate_other_seats(self):
+        missing = ROLES[-1][1]
+        calls = []
+        def only_four(method, path, payload=None):
+            if (method, path) == ("GET", "/api/tags"):
+                return {"models": [{"name": model, "digest": EXPECTED_DIGESTS[model]}
+                                   for _, model, _ in ROLES if model != missing]}
+            if (method, path) == ("POST", "/api/chat"):
+                calls.append(payload["model"])
+                if payload["model"] == missing:
+                    raise AssertionError("missing tag was queried")
+                return fake(method, path, payload)
+            raise AssertionError("unapproved endpoint")
+        report = run_council(only_four)
+        last = report["seats"][-1]
+        self.assertEqual("UNAVAILABLE", last["status"])
+        self.assertEqual("MODEL_MISSING_OR_UNPINNED", last["reason"])
+        self.assertNotIn("advice", last)
+        self.assertEqual(4, len(calls))
 
     def test_external_seats_are_explicitly_unavailable(self):
         result = run_council(fake)
@@ -340,7 +387,7 @@ class CouncilTests(unittest.TestCase):
                 self.assertEqual("UNAVAILABLE", first["status"])
                 self.assertNotIn("advice", first)
                 self.assertEqual("ADVISORY_ONLY", second["status"])
-                self.assertEqual([ROLES[1][1]], calls)
+                self.assertEqual([model for _, model, _ in ROLES if model != ROLES[0][1]], calls)
 
 
 if __name__ == "__main__":
