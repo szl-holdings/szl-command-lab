@@ -1,6 +1,8 @@
 """SZL's *advisory-only* local model council, with no external authority.
 
 Runs against a loopback Ollama endpoint and a FIXED PUBLIC synthetic prompt.
+Refuses unknown pre-existing model residency: a shared runner may belong to
+another Kimi/Mistral session, and keep_alive=0 must not unload that session.
 Never reads GitHub/HF credentials, browser state, filesystem inputs, or private
 repository contents. Model-generated advice is untrusted data and is never
 executed, merged, published, or promoted to training/deployment evidence.
@@ -69,7 +71,8 @@ class CouncilError(Exception):
 
 def _api_json(method: str, path: str, payload: dict[str, Any] | None = None) -> dict[str, Any]:
     """The only network destination is the hard-coded loopback Ollama socket."""
-    if (method, path) not in {("GET", "/api/tags"), ("POST", "/api/chat")}:
+    if (method, path) not in {("GET", "/api/tags"), ("GET", "/api/ps"),
+                              ("POST", "/api/chat")}:
         raise CouncilError("API_NOT_ALLOWLISTED")
     body = None if payload is None else json.dumps(
         payload, sort_keys=True, separators=(",", ":"), allow_nan=False
@@ -123,6 +126,27 @@ def listed_digests(call: Callable[..., dict[str, Any]] = _api_json) -> dict[str,
         if isinstance(digest, str) and HEX64.fullmatch(digest):
             result[name] = digest
     return result
+
+
+
+def require_unclaimed_residency(
+    call: Callable[..., dict[str, Any]] = _api_json,
+) -> None:
+    """HOLD if the endpoint already runs any model, regardless of identity.
+
+    /api/ps is a read-only shared-host observation; it is NOT an ownership
+    lease or exclusion proof. An empty list cannot exclude racing clients.
+    Do not unload/retag pre-existing Kimi, Mistral or other owned sessions.
+    """
+    data = call("GET", "/api/ps")
+    residents = data.get("models")
+    if not isinstance(residents, list):
+        raise CouncilError("OLLAMA_RESIDENCY_EVIDENCE_UNAVAILABLE")
+    if any(not isinstance(item, dict) or not isinstance(item.get("name"), str)
+           or not item["name"].strip() for item in residents):
+        raise CouncilError("OLLAMA_RESIDENCY_EVIDENCE_INVALID")
+    if residents:
+        raise CouncilError("OLLAMA_PREEXISTING_MODEL_RESIDENCY_HOLD")
 
 
 def ask_local(model: str, role_instruction: str,
@@ -195,7 +219,9 @@ def ask_local(model: str, role_instruction: str,
 
 
 def run_council(call: Callable[..., dict[str, Any]] = _api_json) -> dict[str, Any]:
-    """Sequential CPU calls avoid disrupting preexisting model workloads."""
+    """Sequential CPU calls with a fail-closed occupied-runner preflight."""
+    if call is _api_json:
+        require_unclaimed_residency(call)
     digests = listed_digests(call)
     decisions: list[dict[str, Any]] = []
     for name, model, instruction in ROLES:
