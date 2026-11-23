@@ -95,6 +95,64 @@ class CouncilTests(unittest.TestCase):
         with self.assertRaisesRegex(CouncilError, "API_NOT_ALLOWLISTED"):
             _api_json("POST", "/api/ps")
 
+    def test_status_only_observes_pinned_models_not_inference(self):
+        from python import local_agent_council as council
+        calls = []
+        def read_only(method, path, payload=None):
+            calls.append((method, path))
+            if (method, path) == ("GET", "/api/ps"):
+                return {"models": []}
+            if (method, path) == ("GET", "/api/tags"):
+                return fake(method, path)
+            raise AssertionError("status path must not invoke inference")
+        report = council.observe_council_status(read_only)
+        self.assertEqual("PREFLIGHT_ONLY_NOT_OPERATIONAL", report["status"])
+        self.assertTrue(report["resident_model_names_withheld"])
+        self.assertFalse(report["inference_invoked"])
+        self.assertFalse(report["inference_execution_host_verified"])
+        self.assertFalse(report["production_admitted"])
+        self.assertEqual("NONE", report["deployment_authority"])
+        self.assertEqual([("GET", "/api/ps"), ("GET", "/api/tags")], calls)
+        self.assertTrue(all(x["status"] == "MODEL_DIGEST_MATCH" for x in report["seats"]))
+
+    def test_status_marks_resident_other_owner_hold_without_chat(self):
+        from python import local_agent_council as council
+        def occupied(method, path, payload=None):
+            if path == "/api/ps":
+                return {"models": [{"name": "unrelated-owning-model:latest"}]}
+            if path == "/api/tags":
+                return fake(method, path)
+            raise AssertionError("no chat or model unload allowed")
+        report = council.observe_council_status(occupied)
+        self.assertEqual("HOLD_RESIDENT_MODELS", report["status"])
+        self.assertEqual(1, report["resident_model_count"])
+        self.assertTrue(report["resident_model_names_withheld"])
+        self.assertFalse(report["inference_invoked"])
+
+    def test_status_digest_mismatch_stays_hold_not_green(self):
+        from python import local_agent_council as council
+        def drift(method, path, payload=None):
+            if path == "/api/ps":
+                return {"models": []}
+            if path == "/api/tags":
+                return {"models": [{"name": ROLES[0][1], "digest": "0" * 64}]}
+            raise AssertionError("no inference")
+        report = council.observe_council_status(drift)
+        self.assertEqual("HOLD_MODEL_IDENTITIES", report["status"])
+        self.assertEqual("MODEL_DIGEST_MISMATCH", report["seats"][0]["status"])
+        self.assertEqual("MODEL_MISSING_OR_UNPINNED", report["seats"][1]["status"])
+
+    def test_status_malformed_residency_refused_before_tag_read(self):
+        from python import local_agent_council as council
+        for bad in ({}, {"models": None}, {"models": {}},
+                    {"models": [None]}, {"models": [{}]}):
+            with self.subTest(bad=bad):
+                def malformed(method, path, payload=None):
+                    self.assertEqual(path, "/api/ps")
+                    return bad
+                with self.assertRaises(CouncilError):
+                    council.observe_council_status(malformed)
+
     def test_unknown_model_rejected_without_call(self):
         with self.assertRaisesRegex(CouncilError, "MODEL_NOT_ALLOWLISTED"):
             ask_local("claude:cloud", "test", fake)
