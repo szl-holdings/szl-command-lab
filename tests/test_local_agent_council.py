@@ -153,6 +153,35 @@ class CouncilTests(unittest.TestCase):
                 with self.assertRaises(CouncilError):
                     council.observe_council_status(malformed)
 
+
+    def test_metadata_status_exit_never_claims_operational_green(self):
+        """A correct metadata snapshot is still a non-operational HOLD."""
+        import io
+        from contextlib import redirect_stdout
+        from unittest import mock
+        from python import local_agent_council as council
+
+        report = {
+            "schema": "szl.local-council-observation/v1",
+            "status": "PREFLIGHT_ONLY_NOT_OPERATIONAL",
+            "resident_model_count": 0,
+            "inference_invoked": False,
+            "deployment_authority": "NONE",
+            "seats": [
+                {"seat": "mistral_architect", "status": "MODEL_DIGEST_MATCH"},
+                {"seat": "kimi_reviewer", "status": "MODEL_DIGEST_MATCH"},
+            ],
+        }
+        output = io.StringIO()
+        with (
+            mock.patch.object(council, "observe_council_status", return_value=report),
+            mock.patch("sys.argv", ["local_agent_council", "--status"]),
+            redirect_stdout(output),
+        ):
+            self.assertEqual(2, council.main())
+        self.assertIn("PREFLIGHT_ONLY_NOT_OPERATIONAL", output.getvalue())
+
+
     def test_unknown_model_rejected_without_call(self):
         with self.assertRaisesRegex(CouncilError, "MODEL_NOT_ALLOWLISTED"):
             ask_local("claude:cloud", "test", fake)
