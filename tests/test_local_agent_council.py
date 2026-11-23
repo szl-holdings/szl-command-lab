@@ -6,6 +6,7 @@ import unittest
 from python.local_agent_council import (
     CouncilError, EXTERNAL_ROLES, EXPECTED_DIGESTS, PUBLIC_BRIEF, ROLES,
     SYSTEM_POLICY, _api_json, ask_local, listed_digests, run_council,
+    require_unclaimed_residency,
 )
 
 
@@ -50,6 +51,49 @@ class CouncilTests(unittest.TestCase):
         self.assertNotIn("api_key=", PUBLIC_BRIEF)
         self.assertIn("Never execute", SYSTEM_POLICY)
         self.assertEqual(["127.0.0.1:11434"], run_council(fake)["network_allowed"])
+
+    def test_preexisting_kimi_residency_blocks_all_inference(self):
+        # Simulate a shared runner already occupied by another Kimi session.
+        from python import local_agent_council as council
+        original = council._api_json
+        calls = []
+        def occupied(method, path, payload=None):
+            calls.append((method, path))
+            if (method, path) == ("GET", "/api/ps"):
+                return {"models": [{"name": ROLES[1][1], "expires_at": "future"}]}
+            if (method, path) == ("GET", "/api/tags"):
+                return fake(method, path)
+            raise AssertionError("preexisting model should block chat")
+        council._api_json = occupied
+        try:
+            with self.assertRaisesRegex(CouncilError, "PREEXISTING_MODEL_RESIDENCY_HOLD"):
+                council.run_council(occupied)
+        finally:
+            council._api_json = original
+        self.assertEqual(calls, [("GET", "/api/ps")])
+
+    def test_unrelated_preloaded_model_also_holds(self):
+        def preloaded(method, path, payload=None):
+            self.assertEqual((method, path), ("GET", "/api/ps"))
+            return {"models": [{"name": "another-owner:7b"}]}
+        with self.assertRaisesRegex(CouncilError, "PREEXISTING_MODEL_RESIDENCY_HOLD"):
+            require_unclaimed_residency(preloaded)
+
+    def test_empty_residency_is_only_a_weak_preflight(self):
+        self.assertIsNone(require_unclaimed_residency(
+            lambda method, path, payload=None: {"models": []}
+        ))
+
+    def test_missing_or_malformed_residency_fails_closed(self):
+        for snapshot in ({}, {"models": None}, {"models": {}},
+                         {"models": [None]}, {"models": [{}]},
+                         {"models": [{"name": ""}]}):
+            with self.subTest(snapshot=snapshot), self.assertRaises(CouncilError):
+                require_unclaimed_residency(
+                    lambda method, path, payload=None: snapshot
+                )
+        with self.assertRaisesRegex(CouncilError, "API_NOT_ALLOWLISTED"):
+            _api_json("POST", "/api/ps")
 
     def test_unknown_model_rejected_without_call(self):
         with self.assertRaisesRegex(CouncilError, "MODEL_NOT_ALLOWLISTED"):
