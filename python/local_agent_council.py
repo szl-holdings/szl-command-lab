@@ -218,6 +218,63 @@ def ask_local(model: str, role_instruction: str,
     return result
 
 
+
+def observe_council_status(
+    call: Callable[..., dict[str, Any]] = _api_json,
+) -> dict[str, Any]:
+    """Read-only model identity and occupancy inventory, never a live smoke.
+
+    Missing evidence, malformed model occupancy, and digest drift stay HOLD.
+    The endpoint can be forwarded, so even an empty resident list is not
+    exclusive ownership or evidence of physical model-execution location.
+    """
+    state = call("GET", "/api/ps").get("models")
+    if not isinstance(state, list):
+        raise CouncilError("OLLAMA_RESIDENCY_EVIDENCE_UNAVAILABLE")
+    if any(
+        not isinstance(item, dict)
+        or not isinstance(item.get("name"), str)
+        or not item["name"].strip()
+        for item in state
+    ):
+        raise CouncilError("OLLAMA_RESIDENCY_EVIDENCE_INVALID")
+    digests = listed_digests(call)
+    seats = []
+    for name, model, _ in ROLES:
+        actual = digests.get(model)
+        code = (
+            "MODEL_MISSING_OR_UNPINNED" if actual is None
+            else "MODEL_DIGEST_MATCH" if actual == EXPECTED_DIGESTS[model]
+            else "MODEL_DIGEST_MISMATCH"
+        )
+        seats.append({
+            "seat": name, "status": code,
+            "authority": "NONE", "inference_verified": False,
+        })
+    occupied = bool(state)
+    identities_ok = all(x["status"] == "MODEL_DIGEST_MATCH" for x in seats)
+    return {
+        "schema": "szl.local-council-observation/v1",
+        "status": (
+            "HOLD_RESIDENT_MODELS" if occupied
+            else "HOLD_MODEL_IDENTITIES" if not identities_ok
+            else "PREFLIGHT_ONLY_NOT_OPERATIONAL"
+        ),
+        "resident_model_count": len(state),
+        "resident_model_names_withheld": True,
+        "inference_invoked": False,
+        "inference_execution_host_verified": False,
+        "endpoint_transport": "loopback_endpoint_may_be_forwarded",
+        "provider_account_authenticated": False,
+        "actual_source_audited": False,
+        "model_training_verified": False,
+        "production_admitted": False,
+        "deployment_authority": "NONE",
+        "external_agents": dict(EXTERNAL_ROLES),
+        "seats": seats,
+    }
+
+
 def run_council(call: Callable[..., dict[str, Any]] = _api_json) -> dict[str, Any]:
     """Sequential CPU calls with a fail-closed occupied-runner preflight."""
     if call is _api_json:
@@ -266,17 +323,23 @@ def run_council(call: Callable[..., dict[str, Any]] = _api_json) -> dict[str, An
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--smoke", action="store_true", required=True,
-                        help="Use only the bundled public synthetic prompt")
-    parser.parse_args()
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("--smoke", action="store_true",
+                       help="Use only the bundled public synthetic prompt")
+    group.add_argument("--status", action="store_true",
+                       help="Observe pinned models and occupancy without inference")
+    args = parser.parse_args()
     try:
-        report = run_council()
+        report = observe_council_status() if args.status else run_council()
     except CouncilError as exc:
         print(json.dumps({"schema": "szl.local-council-readonly/v1",
                           "status": "UNAVAILABLE", "reason": str(exc)},
                          sort_keys=True))
         return 2
     print(json.dumps(report, sort_keys=True, ensure_ascii=True))
+    if args.status:
+        # A valid observation is never proof of a working multi-model team.
+        return 0 if report["status"] == "PREFLIGHT_ONLY_NOT_OPERATIONAL" else 2
     return 0 if all(item["status"] == "ADVISORY_ONLY" for item in report["seats"]) else 2
 
 
