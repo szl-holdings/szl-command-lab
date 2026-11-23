@@ -340,8 +340,9 @@ def main() -> int:
         return 2
     print(json.dumps(report, sort_keys=True, ensure_ascii=True))
     if args.status:
-        # A valid observation is never proof of a working multi-model team.
-        return 0 if report["status"] == "PREFLIGHT_ONLY_NOT_OPERATIONAL" else 2
+        # Operational automation must not treat a successful metadata read
+        # as a functioning, exclusive, source-bound council. Always HOLD.
+        return 2
     return 0 if all(item["status"] == "ADVISORY_ONLY" for item in report["seats"]) else 2
 
 
