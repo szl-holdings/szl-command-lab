@@ -197,6 +197,8 @@ def ask_local(model: str, role_instruction: str,
         other_tags = ("<think>", "</think>", "[think]", "[/think]")
         normalized_raw = unicodedata.normalize("NFKC", raw.casefold())
         if (raw.count(open_tag) != 1 or raw.count(close_tag) != 1
+                or normalized_raw.count(open_tag) != 1
+                or normalized_raw.count(close_tag) != 1
                 or any(marker in normalized_raw for marker in other_tags)):
             raise CouncilError("OLLAMA_THINKING_TEXT")
         result = raw.split(close_tag, 1)[1].strip()
