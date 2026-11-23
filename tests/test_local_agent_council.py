@@ -289,6 +289,7 @@ class CouncilTests(unittest.TestCase):
             "◁think▷unclosed private reasoning",
             "◁think▷private◁/think▷",
             "◁think▷a◁think▷b◁/think▷final",
+            "◁think▷outer◁THINK▷inner◁/think▷still reasoning",
             "◁think▷a◁/think▷final◁/think▷",
             "◁think▷a◁/think▷final◁think▷",
             "◁think▷a◁/think▷final<think>hidden</think>",
