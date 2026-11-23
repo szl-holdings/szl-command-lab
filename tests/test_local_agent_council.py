@@ -387,7 +387,7 @@ class CouncilTests(unittest.TestCase):
                 self.assertEqual("UNAVAILABLE", first["status"])
                 self.assertNotIn("advice", first)
                 self.assertEqual("ADVISORY_ONLY", second["status"])
-                self.assertEqual([model for _, model, _ in ROLES if model != ROLES[0][1]], calls)
+                self.assertEqual([ROLES[1][1]], calls)  # only Kimi tag exists in this fixture
 
 
 if __name__ == "__main__":
