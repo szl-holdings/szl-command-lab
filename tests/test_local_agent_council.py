@@ -383,7 +383,7 @@ class CouncilTests(unittest.TestCase):
                     raise AssertionError("unapproved endpoint")
 
                 result = run_council(duplicated)
-                first, second = result["seats"]
+                first, second = result["seats"][0], result["seats"][1]
                 self.assertEqual("UNAVAILABLE", first["status"])
                 self.assertNotIn("advice", first)
                 self.assertEqual("ADVISORY_ONLY", second["status"])
