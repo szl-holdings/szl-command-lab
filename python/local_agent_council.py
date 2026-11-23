@@ -173,6 +173,13 @@ def ask_local(model: str, role_instruction: str,
         raise CouncilError("OLLAMA_THINKING_TEXT")
     if len(result) > MAX_REPLY_CHARS:
         raise CouncilError("OLLAMA_REPLY_TOO_LONG")
+    # json.loads can admit escaped lone surrogates. Ensure the final text is
+    # valid UTF-8 before run_council hashes or serializes it; malformed seats
+    # must fail individually rather than aborting the entire council report.
+    try:
+        result.encode("utf-8")
+    except UnicodeEncodeError:
+        raise CouncilError("OLLAMA_TEXT_NOT_UTF8") from None
     return result
 
 
