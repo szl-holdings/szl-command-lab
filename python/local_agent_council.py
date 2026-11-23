@@ -10,6 +10,8 @@ executed, merged, published, or promoted to training/deployment evidence.
 Upstream weights are external to this repository and have separate licenses:
 - Mistral AI Ministral 3 3B: Apache-2.0 (official Ollama 3 GB quant)
 - Moonshot Kimi-VL A3B Thinking 2506: MIT, GGML-org quantized GGUF (~10.5 GB)
+- SZL A11oy Mini and Khipu 1.5B: exact pinned local GGUF tags, no release claims
+- Qwen3.5 0.8B: fast local synthetic critic, no source or provider access
 - Claude, GPT/Astra, Perplexity: external provider roles remain UNAVAILABLE.
 """
 from __future__ import annotations
@@ -39,13 +41,24 @@ ROLES = (
      "Suggest Python acceptance tests, with no tool use or provider claims."),
     ("kimi_reviewer", "hf.co/ggml-org/Kimi-VL-A3B-Thinking-2506-GGUF:Q4_K_M",
      "Challenge unsupported readiness claims and propose negative controls."),
+    ("a11oy_mini_proposer", "hf.co/SZLHOLDINGS/A11OY-MINI:a11oy-mini-r2-Q4_K_M.gguf",
+     "Propose one small falsifiable Python source-to-runtime test, advisory only."),
+    ("khipu_proof_critic", "hf.co/SZLHOLDINGS/SZL-Khipu-1.5B-GGUF:Q4_K_M",
+     "Critique provenance and receipt overclaiming, with no execution authority."),
+    ("qwen_fast_sanity", "qwen3.5:0.8b",
+     "Find one negative control that keeps missing proof in UNKNOWN state."),
 )
 
-# Immutable digests observed from the authorized Ollama tags readback on 2026-11-21.
+# Immutable digests from authorized loopback /api/tags readbacks, 2026-11-21
+# (Ministral/Kimi) and 2026-11-23 (A11oy Mini/Khipu/Qwen). These attest
+# tag bytes only, not physical host identity, model rights or quality.
 # A retagged or otherwise changed weight is unavailable until this map is reviewed.
 EXPECTED_DIGESTS = {
     "ministral-3:3b": "f04aa1c738f64e13c625b82ae92504fc0260fa6723b509ed1ece0fa188179b1d",
     "hf.co/ggml-org/Kimi-VL-A3B-Thinking-2506-GGUF:Q4_K_M": "e447dad4acfcb8f16c7021fedde7620feec8c1d5c878815771df28ad8a4cdc2d",
+    "hf.co/SZLHOLDINGS/A11OY-MINI:a11oy-mini-r2-Q4_K_M.gguf": "7b3557f752203a4e7ad894998c7a6bc210fda038f2adb0ddfbd6579bec7c3fb6",
+    "hf.co/SZLHOLDINGS/SZL-Khipu-1.5B-GGUF:Q4_K_M": "8d5778860cd624c0b9255833a4f5dbd70c54b2f4cd80384a834e323860724fde",
+    "qwen3.5:0.8b": "de63045f29755d4721c09d54c9b45c2dadb644f4fd7d604d4cac90d96049971c",
 }
 EXTERNAL_ROLES = {"claude": "UNAVAILABLE", "astra": "UNAVAILABLE",
                   "perplexity": "UNAVAILABLE"}
@@ -219,7 +232,7 @@ def ask_local(model: str, role_instruction: str,
 
 
 def run_council(call: Callable[..., dict[str, Any]] = _api_json) -> dict[str, Any]:
-    """Sequential CPU calls with a fail-closed occupied-runner preflight."""
+    """Five sequential CPU advisory calls with occupied-runner HOLD."""
     if call is _api_json:
         require_unclaimed_residency(call)
     digests = listed_digests(call)
